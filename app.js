@@ -6,6 +6,8 @@ const MAX_BETRAG_CENT = 10000;          // "Anderer Preis": höchstens 100,00 �
 const INAKTIV_MS = 2 * 60 * 1000;       // nach 2 Minuten ohne Eingabe zurücksetzen
 const WARNUNG_MS = 15 * 1000;           // 15 Sekunden vorher warnen
 const START_TAB = "beliebt";            // Reiter beim Start und nach jedem Zurücksetzen
+const DANKE_SEKUNDEN = 20;              // "Danke"-Seite: danach automatisch neuer Einkauf
+const FEEDBACK_AKTIV = false;           // Bewertung (Smileys) auf der "Danke"-Seite anzeigen – noch nicht fertig
 
 // ===== Zustand =====
 let produkte = [];      // aus products.json (nur verfügbare)
@@ -15,6 +17,8 @@ let andersZaehler = 0;
 let eingabe = "";       // Text im Ziffernfeld, z. B. "3,7"
 let letzteAktivitaet = Date.now();
 let neuTimer = null;
+let dankeTimer = null;
+let dankeEnde = 0;
 
 // ===== Elemente =====
 const $ = (id) => document.getElementById(id);
@@ -25,6 +29,10 @@ const el = {
   tastatur: $("tastatur"), anzeige: $("anzeige"), fehler: $("fehler"), name: $("name"),
   abbrechen: $("abbrechen"), hinzufuegen: $("hinzufuegen"),
   warnung: $("warnung"), countdown: $("countdown"), weiter: $("weiter"),
+  summeBetrag: $("summe-betrag"), fertig: $("fertig"),
+  danke: $("danke"), dankeBetrag: $("danke-betrag"), dankeSekunden: $("danke-sekunden"),
+  dankeNeu: $("danke-neu"), dankeZurueck: $("danke-zurueck"),
+  belegListe: $("beleg-liste"), belegSumme: $("beleg-summe"), feedback: $("feedback"),
 };
 
 // ===== Hilfsfunktionen =====
@@ -212,7 +220,17 @@ function zeichneWarenkorb() {
     k.classList.toggle("gewaehlt", stueck > 0);
   });
 
-  // Gesamtsumme – Betrag in eigenem <span>, damit er in der Preis-Schrift erscheint
+  // Summe im Warenkorb; "Fertig" nur, wenn etwas drin ist
+  if (warenkorb.length) {
+    el.summeBetrag.textContent = euro(summeCent());
+    el.summeBetrag.classList.remove("summe-leer");
+  } else {
+    el.summeBetrag.textContent = "Tippen Sie auf ein Produkt";
+    el.summeBetrag.classList.add("summe-leer");
+  }
+  el.fertig.hidden = warenkorb.length === 0;
+
+  // Leiste unten (Handy) – Betrag in eigenem <span>, damit er in der Preis-Schrift erscheint
   if (warenkorb.length) {
     el.summentext.replaceChildren("Bitte ", neu("span", "betrag", euro(summeCent())), " in die Kassa legen");
   } else {
@@ -331,6 +349,61 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "Backspace") taste("zurueck");
 });
 
+// ===== "Danke"-Seite =====
+function zeigeDanke() {
+  if (warenkorb.length === 0) return;
+  neuKnopfNormal();
+
+  // Beleg: "2 × Erdäpfel 2 kg ........ 6,00 €"
+  el.belegListe.innerHTML = "";
+  warenkorb.forEach((z) => {
+    const li = neu("li");
+    const text = z.anders ? z.name : `${z.name} ${z.detail}`;
+    li.append(
+      neu("span", "beleg-name", `${z.menge} × ${text}`),
+      neu("span", "beleg-punkte"),
+      neu("span", "beleg-preis", euro(z.cent * z.menge))
+    );
+    el.belegListe.append(li);
+  });
+  const summe = euro(summeCent());
+  el.belegSumme.textContent = summe;
+  el.dankeBetrag.textContent = summe;
+  el.feedback.hidden = !FEEDBACK_AKTIV;
+
+  el.danke.hidden = false;
+  el.danke.scrollTop = 0;
+
+  // Countdown bis zum automatischen Neustart
+  dankeEnde = Date.now() + DANKE_SEKUNDEN * 1000;
+  clearInterval(dankeTimer);
+  dankeTick();
+  dankeTimer = setInterval(dankeTick, 250);
+}
+
+function dankeTick() {
+  const rest = Math.ceil((dankeEnde - Date.now()) / 1000);
+  if (rest <= 0) {
+    zuruecksetzen();
+    return;
+  }
+  el.dankeSekunden.textContent = rest;
+}
+
+function schliesseDanke() {
+  clearInterval(dankeTimer);
+  dankeTimer = null;
+  el.danke.hidden = true;
+}
+
+el.fertig.addEventListener("click", zeigeDanke);
+el.dankeNeu.addEventListener("click", zuruecksetzen);
+el.dankeZurueck.addEventListener("click", () => {
+  schliesseDanke();        // Warenkorb bleibt unverändert
+  aktivitaet();
+});
+// Smileys und "Hier melden": werden erst mit der Bewertungs-Funktion verbunden (FEEDBACK_AKTIV).
+
 // ===== Neuer Einkauf (mit Bestätigung) =====
 el.neu.addEventListener("click", () => {
   if (warenkorb.length === 0) return;
@@ -352,6 +425,7 @@ function neuKnopfNormal() {
 function zuruecksetzen() {
   warenkorb = [];
   schliesseTastatur();
+  schliesseDanke();
   el.warnung.hidden = true;
   neuKnopfNormal();
   waehleTab(START_TAB);
@@ -372,6 +446,11 @@ el.weiter.addEventListener("click", () => {
 });
 
 setInterval(() => {
+  // Auf der "Danke"-Seite läuft ein eigener Countdown
+  if (!el.danke.hidden) {
+    el.warnung.hidden = true;
+    return;
+  }
   const gibtEtwas = warenkorb.length > 0 || !el.tastatur.hidden;
   const inaktiv = Date.now() - letzteAktivitaet;
 

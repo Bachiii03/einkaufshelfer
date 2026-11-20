@@ -46,14 +46,23 @@
       <h2>Ihr Einkauf</h2>
       <p id="leer" class="leer">Noch nichts ausgewählt.</p>
       <ul id="liste" class="liste"></ul>
-      <button id="neu" class="btn-neu" type="button">Neuer Einkauf</button>
-      <p class="hinweis">
-        Bei Abweichungen gelten die Preise, die direkt bei den Produkten angeschrieben sind.
-      </p>
+
+      <!-- Unterer Teil des Warenkorbs: Summe und Kassa -->
+      <div class="kasse">
+        <div class="summe-zeile" aria-live="polite">
+          <span class="summe-label">Summe</span>
+          <span id="summe-betrag" class="summe-betrag">Tippen Sie auf ein Produkt</span>
+        </div>
+        <button id="fertig" class="btn-fertig" type="button" hidden>Fertig – zur Kassa</button>
+        <button id="neu" class="btn-neu" type="button">Neuer Einkauf</button>
+        <p class="hinweis">
+          Bei Abweichungen gelten die Preise, die direkt bei den Produkten angeschrieben sind.
+        </p>
+      </div>
     </aside>
   </main>
 
-  <!-- Gesamtsumme: immer sichtbar -->
+  <!-- Gesamtsumme unten (nur am Handy – am Tablet steht sie im Warenkorb) -->
   <footer class="summe" aria-live="polite">
     <span id="summentext">Bitte 0,00 € in die Kassa legen</span>
   </footer>
@@ -96,6 +105,55 @@
       <h2>Sind Sie noch da?</h2>
       <p class="dialog-text">Der Einkauf wird in <strong id="countdown">15</strong> Sekunden gelöscht.</p>
       <button id="weiter" type="button" class="btn-haupt">Weiter einkaufen</button>
+    </div>
+  </div>
+
+  <!-- "Danke"-Seite nach "Fertig – zur Kassa" -->
+  <div id="danke" class="danke" role="dialog" aria-modal="true" aria-labelledby="danke-titel" hidden>
+    <div class="danke-karte">
+      <div class="danke-links">
+        <picture>
+          <source srcset="bilder/logo-400.webp" type="image/webp">
+          <img class="danke-logo" src="bilder/logo-400.png" width="400" height="325" alt="Logo Bachl's Feldgemüse">
+        </picture>
+        <h2 id="danke-titel">Danke für Ihren Einkauf!</h2>
+        <p class="danke-text">Bitte legen Sie</p>
+        <p id="danke-betrag" class="danke-betrag">0,00 €</p>
+        <p class="danke-text">in die Kassa.</p>
+        <div class="danke-knoepfe">
+          <button id="danke-neu" type="button" class="btn-haupt">Neuer Einkauf</button>
+          <button id="danke-zurueck" type="button" class="btn-zweit">Zurück zum Einkauf</button>
+        </div>
+        <p class="danke-countdown">Startet in <strong id="danke-sekunden">20</strong> Sekunden automatisch neu.</p>
+      </div>
+
+      <div class="danke-rechts">
+        <section class="beleg" aria-labelledby="beleg-titel">
+          <h3 id="beleg-titel">Ihr Einkauf</h3>
+          <ul id="beleg-liste" class="beleg-liste"></ul>
+          <div class="beleg-summe"><span>Summe</span><span id="beleg-summe">0,00 €</span></div>
+        </section>
+
+        <!-- Bewertung: Aufbau steht schon, wird über FEEDBACK_AKTIV in app.js eingeschaltet -->
+        <section id="feedback" class="feedback" aria-labelledby="feedback-titel" hidden>
+          <h3 id="feedback-titel">Wie war Ihr Einkauf?</h3>
+          <div class="smileys">
+            <button type="button" class="smiley" data-bewertung="gut">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle class="auge" cx="23" cy="26" r="3"/><circle class="auge" cx="41" cy="26" r="3"/><path d="M20 38q12 12 24 0"/></svg>
+              <span>Gut</span>
+            </button>
+            <button type="button" class="smiley" data-bewertung="okay">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle class="auge" cx="23" cy="26" r="3"/><circle class="auge" cx="41" cy="26" r="3"/><path d="M21 42h22"/></svg>
+              <span>Okay</span>
+            </button>
+            <button type="button" class="smiley" data-bewertung="schlecht">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle class="auge" cx="23" cy="26" r="3"/><circle class="auge" cx="41" cy="26" r="3"/><path d="M20 46q12 -12 24 0"/></svg>
+              <span>Schlecht</span>
+            </button>
+          </div>
+          <button type="button" id="melden" class="link-knopf">Etwas gefehlt? Hier melden</button>
+        </section>
+      </div>
     </div>
   </div>
 

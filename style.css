@@ -97,12 +97,12 @@ button:focus-visible, input:focus-visible {
 }
 
 /* "Gestempelte" Flächen und Knöpfe: beim Drücken rutscht der Stempel nach */
-.kachel, .warenkorb, .dialog, .btn-haupt, .btn-zweit, .btn-neu, .ziffern button {
+.kachel, .warenkorb, .dialog, .btn-haupt, .btn-zweit, .btn-neu, .btn-fertig, .ziffern button, .danke-karte, .smiley {
   border: var(--rand);
   border-radius: var(--rundung);
   box-shadow: var(--stempel);
 }
-.btn-haupt:active, .btn-zweit:active, .btn-neu:active, .ziffern button:active {
+.btn-haupt:active, .btn-zweit:active, .btn-neu:active, .btn-fertig:active, .ziffern button:active, .smiley:active {
   transform: translate(3px, 3px);
   box-shadow: 1px 1px 0 var(--tinte);
 }
@@ -172,6 +172,9 @@ button:focus-visible, input:focus-visible {
 
 /* Tablet / großer Bildschirm: nur die Kacheln scrollen, Warenkorb fest rechts */
 @media (min-width: 800px) {
+  /* Die Summe steht hier im Warenkorb → keine Leiste unten (ausgeblendet weiter unten bei .summe) */
+  :root { --summe-hoehe: 0px; }
+
   body {
     height: var(--bildschirm-h);
     padding-bottom: var(--summe-hoehe); /* genau die Höhe der Summen-Leiste */
@@ -191,12 +194,17 @@ button:focus-visible, input:focus-visible {
     padding: 0 20px 0 16px; /* rechts Platz für den Stempel-Schatten */
   }
   .produkte { min-height: 0; overflow-y: auto; }
+  /* Warenkorb über die ganze Höhe: Liste scrollt, Summe & Kassa bleiben unten */
   .warenkorb {
-    align-self: start;
-    max-height: calc(100% - var(--kacheln-oben) - 10px);
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - var(--kacheln-oben) - 14px);
     margin-top: var(--kacheln-oben);
+    overflow: hidden;
   }
+  .warenkorb h2, .leer { flex: none; }
+  .liste { flex: 1; min-height: 0; overflow-y: auto; }
+  .kasse { flex: none; }
 }
 
 /* ===== Produkt-Kacheln ===== */
@@ -367,25 +375,68 @@ button:focus-visible, input:focus-visible {
 }
 .btn-rund:active { background: var(--papier-hell); }
 
+/* Unterer Teil: Summe, Fertig, Neuer Einkauf, Hinweis */
+.kasse {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: var(--rand);
+}
+.summe-zeile {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 12px;
+}
+.summe-label { font-family: var(--schrift-titel); font-weight: 700; font-size: 1.6rem; }
+.summe-betrag {
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 1;
+  color: var(--gruen);
+  white-space: nowrap;
+}
+.summe-betrag.summe-leer {
+  font-family: var(--schrift-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--tinte-mild);
+  white-space: normal;
+}
+
+.btn-fertig {
+  width: 100%;
+  min-height: 68px;
+  margin-bottom: 4px; /* Platz für den Stempel */
+  background: var(--orange);
+  color: var(--tinte);
+  font-weight: 700;
+  font-size: 1.45rem;
+}
+
 .btn-neu {
   width: 100%;
-  margin-top: 16px;
-  min-height: 60px;
+  margin-top: 12px;
+  min-height: 52px;
   border-color: var(--braun);
   background: var(--papier);
   color: var(--tinte);
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
+  box-shadow: 3px 3px 0 var(--tinte);
 }
 .btn-neu.bestaetigen { background: var(--rot); color: var(--weiss); border-color: var(--tinte); }
 
 .hinweis {
-  margin: 16px 0 0;
-  padding: 10px 12px;
+  margin: 12px 0 0;
+  padding: 6px 10px;
   border-left: 4px solid var(--braun);
   background: var(--papier-hell);
   font-size: 1rem;
-  color: var(--tinte);
+  line-height: 1.25;
+  color: var(--tinte-mild);
 }
 
 /* ===== Gesamtsumme (immer unten sichtbar) ===== */
@@ -412,6 +463,10 @@ button:focus-visible, input:focus-visible {
   font-weight: 700;
   font-size: 1.15em;
   white-space: nowrap;
+}
+/* Tablet: Leiste nicht nötig, die Summe steht im Warenkorb (muss NACH .summe stehen) */
+@media (min-width: 800px) {
+  .summe { display: none; }
 }
 
 /* ===== Overlays (Ziffernfeld, Warnung) ===== */
@@ -490,6 +545,120 @@ button:focus-visible, input:focus-visible {
 }
 .btn-haupt { background: var(--orange); color: var(--tinte); }
 .btn-zweit { background: var(--papier); color: var(--tinte); border-color: var(--braun); }
+
+/* ===== "Danke"-Seite ===== */
+.danke {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--kraft);
+}
+.danke[hidden] { display: none; }
+
+.danke-karte {
+  margin: auto;               /* mittig, scrollt aber, wenn der Platz nicht reicht */
+  width: 100%;
+  max-width: 1180px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 32px;
+  padding: 28px 32px 32px;
+  background: var(--papier);
+  box-shadow: 6px 6px 0 var(--tinte);
+}
+
+.danke-logo { display: block; height: 130px; width: auto; margin-bottom: 8px; }
+.danke-links h2 { font-size: 52px; line-height: 1.05; margin-bottom: 14px; }
+.danke-text { margin: 0; font-size: 1.6rem; font-weight: 600; }
+.danke-betrag {
+  margin: 2px 0 6px;
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 110px;
+  line-height: 1;
+  color: var(--gruen);
+  white-space: nowrap;
+}
+.danke-knoepfe { display: flex; flex-wrap: wrap; gap: 14px; margin: 24px 4px 0 0; }
+.danke-knoepfe button { min-height: 68px; padding: 0 28px; font-size: 1.3rem; }
+.danke-countdown { margin: 16px 0 0; font-size: 1.1rem; color: var(--tinte-mild); }
+.danke-countdown strong { color: var(--tinte); }
+
+.danke-rechts { display: flex; flex-direction: column; gap: 20px; }
+
+/* Beleg: "2 × Erdäpfel 2 kg ........ 6,00 €" */
+.beleg {
+  padding: 18px 20px;
+  background: var(--weiss);
+  border: var(--rand);
+  border-radius: var(--rundung);
+}
+.beleg h3 { font-size: 1.7rem; margin-bottom: 8px; }
+.beleg-liste { list-style: none; margin: 0; padding: 0; max-height: 330px; overflow-y: auto; }
+.beleg-liste li { display: flex; align-items: baseline; gap: 8px; padding: 6px 0; font-size: 1.1rem; }
+.beleg-name { min-width: 0; }
+.beleg-punkte { flex: 1; min-width: 16px; border-bottom: 2px dotted var(--braun); transform: translateY(-5px); }
+.beleg-preis { font-family: var(--schrift-titel); font-weight: 700; font-size: 1.25rem; white-space: nowrap; }
+.beleg-summe {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: var(--rand);
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+.beleg-summe span:last-child { color: var(--gruen); }
+
+/* Bewertung (noch ausgeblendet, siehe FEEDBACK_AKTIV) */
+.feedback {
+  padding: 18px 20px;
+  background: var(--papier-hell);
+  border: var(--rand);
+  border-radius: var(--rundung);
+}
+.feedback[hidden] { display: none; }
+.feedback h3 { font-size: 1.6rem; margin-bottom: 12px; }
+.smileys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 0 4px 4px 0; }
+.smiley {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 6px 10px;
+  background: var(--papier);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.smiley svg { width: 60px; height: 60px; fill: none; stroke: var(--tinte); stroke-width: 3.5; stroke-linecap: round; }
+.smiley svg .auge { fill: var(--tinte); stroke: none; }
+.link-knopf {
+  margin-top: 12px;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  color: var(--tinte);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Handy / schmal: untereinander, etwas kleiner */
+@media (max-width: 899px) {
+  .danke { padding: 12px; }
+  .danke-karte { grid-template-columns: 1fr; gap: 20px; padding: 18px 18px 22px; }
+  .danke-logo { height: 90px; }
+  .danke-links h2 { font-size: 34px; }
+  .danke-text { font-size: 1.3rem; }
+  .danke-betrag { font-size: 72px; }
+  .danke-knoepfe button { flex: 1 1 100%; }
+}
 
 /* Kleine Handys: Ziffernfeld etwas kompakter */
 @media (max-height: 700px) {
