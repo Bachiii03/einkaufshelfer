@@ -1,0 +1,25 @@
+{
+  "produkte": [
+    { "name": "Äpfel div. Sorten", "einheit": "1 kg", "preis": 2.20, "bild": "🍎" },
+    { "name": "Apfelsaft", "einheit": "1 Liter", "preis": 3.00, "bild": "🧃" },
+    { "name": "Chinakohl violett", "einheit": "1 Stück", "preis": 2.50, "bild": "🥬" },
+    { "name": "Chinakohl grün", "einheit": "1 Stück", "preis": 2.00, "bild": "🥬" },
+    { "name": "Erdäpfel", "einheit": "2 kg", "preis": 3.00, "bild": "🥔" },
+    { "name": "Freilandeier", "einheit": "1 Packung", "preis": 3.80, "bild": "🥚" },
+    { "name": "Honig div. Sorten", "einheit": "1 Glas", "preis": 7.00, "bild": "🍯", "info": "inkl. 0,50 € Flascheneinsatz" },
+    { "name": "Knoblauch", "einheit": "250 g", "preis": 3.00, "bild": "🧄" },
+    { "name": "Knoblauchpaste", "einheit": "1 Glas", "preis": 6.00, "bild": "🫙" },
+    { "name": "Kürbiskernöl", "einheit": "250 ml", "preis": 7.00, "bild": "🎃" },
+    { "name": "Kürbiskernöl", "einheit": "500 ml", "preis": 12.00, "bild": "🎃" },
+    { "name": "Leinöl", "einheit": "250 ml", "preis": 6.00, "bild": "🌾" },
+    { "name": "Müsli", "einheit": "750 g", "preis": 10.50, "bild": "🥣" },
+    { "name": "Rapsöl", "einheit": "500 ml", "preis": 4.90, "bild": "🌼" },
+    { "name": "Rapsöl", "einheit": "1000 ml", "preis": 7.00, "bild": "🌼" },
+    { "name": "Speisekürbis", "einheit": "1 Stück", "preis": 2.50, "bild": "🎃", "info": "Hokkaido, Spaghetti, Butternuss" },
+    { "name": "Süßkartoffeln", "einheit": "1 kg", "preis": 4.00, "bild": "🍠" },
+    { "name": "Traubensaft", "einheit": "1 Liter", "preis": 4.00, "bild": "🍇" },
+    { "name": "Zwiebel gelb", "einheit": "1 kg", "preis": 1.50, "bild": "🧅" },
+    { "name": "Zwiebel gelb", "einheit": "2 kg", "preis": 2.50, "bild": "🧅" },
+    { "name": "Zwiebel rot", "einheit": "1 kg", "preis": 2.00, "bild": "🧅" }
+  ]
+}

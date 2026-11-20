@@ -1,0 +1,7 @@
+# Persönliche Claude-Code-Einstellungen (nicht teilen)
+.claude/settings.local.json
+
+# Systemdateien von Windows / Mac
+Thumbs.db
+desktop.ini
+.DS_Store

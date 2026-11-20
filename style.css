@@ -1,0 +1,294 @@
+/* ===== Farben & Grundeinstellungen ===== */
+:root {
+  --gruen: #2f5d34;
+  --gruen-hell: #e7f0e3;
+  --erde: #7a4e2d;
+  --hintergrund: #f7f4ec;
+  --karte: #ffffff;
+  --text: #1f1f1f;
+  --grau: #6b6b6b;
+  --rot: #b3261e;
+  --rahmen: #d9d3c3;
+  --summe-hoehe: 84px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--hintergrund);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 18px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  padding-bottom: calc(var(--summe-hoehe) + env(safe-area-inset-bottom, 0px) + 16px);
+}
+
+/* Kein Markieren von Text beim Tippen (Kiosk) – außer im Namensfeld */
+body { user-select: none; -webkit-user-select: none; }
+input { user-select: text; -webkit-user-select: text; }
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation; /* kein Zoom bei Doppeltipp */
+}
+
+/* ===== Kopfzeile ===== */
+.kopf {
+  background: var(--gruen);
+  color: #fff;
+  padding: 14px 20px;
+}
+.kopf h1 { margin: 0; font-size: 1.6rem; }
+.untertitel { margin: 4px 0 0; opacity: .9; }
+
+/* ===== Aufteilung ===== */
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px;
+}
+
+/* Tablet quer / großer Bildschirm: Warenkorb rechts daneben */
+@media (min-width: 800px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr minmax(300px, 34%);
+    align-items: start;
+  }
+  .warenkorb {
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - var(--summe-hoehe) - 32px);
+    overflow-y: auto;
+  }
+}
+
+/* ===== Produkt-Kacheln ===== */
+.kacheln {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.kachel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 150px;
+  padding: 12px 8px;
+  background: var(--karte);
+  border: 2px solid var(--rahmen);
+  border-radius: 16px;
+  text-align: center;
+  transition: transform .08s ease, background .15s ease;
+}
+.kachel:active { transform: scale(.96); background: var(--gruen-hell); }
+.kachel.gewaehlt { border-color: var(--gruen); background: var(--gruen-hell); }
+
+.kachel .bild { font-size: 2.4rem; line-height: 1.1; }
+.kachel .name { font-weight: 700; font-size: 1.05rem; line-height: 1.2; }
+.kachel .einheit { color: var(--grau); font-size: .95rem; }
+.kachel .info { color: var(--grau); font-size: .75rem; }
+.kachel .preis { font-weight: 700; font-size: 1.2rem; color: var(--erde); margin-top: 4px; }
+
+.kachel .anzahl {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border-radius: 17px;
+  background: var(--gruen);
+  color: #fff;
+  font-weight: 700;
+  line-height: 34px;
+}
+
+.kachel-anders {
+  border-style: dashed;
+  border-color: var(--erde);
+  background: #fbf3ea;
+}
+
+.ladefehler { color: var(--rot); font-weight: 700; }
+
+/* ===== Warenkorb ===== */
+.warenkorb {
+  background: var(--karte);
+  border: 2px solid var(--rahmen);
+  border-radius: 16px;
+  padding: 16px;
+}
+.warenkorb h2 { margin: 0 0 8px; font-size: 1.3rem; }
+.leer { color: var(--grau); }
+
+.liste { list-style: none; margin: 0; padding: 0; }
+.zeile {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rahmen);
+}
+.zeile-name { font-weight: 600; }
+.zeile-name small { display: block; font-weight: 400; color: var(--grau); }
+.zeile-betrag { font-weight: 700; text-align: right; white-space: nowrap; }
+.zeile-steuerung {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.zeile-steuerung .menge { min-width: 2ch; text-align: center; font-weight: 700; font-size: 1.2rem; }
+
+.btn-rund {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--gruen);
+  background: #fff;
+  color: var(--gruen);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.btn-rund:active { background: var(--gruen-hell); }
+.btn-loeschen {
+  margin-left: auto;
+  height: 52px;
+  padding: 0 16px;
+  border-radius: 26px;
+  border: 2px solid var(--rot);
+  background: #fff;
+  color: var(--rot);
+  font-weight: 600;
+}
+
+.btn-neu {
+  width: 100%;
+  margin-top: 16px;
+  min-height: 60px;
+  border-radius: 14px;
+  border: 2px solid var(--erde);
+  background: #fff;
+  color: var(--erde);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.btn-neu.bestaetigen { background: var(--rot); border-color: var(--rot); color: #fff; }
+
+.hinweis { font-size: .85rem; color: var(--grau); margin: 14px 0 0; }
+
+/* ===== Gesamtsumme (immer unten sichtbar) ===== */
+.summe {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: var(--summe-hoehe);
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gruen);
+  color: #fff;
+  font-size: clamp(1.3rem, 4.5vw, 2.2rem);
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, .15);
+  z-index: 10;
+}
+
+/* ===== Overlays (Ziffernfeld, Warnung) ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  z-index: 20;
+}
+.overlay[hidden] { display: none; }
+
+.dialog {
+  width: 100%;
+  max-width: 440px;
+  max-height: 100%;
+  overflow-y: auto;
+  background: var(--karte);
+  border-radius: 20px;
+  padding: 18px;
+}
+.dialog h2 { margin: 0; font-size: 1.4rem; }
+.dialog-text { margin: 6px 0 10px; color: var(--grau); }
+.dialog-klein { max-width: 380px; text-align: center; }
+.dialog-klein .btn-haupt { width: 100%; }
+
+.anzeige {
+  font-size: 2.6rem;
+  font-weight: 700;
+  text-align: right;
+  padding: 10px 16px;
+  border: 2px solid var(--rahmen);
+  border-radius: 12px;
+  background: var(--hintergrund);
+}
+.fehler { min-height: 1.4em; margin: 6px 0; color: var(--rot); font-weight: 600; }
+
+.ziffern {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.ziffern button {
+  height: 64px;
+  border-radius: 12px;
+  border: 2px solid var(--rahmen);
+  background: #fff;
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+.ziffern button:active { background: var(--gruen-hell); }
+
+.namensfeld { display: block; margin-top: 12px; font-weight: 600; }
+.namensfeld input {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 12px;
+  font: inherit;
+  border: 2px solid var(--rahmen);
+  border-radius: 10px;
+}
+
+.dialog-knoepfe { display: flex; gap: 10px; margin-top: 14px; }
+.dialog-knoepfe button { flex: 1; }
+
+.btn-haupt, .btn-zweit {
+  min-height: 60px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.btn-haupt { background: var(--gruen); color: #fff; border: 2px solid var(--gruen); }
+.btn-zweit { background: #fff; color: var(--text); border: 2px solid var(--rahmen); }
+
+/* Kleine Handys: Ziffernfeld etwas kompakter */
+@media (max-height: 700px) {
+  .ziffern button { height: 54px; }
+  .anzeige { font-size: 2rem; }
+}

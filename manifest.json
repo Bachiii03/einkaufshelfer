@@ -1,0 +1,14 @@
+{
+  "name": "Einkaufshelfer – Bachl's Feldgemüse",
+  "short_name": "Einkaufshelfer",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f4ec",
+  "theme_color": "#2f5d34",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
