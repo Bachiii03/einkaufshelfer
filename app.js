@@ -176,12 +176,9 @@ function zeichneWarenkorb() {
   });
 
   // Gesamtsumme
-  // Betrag in eigenem <span>, damit er orange hervorgehoben werden kann
-  if (warenkorb.length) {
-    el.summentext.replaceChildren("Bitte ", span("betrag", euro(summeCent())), " in die Kassa legen");
-  } else {
-    el.summentext.textContent = "Tippen Sie auf ein Produkt, um zu beginnen";
-  }
+  el.summentext.textContent = warenkorb.length
+    ? `Bitte ${euro(summeCent())} in die Kassa legen`
+    : "Tippen Sie auf ein Produkt, um zu beginnen";
 }
 
 function rundKnopf(text, label, aktion) {
