@@ -2,7 +2,7 @@
 // Strategie: zuerst aus dem Internet laden (max. 3 Sekunden warten),
 // sonst die gespeicherte Kopie verwenden. Jede erfolgreiche Antwort wird gespeichert.
 
-const CACHE = "einkaufshelfer-v5";
+const CACHE = "einkaufshelfer-v6";
 const DATEIEN = [
   "./",
   "index.html",

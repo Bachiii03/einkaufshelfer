@@ -635,6 +635,7 @@ button:focus-visible, input:focus-visible {
   font-weight: 700;
   font-size: 1.1rem;
 }
+.smiley[aria-pressed="true"] { background: var(--orange); } /* gewählter Smiley */
 .smiley svg { width: 60px; height: 60px; fill: none; stroke: var(--tinte); stroke-width: 3.5; stroke-linecap: round; }
 .smiley svg .auge { fill: var(--tinte); stroke: none; }
 .link-knopf {

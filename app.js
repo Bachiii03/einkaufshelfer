@@ -7,7 +7,7 @@ const INAKTIV_MS = 2 * 60 * 1000;       // nach 2 Minuten ohne Eingabe zurückse
 const WARNUNG_MS = 15 * 1000;           // 15 Sekunden vorher warnen
 const START_TAB = "beliebt";            // Reiter beim Start und nach jedem Zurücksetzen
 const DANKE_SEKUNDEN = 20;              // "Danke"-Seite: danach automatisch neuer Einkauf
-const FEEDBACK_AKTIV = false;           // Bewertung (Smileys) auf der "Danke"-Seite anzeigen – noch nicht fertig
+const FEEDBACK_AKTIV = true;            // Bewertung (Smileys) auf der "Danke"-Seite anzeigen (wird noch NICHT gespeichert)
 
 // ===== Zustand =====
 let produkte = [];      // aus products.json (nur verfügbare)
@@ -370,6 +370,7 @@ function zeigeDanke() {
   el.belegSumme.textContent = summe;
   el.dankeBetrag.textContent = summe;
   el.feedback.hidden = !FEEDBACK_AKTIV;
+  bewertungZuruecksetzen();
 
   el.danke.hidden = false;
   el.danke.scrollTop = 0;
@@ -402,7 +403,23 @@ el.dankeZurueck.addEventListener("click", () => {
   schliesseDanke();        // Warenkorb bleibt unverändert
   aktivitaet();
 });
-// Smileys und "Hier melden": werden erst mit der Bewertungs-Funktion verbunden (FEEDBACK_AKTIV).
+// ===== Bewertung (Smileys) =====
+// Zeigt nur, welcher Smiley gewählt wurde, und bedankt sich. Es wird (noch) nichts gespeichert.
+// "Etwas gefehlt? Hier melden" hat noch keine Funktion.
+const smileys = document.querySelectorAll(".smiley");
+const feedbackTitel = $("feedback-titel");
+
+function bewertungZuruecksetzen() {
+  smileys.forEach((s) => s.setAttribute("aria-pressed", "false"));
+  feedbackTitel.textContent = "Wie war Ihr Einkauf?";
+}
+
+smileys.forEach((s) =>
+  s.addEventListener("click", () => {
+    smileys.forEach((andere) => andere.setAttribute("aria-pressed", String(andere === s)));
+    feedbackTitel.textContent = "Danke für Ihre Bewertung!";
+  })
+);
 
 // ===== Neuer Einkauf (mit Bestätigung) =====
 el.neu.addEventListener("click", () => {
