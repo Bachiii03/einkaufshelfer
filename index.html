@@ -3,16 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#2f5d34">
+  <meta name="theme-color" content="#0b5a26">
   <title>Einkaufshelfer – Bachl's Feldgemüse</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/PatrickHand-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="kopf">
-    <h1>Bachl's Feldgemüse</h1>
-    <p class="untertitel">Einkaufshelfer – tippen Sie auf alles, was Sie mitnehmen.</p>
+    <picture>
+      <source srcset="bilder/logo-400.webp" type="image/webp">
+      <img class="logo" src="bilder/logo-400.png" width="400" height="325" alt="Logo Bachl's Feldgemüse">
+    </picture>
+    <div>
+      <h1>Einkaufshelfer</h1>
+      <p class="untertitel">Tippen Sie auf alles, was Sie mitnehmen.</p>
+    </div>
   </header>
 
   <main class="layout">

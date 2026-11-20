@@ -2,7 +2,7 @@
 // Strategie: zuerst aus dem Internet laden (max. 3 Sekunden warten),
 // sonst die gespeicherte Kopie verwenden. Jede erfolgreiche Antwort wird gespeichert.
 
-const CACHE = "einkaufshelfer-v1";
+const CACHE = "einkaufshelfer-v2";
 const DATEIEN = [
   "./",
   "index.html",
@@ -11,6 +11,9 @@ const DATEIEN = [
   "products.json",
   "manifest.json",
   "icon.svg",
+  "bilder/logo-400.webp",
+  "bilder/logo-400.png",
+  "fonts/PatrickHand-Regular.woff2",
 ];
 const TIMEOUT_MS = 3000;
 
