@@ -23,9 +23,18 @@
     </div>
   </header>
 
+  <!-- Reiter: Kategorien (Namen müssen genau wie "kategorie" in products.json geschrieben sein) -->
+  <nav class="tabs" role="tablist" aria-label="Kategorien">
+    <button type="button" class="tab" role="tab" data-tab="beliebt" aria-selected="true">★ Beliebt</button>
+    <button type="button" class="tab" role="tab" data-tab="Gemüse" aria-selected="false">Gemüse</button>
+    <button type="button" class="tab" role="tab" data-tab="Obst &amp; Säfte" aria-selected="false">Obst &amp; Säfte</button>
+    <button type="button" class="tab" role="tab" data-tab="Öle" aria-selected="false">Öle</button>
+    <button type="button" class="tab" role="tab" data-tab="Vorrat &amp; Gläser" aria-selected="false">Vorrat &amp; Gläser</button>
+  </nav>
+
   <main class="layout">
     <!-- Produkt-Kacheln (werden aus products.json erzeugt) -->
-    <section class="produkte" aria-label="Produkte">
+    <section id="produkte" class="produkte" role="tabpanel" aria-label="Produkte">
       <div id="kacheln" class="kacheln"></div>
       <p id="ladefehler" class="ladefehler" hidden>
         Die Preisliste konnte nicht geladen werden. Bitte die Seite neu laden.
