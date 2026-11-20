@@ -2,7 +2,7 @@
 // Strategie: zuerst aus dem Internet laden (max. 3 Sekunden warten),
 // sonst die gespeicherte Kopie verwenden. Jede erfolgreiche Antwort wird gespeichert.
 
-const CACHE = "einkaufshelfer-v1";
+const CACHE = "einkaufshelfer-v3";
 const DATEIEN = [
   "./",
   "index.html",
@@ -11,6 +11,11 @@ const DATEIEN = [
   "products.json",
   "manifest.json",
   "icon.svg",
+  "bilder/logo-400.webp",
+  "bilder/logo-400.png",
+  "fonts/SourceSans3-Variable.woff2",
+  "fonts/ZillaSlab-SemiBold.woff2",
+  "fonts/ZillaSlab-Bold.woff2",
 ];
 const TIMEOUT_MS = 3000;
 
@@ -35,13 +40,20 @@ self.addEventListener("fetch", (e) => {
 
 async function netzZuerst(anfrage) {
   const cache = await caches.open(CACHE);
-  try {
-    const antwort = await mitTimeout(fetch(anfrage), TIMEOUT_MS);
+  const netz = fetch(anfrage).then((antwort) => {
     if (antwort.ok) cache.put(anfrage, antwort.clone());
     return antwort;
+  });
+  netz.catch(() => {}); // Fehler wird unten behandelt
+
+  try {
+    return await mitTimeout(netz, TIMEOUT_MS);
   } catch {
+    // Internet zu langsam oder weg → gespeicherte Kopie verwenden
     const gespeichert = await cache.match(anfrage, { ignoreSearch: true });
     if (gespeichert) return gespeichert;
+    // Noch keine Kopie da (erster Besuch)? Dann doch auf das Internet warten.
+    try { return await netz; } catch { /* wirklich offline */ }
     if (anfrage.mode === "navigate") {
       const start = await cache.match("index.html");
       if (start) return start;

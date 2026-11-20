@@ -1,35 +1,78 @@
-/* ===== Farben & Grundeinstellungen ===== */
+/* =========================================================
+   Einkaufshelfer – Look "Hofladen / Packpapier"
+   ========================================================= */
+
+/* ===== Schriften (liegen im Projekt → funktionieren offline) ===== */
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("fonts/SourceSans3-Variable.woff2") format("woff2");
+  font-weight: 400 700; /* eine Datei für alle Stärken */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zilla Slab";
+  src: url("fonts/ZillaSlab-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Zilla Slab";
+  src: url("fonts/ZillaSlab-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ===== Farben ===== */
 :root {
-  --gruen: #2f5d34;
-  --gruen-hell: #e7f0e3;
-  --erde: #7a4e2d;
-  --hintergrund: #f7f4ec;
-  --karte: #ffffff;
-  --text: #1f1f1f;
-  --grau: #6b6b6b;
-  --rot: #b3261e;
-  --rahmen: #d9d3c3;
-  --summe-hoehe: 84px;
+  --kraft: #E6D5B4;        /* Seitenhintergrund (Packpapier) */
+  --papier: #FBF5E9;       /* Kacheln & Flächen */
+  --papier-hell: #F4E6CC;  /* helle Flächen (ausgewählt, Hinweise) */
+  --tinte: #33261A;        /* Text & Ränder */
+  --tinte-mild: #5C4A36;   /* Zweittext (Einheit, Info) */
+  --gruen: #0A6B2D;        /* Preis-Knöpfe, Summe */
+  --orange: #E8961E;       /* Hauptaktion, Anzahl – immer mit dunkler Schrift */
+  --braun: #7A4E2D;        /* Nebenränder */
+  --rot: #A3261E;          /* nur für Löschen & Fehlermeldungen */
+  --weiss: #FFFFFF;
+
+  --schrift-text: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --schrift-titel: "Zilla Slab", Rockwell, Georgia, serif;
+
+  --rand: 2px solid var(--tinte);
+  --rundung: 12px;
+  --stempel: 4px 4px 0 var(--tinte);  /* harter "gestempelter" Schatten */
+
+  --summe-hoehe: 96px;
 }
 
 * { box-sizing: border-box; }
 
-html, body {
-  margin: 0;
-  background: var(--hintergrund);
-  color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  font-size: 18px;
-  -webkit-tap-highlight-color: transparent;
-}
+html { font-size: 18px; } /* 1rem = 18 px – nichts ist kleiner */
 
 body {
+  margin: 0;
+  background: var(--kraft);
+  color: var(--tinte);
+  font-family: var(--schrift-text);
+  font-size: 1rem;
+  line-height: 1.35;
+  -webkit-tap-highlight-color: transparent;
   padding-bottom: calc(var(--summe-hoehe) + env(safe-area-inset-bottom, 0px) + 16px);
+  user-select: none;          /* kein Markieren beim Tippen (Kiosk) */
+  -webkit-user-select: none;
 }
-
-/* Kein Markieren von Text beim Tippen (Kiosk) – außer im Namensfeld */
-body { user-select: none; -webkit-user-select: none; }
 input { user-select: text; -webkit-user-select: text; }
+
+h1, h2 {
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  color: var(--tinte);
+  margin: 0;
+  line-height: 1.1;
+}
 
 button {
   font: inherit;
@@ -37,35 +80,62 @@ button {
   cursor: pointer;
   touch-action: manipulation; /* kein Zoom bei Doppeltipp */
 }
+button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--gruen);
+  outline-offset: 3px;
+}
+
+/* "Gestempelte" Flächen und Knöpfe: beim Drücken rutscht der Stempel nach */
+.gestempelt,
+.kachel, .warenkorb, .dialog, .btn-haupt, .btn-zweit, .btn-neu, .ziffern button {
+  border: var(--rand);
+  border-radius: var(--rundung);
+  box-shadow: var(--stempel);
+}
+.kachel:active, .btn-haupt:active, .btn-zweit:active, .btn-neu:active, .ziffern button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--tinte);
+}
 
 /* ===== Kopfzeile ===== */
 .kopf {
-  background: var(--gruen);
-  color: #fff;
-  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 20px;
+  background: var(--papier);
+  border-bottom: var(--rand);
 }
-.kopf h1 { margin: 0; font-size: 1.6rem; }
-.untertitel { margin: 4px 0 0; opacity: .9; }
+.logo { display: block; width: auto; height: 100px; flex-shrink: 0; }
+.kopf h1 { font-size: 40px; }
+.untertitel { margin: 4px 0 0; font-size: 1.1rem; font-weight: 600; color: var(--tinte-mild); }
+
+@media (max-width: 520px) {
+  .kopf { padding: 8px 12px; gap: 12px; }
+  .logo { height: 70px; }
+  .kopf h1 { font-size: 32px; }
+  .untertitel { font-size: 1rem; }
+}
 
 /* ===== Aufteilung ===== */
 .layout {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 16px;
+  gap: 22px;
+  padding: 18px 16px;
 }
 
 /* Tablet quer / großer Bildschirm: Warenkorb rechts daneben */
 @media (min-width: 800px) {
   .layout {
     display: grid;
-    grid-template-columns: 1fr minmax(300px, 34%);
+    grid-template-columns: 1fr minmax(320px, 34%);
     align-items: start;
   }
   .warenkorb {
     position: sticky;
-    top: 16px;
-    max-height: calc(100vh - var(--summe-hoehe) - 32px);
+    top: 18px;
+    max-height: calc(100vh - var(--summe-hoehe) - 40px);
     overflow-y: auto;
   }
 }
@@ -73,8 +143,9 @@ button {
 /* ===== Produkt-Kacheln ===== */
 .kacheln {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  padding: 0 4px 4px 0; /* Platz für den Stempel-Schatten */
 }
 
 .kachel {
@@ -82,56 +153,70 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-height: 150px;
-  padding: 12px 8px;
-  background: var(--karte);
-  border: 2px solid var(--rahmen);
-  border-radius: 16px;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 160px;
+  padding: 14px 10px 12px;
+  background: var(--papier);
   text-align: center;
-  transition: transform .08s ease, background .15s ease;
+  transition: transform .06s ease, box-shadow .06s ease;
 }
-.kachel:active { transform: scale(.96); background: var(--gruen-hell); }
-.kachel.gewaehlt { border-color: var(--gruen); background: var(--gruen-hell); }
+.kachel.gewaehlt { background: var(--papier-hell); }
 
-.kachel .bild { font-size: 2.4rem; line-height: 1.1; }
-.kachel .name { font-weight: 700; font-size: 1.05rem; line-height: 1.2; }
-.kachel .einheit { color: var(--grau); font-size: .95rem; }
-.kachel .info { color: var(--grau); font-size: .75rem; }
-.kachel .preis { font-weight: 700; font-size: 1.2rem; color: var(--erde); margin-top: 4px; }
+.kachel .name {
+  font-family: var(--schrift-titel);
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+.kachel .einheit { color: var(--tinte-mild); font-size: 1rem; font-weight: 600; }
+.kachel .info { color: var(--tinte-mild); font-size: 1rem; line-height: 1.2; }
+
+/* Der Preis sieht aus wie ein grüner Knopf */
+.kachel .preis {
+  margin-top: 6px;
+  align-self: stretch;
+  padding: 6px 8px;
+  border: var(--rand);
+  border-radius: 8px;
+  background: var(--gruen);
+  color: var(--weiss);
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 1.5rem; /* 27 px */
+  line-height: 1.1;
+  white-space: nowrap;
+}
 
 .kachel .anzahl {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  min-width: 34px;
-  height: 34px;
+  top: -12px;
+  right: -12px;
+  min-width: 42px;
+  height: 42px;
   padding: 0 8px;
-  border-radius: 17px;
-  background: var(--gruen);
-  color: #fff;
+  border: var(--rand);
+  border-radius: 21px;
+  background: var(--orange);
+  color: var(--tinte);
+  font-family: var(--schrift-titel);
   font-weight: 700;
-  line-height: 34px;
+  font-size: 1.3rem;
+  line-height: 38px;
 }
 
-.kachel-anders {
-  border-style: dashed;
-  border-color: var(--erde);
-  background: #fbf3ea;
-}
+.kachel-anders { background: var(--papier-hell); }
+.kachel-anders .preis { font-size: 1.15rem; white-space: normal; padding: 9px 8px; }
 
 .ladefehler { color: var(--rot); font-weight: 700; }
 
 /* ===== Warenkorb ===== */
 .warenkorb {
-  background: var(--karte);
-  border: 2px solid var(--rahmen);
-  border-radius: 16px;
-  padding: 16px;
+  background: var(--papier);
+  padding: 16px 18px;
 }
-.warenkorb h2 { margin: 0 0 8px; font-size: 1.3rem; }
-.leer { color: var(--grau); }
+.warenkorb h2 { font-size: 1.8rem; margin-bottom: 6px; }
+.leer { color: var(--tinte-mild); font-weight: 600; }
 
 .liste { list-style: none; margin: 0; padding: 0; }
 .zeile {
@@ -139,57 +224,70 @@ button {
   grid-template-columns: 1fr auto;
   gap: 6px 10px;
   align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--rahmen);
+  padding: 12px 0;
+  border-bottom: 2px dashed var(--braun);
 }
-.zeile-name { font-weight: 600; }
-.zeile-name small { display: block; font-weight: 400; color: var(--grau); }
-.zeile-betrag { font-weight: 700; text-align: right; white-space: nowrap; }
-.zeile-steuerung {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.zeile-name { font-weight: 700; font-size: 1.1rem; }
+.zeile-name small { display: block; font-size: 1rem; font-weight: 400; color: var(--tinte-mild); }
+.zeile-betrag {
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 1.35rem;
+  text-align: right;
+  white-space: nowrap;
 }
-.zeile-steuerung .menge { min-width: 2ch; text-align: center; font-weight: 700; font-size: 1.2rem; }
+.zeile-steuerung { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; }
+.zeile-steuerung .menge {
+  min-width: 2ch;
+  text-align: center;
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 1.35rem;
+}
 
 .btn-rund {
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
-  border: 2px solid var(--gruen);
-  background: #fff;
-  color: var(--gruen);
-  font-size: 1.6rem;
+  border: var(--rand);
+  background: var(--papier);
+  color: var(--tinte);
+  font-size: 1.7rem;
   font-weight: 700;
   line-height: 1;
 }
-.btn-rund:active { background: var(--gruen-hell); }
+.btn-rund:active { background: var(--papier-hell); }
 .btn-loeschen {
   margin-left: auto;
-  height: 52px;
+  height: 54px;
   padding: 0 16px;
-  border-radius: 26px;
+  border-radius: var(--rundung);
   border: 2px solid var(--rot);
-  background: #fff;
+  background: var(--papier);
   color: var(--rot);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .btn-neu {
   width: 100%;
-  margin-top: 16px;
-  min-height: 60px;
-  border-radius: 14px;
-  border: 2px solid var(--erde);
-  background: #fff;
-  color: var(--erde);
+  margin-top: 18px;
+  min-height: 62px;
+  border-color: var(--braun);
+  background: var(--papier);
+  color: var(--tinte);
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
-.btn-neu.bestaetigen { background: var(--rot); border-color: var(--rot); color: #fff; }
+.btn-neu.bestaetigen { background: var(--rot); color: var(--weiss); border-color: var(--tinte); }
 
-.hinweis { font-size: .85rem; color: var(--grau); margin: 14px 0 0; }
+.hinweis {
+  margin: 18px 0 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--braun);
+  background: var(--papier-hell);
+  font-size: 1rem;
+  color: var(--tinte);
+}
 
 /* ===== Gesamtsumme (immer unten sichtbar) ===== */
 .summe {
@@ -203,19 +301,25 @@ button {
   align-items: center;
   justify-content: center;
   background: var(--gruen);
-  color: #fff;
+  border-top: var(--rand);
+  color: var(--weiss);
   font-size: clamp(1.3rem, 4.5vw, 2.2rem);
   font-weight: 700;
   text-align: center;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, .15);
   z-index: 10;
+}
+.summe .betrag {
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 1.15em;
+  white-space: nowrap;
 }
 
 /* ===== Overlays (Ziffernfeld, Warnung) ===== */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, .55);
+  background: rgba(51, 38, 26, .65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -226,69 +330,70 @@ button {
 
 .dialog {
   width: 100%;
-  max-width: 440px;
-  max-height: 100%;
+  max-width: 460px;
+  max-height: calc(100% - 8px);
   overflow-y: auto;
-  background: var(--karte);
-  border-radius: 20px;
-  padding: 18px;
+  background: var(--papier);
+  padding: 16px 18px 20px;
 }
-.dialog h2 { margin: 0; font-size: 1.4rem; }
-.dialog-text { margin: 6px 0 10px; color: var(--grau); }
-.dialog-klein { max-width: 380px; text-align: center; }
+.dialog h2 { font-size: 1.9rem; }
+.dialog-text { margin: 6px 0 10px; color: var(--tinte); }
+.dialog-klein { max-width: 400px; text-align: center; }
 .dialog-klein .btn-haupt { width: 100%; }
 
 .anzeige {
-  font-size: 2.6rem;
+  padding: 6px 16px;
+  border: var(--rand);
+  border-radius: var(--rundung);
+  background: var(--papier-hell);
+  font-family: var(--schrift-titel);
   font-weight: 700;
+  font-size: 2.8rem;
   text-align: right;
-  padding: 10px 16px;
-  border: 2px solid var(--rahmen);
-  border-radius: 12px;
-  background: var(--hintergrund);
 }
-.fehler { min-height: 1.4em; margin: 6px 0; color: var(--rot); font-weight: 600; }
+.fehler { min-height: 1.4em; margin: 6px 0; color: var(--rot); font-weight: 700; }
 
 .ziffern {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 10px;
+  padding: 0 4px 4px 0;
 }
 .ziffern button {
-  height: 64px;
-  border-radius: 12px;
-  border: 2px solid var(--rahmen);
-  background: #fff;
-  font-size: 1.7rem;
+  height: 62px;
+  background: var(--papier);
+  font-size: 1.8rem;
   font-weight: 700;
 }
-.ziffern button:active { background: var(--gruen-hell); }
 
-.namensfeld { display: block; margin-top: 12px; font-weight: 600; }
+.namensfeld { display: block; margin-top: 14px; font-weight: 700; }
 .namensfeld input {
   display: block;
   width: 100%;
   margin-top: 4px;
   padding: 12px;
   font: inherit;
-  border: 2px solid var(--rahmen);
-  border-radius: 10px;
+  font-weight: 400;
+  color: var(--tinte);
+  background: var(--weiss);
+  border: var(--rand);
+  border-radius: 8px;
 }
+.namensfeld input::placeholder { color: var(--tinte-mild); opacity: 1; }
 
-.dialog-knoepfe { display: flex; gap: 10px; margin-top: 14px; }
+.dialog-knoepfe { display: flex; gap: 12px; margin-top: 16px; }
 .dialog-knoepfe button { flex: 1; }
 
 .btn-haupt, .btn-zweit {
-  min-height: 60px;
-  border-radius: 14px;
+  min-height: 62px;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
-.btn-haupt { background: var(--gruen); color: #fff; border: 2px solid var(--gruen); }
-.btn-zweit { background: #fff; color: var(--text); border: 2px solid var(--rahmen); }
+.btn-haupt { background: var(--orange); color: var(--tinte); }
+.btn-zweit { background: var(--papier); color: var(--tinte); border-color: var(--braun); }
 
 /* Kleine Handys: Ziffernfeld etwas kompakter */
 @media (max-height: 700px) {
-  .ziffern button { height: 54px; }
-  .anzeige { font-size: 2rem; }
+  .ziffern button { height: 52px; }
+  .anzeige { font-size: 2.2rem; }
 }

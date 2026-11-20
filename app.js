@@ -46,7 +46,6 @@ async function ladeProdukte() {
         name: p.name,
         einheit: p.einheit || "",
         info: p.info || "",
-        bild: p.bild || "",
         cent: Math.round(p.preis * 100),
       }));
     el.ladefehler.hidden = true;
@@ -68,7 +67,7 @@ function zeichneKacheln() {
     knopf.dataset.schluessel = p.schluessel;
     knopf.setAttribute("aria-label", `${p.name}, ${p.einheit}, ${euro(p.cent)}`);
 
-    if (p.bild) knopf.append(span("bild", p.bild));
+    // Die ganze Kachel ist antippbar; der Preis sieht aus wie ein grüner Knopf
     knopf.append(span("name", p.name));
     if (p.einheit) knopf.append(span("einheit", p.einheit));
     if (p.info) knopf.append(span("info", p.info));
@@ -85,7 +84,7 @@ function zeichneKacheln() {
   const anders = document.createElement("button");
   anders.type = "button";
   anders.className = "kachel kachel-anders";
-  anders.append(span("bild", "🏷️"), span("name", "Anderer Preis"), span("einheit", "Preis steht am Produkt"));
+  anders.append(span("name", "Anderer Preis"), span("einheit", "Preis steht am Produkt"), span("preis", "Betrag eingeben"));
   anders.addEventListener("click", oeffneTastatur);
   el.kacheln.append(anders);
 
@@ -176,9 +175,12 @@ function zeichneWarenkorb() {
   });
 
   // Gesamtsumme
-  el.summentext.textContent = warenkorb.length
-    ? `Bitte ${euro(summeCent())} in die Kassa legen`
-    : "Tippen Sie auf ein Produkt, um zu beginnen";
+  // Betrag in eigenem <span>, damit er in der Preis-Schrift erscheint
+  if (warenkorb.length) {
+    el.summentext.replaceChildren("Bitte ", span("betrag", euro(summeCent())), " in die Kassa legen");
+  } else {
+    el.summentext.textContent = "Tippen Sie auf einen Preis, um zu beginnen";
+  }
 }
 
 function rundKnopf(text, label, aktion) {
