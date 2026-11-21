@@ -140,7 +140,7 @@ button:focus-visible, input:focus-visible {
 .tab {
   flex: none;
   height: 56px;
-  padding: 0 20px;
+  padding: 0 16px;
   border: var(--rand);
   border-radius: var(--rundung);
   background: var(--papier);

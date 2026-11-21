@@ -66,6 +66,7 @@ async function ladeProdukte() {
         beliebt: p.beliebt === true,
         info: p.info || "",
         foto: p.foto || "",
+        variabel: p.preis_variabel === true,   // Preis steht am Produkt → Ziffernfeld
         groessen: (p.groessen || [])
           .filter((g) => g && typeof g.preis === "number" && g.preis > 0)
           .map((g) => ({
@@ -74,7 +75,7 @@ async function ladeProdukte() {
             cent: Math.round(g.preis * 100),
           })),
       }))
-      .filter((p) => p.groessen.length > 0);
+      .filter((p) => p.variabel || p.groessen.length > 0);
     el.ladefehler.hidden = true;
     zeichneKacheln();
   } catch (fehler) {
@@ -111,8 +112,17 @@ function zeichneKacheln() {
     kachel.append(fotoStreifen(p), neu("h3", "name", p.name));
     if (p.info) kachel.append(neu("p", "info", p.info));
 
-    // Ein grüner Knopf pro Größe
     const groessen = neu("div", "groessen");
+    if (p.variabel) {
+      // Variabler Preis: ein Knopf "Preis eingeben" → Ziffernfeld mit dem Namen schon ausgefüllt
+      kachel.append(neu("p", "info", "Preis steht am Produkt"));
+      const knopf = neu("button", "groesse groesse-mitte", "Preis eingeben");
+      knopf.type = "button";
+      knopf.setAttribute("aria-label", `${p.name}: Preis eingeben`);
+      knopf.addEventListener("click", () => oeffneTastatur(p.name));
+      groessen.append(knopf);
+    }
+    // Sonst: ein grüner Knopf pro Größe
     p.groessen.forEach((g) => {
       const knopf = neu("button", "groesse");
       knopf.type = "button";
@@ -160,7 +170,7 @@ function andersKachel() {
     '<svg class="etikett" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 10h22l26 26-20 20L10 30V10z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><circle cx="21" cy="21" r="5" fill="none" stroke="currentColor" stroke-width="4"/></svg>';
   const knopf = neu("button", "groesse groesse-mitte", "Betrag eingeben");
   knopf.type = "button";
-  knopf.addEventListener("click", oeffneTastatur);
+  knopf.addEventListener("click", () => oeffneTastatur(""));
   const groessen = neu("div", "groessen");
   groessen.append(knopf);
   kachel.append(streifen, neu("h3", "name", "Anderer Preis"), neu("p", "info", "Preis steht am Produkt"), groessen);
@@ -247,9 +257,14 @@ function rundKnopf(text, label, aktion) {
 }
 
 // ===== Ziffernfeld "Anderer Preis" =====
-function oeffneTastatur() {
+// produktName: bei Produkten mit variablem Preis (z. B. "Speisekürbis") schon ausgefüllt,
+// bei der Kachel "Anderer Preis" leer.
+let tastaturProdukt = "";
+function oeffneTastatur(produktName = "") {
+  tastaturProdukt = produktName;
   eingabe = "";
-  el.name.value = "";
+  el.name.value = produktName;
+  $("tastatur-titel").textContent = produktName || "Anderer Preis";
   zeigeFehler("");
   zeichneAnzeige();
   el.tastatur.hidden = false;
@@ -320,10 +335,10 @@ function andersHinzufuegen() {
   const name = el.name.value.trim();
   andersZaehler++;
   warenkorb.push({
-    schluessel: "anders-" + andersZaehler,
-    produkt: "",
-    name: name || "Anderer Preis",
-    detail: name ? `Anderer Preis · ${euro(cent)}` : "",
+    schluessel: "anders-" + andersZaehler,       // jede Eingabe ist eine eigene Zeile
+    produkt: tastaturProdukt,                    // damit das Abzeichen auf "Speisekürbis" zählt
+    name: name || tastaturProdukt || "Anderer Preis",
+    detail: tastaturProdukt ? `Preis am Produkt · ${euro(cent)}` : name ? `Anderer Preis · ${euro(cent)}` : "",
     cent,
     menge: 1,
     anders: true,
