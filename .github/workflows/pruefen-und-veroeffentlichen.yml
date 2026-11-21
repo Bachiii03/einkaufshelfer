@@ -1,0 +1,50 @@
+# Läuft bei jeder Änderung (Push), auch wenn sie in der GitHub-App gemacht wurde.
+# 1. "Preise prüfen": kontrolliert products.json.
+# 2. "Website veröffentlichen": nur wenn die Prüfung grün ist und nur für den Zweig "main".
+#    Schlägt die Prüfung fehl, bleibt die alte Version online.
+name: Prüfen und veröffentlichen
+
+on:
+  push:
+  workflow_dispatch: # erlaubt einen Start per Knopfdruck unter "Actions"
+
+permissions:
+  contents: read
+
+jobs:
+  pruefen:
+    name: Preise prüfen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: products.json prüfen
+        run: node scripts/check-products.js
+
+  veroeffentlichen:
+    name: Website veröffentlichen
+    needs: pruefen
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Nur die Website-Dateien zusammenstellen
+        run: |
+          mkdir _site
+          cp index.html style.css app.js sw.js products.json inhalte.json manifest.json icon.svg _site/
+          cp -r bilder fonts _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Veröffentlichen
+        id: deployment
+        uses: actions/deploy-pages@v4
