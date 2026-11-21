@@ -4,7 +4,7 @@ Rechner für den Selbstbedienungs-Hofladen: Kundinnen und Kunden tippen ihre Pro
 und sehen, wie viel sie in die Kassa legen müssen. Läuft auf dem Tablet im Laden und
 auf dem eigenen Handy (auch offline).
 
-**Online:** https://BENUTZERNAME.github.io/einkaufshelfer/
+**Online:** https://bachiii03.github.io/einkaufshelfer/
 
 ## Preise ändern
 
