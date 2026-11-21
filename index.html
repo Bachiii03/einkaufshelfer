@@ -21,6 +21,7 @@
       <h1>Einkaufshelfer</h1>
       <p class="untertitel">Tippen Sie auf den Preis – wir rechnen für Sie zusammen.</p>
     </div>
+    <button id="zur-startseite" type="button" class="btn-startseite">← Startseite</button>
   </header>
 
   <!-- Reiter: Kategorien (Namen müssen genau wie "kategorie" in products.json geschrieben sein) -->
@@ -155,6 +156,63 @@
           <button type="button" id="melden" class="link-knopf">Etwas gefehlt? Hier melden</button>
         </section>
       </div>
+    </div>
+  </div>
+
+  <!-- ===== Startseite: erster Bildschirm und Ziel nach jedem Zurücksetzen ===== -->
+  <div id="start" class="start" role="region" aria-labelledby="start-titel">
+    <div class="start-inhalt">
+      <header class="start-kopf">
+        <picture>
+          <source srcset="bilder/logo-400.webp" type="image/webp">
+          <img class="start-logo" src="bilder/logo-400.png" width="400" height="325" alt="Logo Bachl's Feldgemüse">
+        </picture>
+        <div>
+          <h1 id="start-titel">Willkommen in unserem Hofladen!</h1>
+          <p class="start-untertitel">Selbstbedienung rund um die Uhr. Was möchten Sie tun?</p>
+        </div>
+      </header>
+
+      <div class="start-kacheln">
+        <!-- 1: Rechner -->
+        <button id="start-rechner" type="button" class="start-kachel start-gruen">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 26h52M10 26l5 26h34l5-26M22 26l8-14M42 26l-8-14M24 34v11M32 34v11M40 34v11"/></svg>
+          <span class="start-titel">Einkauf zusammen&shy;rechnen</span>
+          <span class="start-text">Produkte antippen, Summe sehen, in die Kassa legen.</span>
+          <span class="start-los">Los geht's</span>
+        </button>
+
+        <!-- 2: Rezepte -->
+        <button type="button" class="start-kachel" data-bald="Rezepte">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 22h36M28 17h8M12 26h40v18a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8zM12 31H6M52 31h6M24 11q-3-3 0-7M32 11q-3-3 0-7M40 11q-3-3 0-7"/></svg>
+          <span class="start-titel">Rezepte</span>
+          <span class="start-text">Was koche ich heute? Ideen mit unseren Produkten.</span>
+          <span id="teaser-rezept" class="start-teaser" hidden><strong>Diese Woche:</strong> <span></span></span>
+        </button>
+
+        <!-- 3: Neuigkeiten & Presse -->
+        <button type="button" class="start-kachel" data-bald="Neuigkeiten &amp; Presse">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 12h38v40H14a4 4 0 0 1-4-4zM48 22h6v26a4 4 0 0 1-4 4M16 20h26M16 28h10v8H16zM31 29h11M31 35h11M16 42h26M16 47h26"/></svg>
+          <span class="start-titel">Neuigkeiten &amp; Presse</span>
+          <span class="start-text">Was gibt's Neues am Hof? Und was die Zeitung über uns schreibt.</span>
+          <span id="teaser-neu" class="start-teaser" hidden><strong>Neu im Laden:</strong> <span></span></span>
+        </button>
+      </div>
+
+      <div class="start-unten">
+        <button type="button" class="btn-zweit start-klein" data-bald="Über uns">Über uns</button>
+        <button type="button" class="btn-zweit start-klein" data-bald="Wünsche &amp; Feedback">Wünsche &amp; Feedback</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Platzhalter "Kommt bald" ===== -->
+  <div id="bald" class="bald" role="region" aria-labelledby="bald-titel" hidden>
+    <div class="bald-karte">
+      <h2 id="bald-titel">Rezepte</h2>
+      <p class="bald-gross">Kommt bald</p>
+      <p class="bald-text">Diese Seite ist noch in Arbeit. Schauen Sie bald wieder vorbei!</p>
+      <button id="bald-zurueck" type="button" class="btn-haupt">Zurück zur Startseite</button>
     </div>
   </div>
 

@@ -462,7 +462,60 @@ function zuruecksetzen() {
   neuKnopfNormal();
   waehleTab(START_TAB);
   window.scrollTo(0, 0);
+  zeigeStartseite();
   ladeProdukte(); // Preise im Hintergrund auffrischen, falls sie geändert wurden
+  ladeInhalte();
+}
+
+// ===== Startseite & "Kommt bald" =====
+const startseite = $("start");
+const bald = $("bald");
+
+function zeigeStartseite() {
+  schliesseTastatur();
+  bald.hidden = true;
+  startseite.hidden = false;
+  startseite.scrollTop = 0;
+}
+
+function zeigeRechner() {
+  startseite.hidden = true;
+  bald.hidden = true;
+  waehleTab(START_TAB);
+  aktivitaet();
+}
+
+function zeigeBald(titel) {
+  $("bald-titel").textContent = titel;
+  startseite.hidden = true;
+  bald.hidden = false;
+}
+
+$("start-rechner").addEventListener("click", zeigeRechner);
+$("zur-startseite").addEventListener("click", zeigeStartseite); // Warenkorb bleibt erhalten
+$("bald-zurueck").addEventListener("click", zeigeStartseite);
+document.querySelectorAll("[data-bald]").forEach((k) =>
+  k.addEventListener("click", () => zeigeBald(k.dataset.bald))
+);
+
+// Texte für die Startseite aus inhalte.json (kann man ohne Programmieren ändern)
+async function ladeInhalte() {
+  try {
+    const antwort = await fetch("inhalte.json", { cache: "no-store" });
+    if (!antwort.ok) throw new Error("HTTP " + antwort.status);
+    const inhalte = await antwort.json();
+    setzeTeaser("teaser-rezept", inhalte.rezept_der_woche);
+    setzeTeaser("teaser-neu", inhalte.neu_im_laden);
+  } catch (fehler) {
+    console.warn("inhalte.json konnte nicht geladen werden:", fehler); // Kästchen bleiben dann einfach weg
+  }
+}
+
+function setzeTeaser(id, text) {
+  const box = $(id);
+  const leer = typeof text !== "string" || text.trim() === "";
+  box.hidden = leer;
+  if (!leer) box.querySelector("span").textContent = text.trim();
 }
 
 // ===== Automatisch zurücksetzen bei Inaktivität =====
@@ -486,10 +539,10 @@ setInterval(() => {
   const gibtEtwas = warenkorb.length > 0 || !el.tastatur.hidden;
   const inaktiv = Date.now() - letzteAktivitaet;
 
-  // Nur Reiter gewechselt, aber nichts gekauft? Still zurück zu "Beliebt".
+  // Nichts im Warenkorb: nach 2 Minuten still zurück zur Startseite (falls nicht schon dort)
   if (!gibtEtwas) {
     el.warnung.hidden = true;
-    if (aktiverTab !== START_TAB && inaktiv >= INAKTIV_MS) waehleTab(START_TAB);
+    if (inaktiv >= INAKTIV_MS && (startseite.hidden || aktiverTab !== START_TAB)) zuruecksetzen();
     return;
   }
   if (inaktiv >= INAKTIV_MS) {
@@ -504,6 +557,7 @@ setInterval(() => {
 
 // ===== Start =====
 ladeProdukte();
+ladeInhalte();
 
 // Offline-Funktion (Service Worker) aktivieren
 if ("serviceWorker" in navigator) {
