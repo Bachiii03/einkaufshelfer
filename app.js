@@ -7,10 +7,16 @@ const INAKTIV_MS = 2 * 60 * 1000;       // nach 2 Minuten ohne Eingabe zurückse
 const WARNUNG_MS = 15 * 1000;           // 15 Sekunden vorher warnen
 const START_TAB = "beliebt";            // Reiter beim Start und nach jedem Zurücksetzen
 const DANKE_SEKUNDEN = 20;              // "Danke"-Seite: danach automatisch neuer Einkauf
-const FEEDBACK_AKTIV = true;            // Bewertung (Smileys) auf der "Danke"-Seite anzeigen (wird noch NICHT gespeichert)
+const FEEDBACK_AKTIV = true;            // Bewertung (Smileys) auf der "Danke"-Seite anzeigen (Laden-Tablet: Wochenbericht per E-Mail)
+
+// "Etwas gefehlt? Hier melden" schickt eine E-Mail an den Hof (über den Dienst Web3Forms).
+// Schlüssel von https://web3forms.com hier eintragen. Leer = Knopf wird nicht angezeigt.
+// Der Schlüssel darf öffentlich sein: Er schickt Meldungen nur an UNSERE E-Mail-Adresse.
+const MELDEN_SCHLUESSEL = "";
 
 // ===== Zustand =====
 let produkte = [];      // aus products.json (nur verfügbare)
+let alleProduktNamen = []; // alle Namen, auch ausverkaufte (für "Was hat gefehlt?")
 let warenkorb = [];     // Zeilen: { schluessel, produkt, name, detail, cent, menge, anders }
 let aktiverTab = START_TAB;
 let andersZaehler = 0;
@@ -58,6 +64,7 @@ async function ladeProdukte() {
     const antwort = await fetch("products.json", { cache: "no-store" });
     if (!antwort.ok) throw new Error("HTTP " + antwort.status);
     const daten = await antwort.json();
+    alleProduktNamen = (daten.produkte || []).filter((p) => p && p.name).map((p) => p.name);
     produkte = (daten.produkte || [])
       .filter((p) => p && p.name && p.verfuegbar !== false)   // ausverkaufte ausblenden
       .map((p) => ({
@@ -400,11 +407,15 @@ function zeigeDanke() {
   el.dankeBetrag.textContent = summe;
   el.feedback.hidden = !FEEDBACK_AKTIV;
   bewertungZuruecksetzen();
+  meldenZuruecksetzen();
 
   el.danke.hidden = false;
   el.danke.scrollTop = 0;
+  starteDankeCountdown();
+}
 
-  // Countdown bis zum automatischen Neustart
+// Countdown bis zum automatischen Neustart (startet immer wieder bei 20 Sekunden)
+function starteDankeCountdown() {
   dankeEnde = Date.now() + DANKE_SEKUNDEN * 1000;
   clearInterval(dankeTimer);
   dankeTick();
@@ -433,22 +444,246 @@ el.dankeZurueck.addEventListener("click", () => {
   aktivitaet();
 });
 // ===== Bewertung (Smileys) =====
-// Zeigt nur, welcher Smiley gewählt wurde, und bedankt sich. Es wird (noch) nichts gespeichert.
-// "Etwas gefehlt? Hier melden" hat noch keine Funktion.
+// Zeigt, welcher Smiley gewählt wurde, und bedankt sich. Das Laden-Tablet zählt mit
+// und schickt einmal pro Woche eine Zusammenfassung (siehe "Wochenbericht" weiter unten).
 const smileys = document.querySelectorAll(".smiley");
 const feedbackTitel = $("feedback-titel");
 
 function bewertungZuruecksetzen() {
   smileys.forEach((s) => s.setAttribute("aria-pressed", "false"));
   feedbackTitel.textContent = "Wie war Ihr Einkauf?";
+  gezaehlteBewertung = null;
 }
 
 smileys.forEach((s) =>
   s.addEventListener("click", () => {
+    if (s.getAttribute("aria-pressed") === "true") return; // derselbe Smiley nochmal: nichts tun
     smileys.forEach((andere) => andere.setAttribute("aria-pressed", String(andere === s)));
     feedbackTitel.textContent = "Danke für Ihre Bewertung!";
+    zaehleBewertung(s.dataset.bewertung);
   })
 );
+
+// ===== "Etwas gefehlt? Hier melden" → E-Mail an den Hof =====
+// Ablauf: Kunde tippt an, was gefehlt hat → "Senden" → Meldung wird zuerst auf dem Gerät
+// gespeichert und dann an Web3Forms geschickt, das uns eine E-Mail sendet.
+// Ohne Internet bleibt sie gespeichert und wird später automatisch nachgeschickt.
+const MELDEN_AKTIV = MELDEN_SCHLUESSEL.trim() !== "";
+const MELDEN_ADRESSE = "https://api.web3forms.com/submit";
+const WARTESCHLANGE = "einkaufshelfer-meldungen";  // Speicherplatz auf dem Gerät
+const WARTESCHLANGE_MAX = 20;                       // höchstens so viele ungesendete Meldungen aufheben
+
+const melden = {
+  knopf: $("melden"), danke: $("melden-danke"), dialog: $("melden-dialog"),
+  produkte: $("melden-produkte"), text: $("melden-text"), fehler: $("melden-fehler"),
+  abbrechen: $("melden-abbrechen"), senden: $("melden-senden"),
+};
+
+// Bei jeder neuen "Danke"-Seite: Knopf wieder zeigen (eine Meldung pro Einkauf)
+function meldenZuruecksetzen() {
+  schliesseMelden();
+  melden.knopf.hidden = !MELDEN_AKTIV;
+  melden.danke.hidden = true;
+}
+
+function oeffneMelden() {
+  clearInterval(dankeTimer);   // "Danke"-Seite schließt sich nicht, solange man meldet
+  dankeTimer = null;
+  melden.produkte.replaceChildren(
+    ...alleProduktNamen.map((name) => {
+      const b = neu("button", "melden-produkt", name);
+      b.type = "button";
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => {
+        b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true"));
+        melden.fehler.textContent = "";
+      });
+      return b;
+    })
+  );
+  melden.text.value = "";
+  melden.fehler.textContent = "";
+  melden.dialog.hidden = false;
+  melden.dialog.querySelector(".dialog").scrollTop = 0;
+  aktivitaet();
+}
+
+function schliesseMelden() {
+  melden.dialog.hidden = true;
+}
+
+function meldenAbbrechen() {
+  schliesseMelden();
+  starteDankeCountdown();
+}
+
+function meldenAbschicken() {
+  const gewaehlt = [...melden.produkte.querySelectorAll('[aria-pressed="true"]')].map((b) => b.textContent);
+  const text = melden.text.value.trim();
+  if (gewaehlt.length === 0 && text === "") {
+    melden.fehler.textContent = "Bitte ein Produkt antippen oder etwas schreiben.";
+    return;
+  }
+  // Zuerst auf dem Gerät speichern – so geht ohne Internet nichts verloren
+  const liste = leseWarteschlange();
+  liste.push({ id: Date.now() + "-" + Math.random().toString(36).slice(2, 8), zeit: new Date().toISOString(), produkte: gewaehlt, text });
+  schreibeWarteschlange(liste);
+
+  schliesseMelden();
+  melden.knopf.hidden = true;
+  melden.danke.hidden = false;
+  starteDankeCountdown();
+  sendeWarteschlange(); // im Hintergrund
+}
+
+melden.knopf.addEventListener("click", oeffneMelden);
+melden.abbrechen.addEventListener("click", meldenAbbrechen);
+melden.senden.addEventListener("click", meldenAbschicken);
+
+// --- Warteschlange (localStorage: bleibt auch nach Neustart des Tablets erhalten) ---
+function leseWarteschlange() {
+  try {
+    const liste = JSON.parse(localStorage.getItem(WARTESCHLANGE) || "[]");
+    return Array.isArray(liste) ? liste : [];
+  } catch {
+    return [];
+  }
+}
+
+function schreibeWarteschlange(liste) {
+  try {
+    localStorage.setItem(WARTESCHLANGE, JSON.stringify(liste.slice(-WARTESCHLANGE_MAX)));
+  } catch { /* Speicher voll oder gesperrt – dann eben nicht */ }
+}
+
+let sendetGerade = false;
+async function sendeWarteschlange() {
+  if (!MELDEN_AKTIV || sendetGerade) return;
+  sendetGerade = true;
+  try {
+    for (const meldung of leseWarteschlange()) {
+      if (!(await sendeMeldung(meldung))) break;          // kein Internet → später nochmal
+      schreibeWarteschlange(leseWarteschlange().filter((m) => m.id !== meldung.id));
+    }
+  } finally {
+    sendetGerade = false;
+  }
+}
+
+async function sendeMeldung(m) {
+  const zeit = new Date(m.zeit).toLocaleString("de-AT", { timeZone: "Europe/Vienna", dateStyle: "medium", timeStyle: "short" });
+  const teile = [`Gemeldet am ${zeit} im Einkaufshelfer.`];
+  if (m.produkte.length) teile.push("Gefehlt hat:\n" + m.produkte.map((p) => "• " + p).join("\n"));
+  if (m.text) teile.push("Nachricht:\n" + m.text);
+  const betreff = m.produkte.length ? `Hofladen: ${m.produkte.join(", ")} fehlt` : "Hofladen: Meldung";
+  return sendeEmail(betreff, teile.join("\n\n"));
+}
+
+// Schickt eine E-Mail an den Hof (über Web3Forms). Ergebnis: true = angekommen.
+async function sendeEmail(betreff, nachricht) {
+  try {
+    const antwort = await fetch(MELDEN_ADRESSE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        access_key: MELDEN_SCHLUESSEL,
+        subject: betreff.length > 120 ? betreff.slice(0, 117) + "…" : betreff,
+        from_name: "Einkaufshelfer Hofladen",
+        message: nachricht,
+      }),
+    });
+    const daten = await antwort.json().catch(() => ({}));
+    return antwort.ok && daten.success !== false;
+  } catch {
+    return false; // offline o. ä.
+  }
+}
+
+// ===== Wochenbericht der Bewertungen (nur das Tablet im Laden) =====
+// Das Laden-Tablet wird einmalig erkannt, wenn es die Seite mit "?laden" am Ende öffnet
+// (Start-Adresse in Fully Kiosk: https://bachiii03.github.io/einkaufshelfer/?laden).
+// Es zählt die Smileys und schickt alle 7 Tage eine Zusammenfassung per E-Mail.
+// Handys der Kunden zählen nicht mit (sonst käme von jedem Handy ein eigener Bericht).
+const LADEN_MERKER = "einkaufshelfer-laden";
+const BEWERTUNGEN = "einkaufshelfer-bewertungen";
+const BERICHT_TAGE = 7;
+
+try {
+  if (new URLSearchParams(location.search).has("laden")) localStorage.setItem(LADEN_MERKER, "1");
+} catch { /* ohne Speicher kein Wochenbericht */ }
+const IST_LADEN = (() => {
+  try { return localStorage.getItem(LADEN_MERKER) === "1"; } catch { return false; }
+})();
+
+function leseBewertungen() {
+  try {
+    const b = JSON.parse(localStorage.getItem(BEWERTUNGEN) || "null");
+    if (b && b.seit) return { seit: b.seit, gut: b.gut || 0, okay: b.okay || 0, schlecht: b.schlecht || 0 };
+  } catch { /* kaputt → neu anfangen */ }
+  return { seit: new Date().toISOString(), gut: 0, okay: 0, schlecht: 0 };
+}
+
+function schreibeBewertungen(b) {
+  try { localStorage.setItem(BEWERTUNGEN, JSON.stringify(b)); } catch { /* egal */ }
+}
+
+// Smiley gezählt; wer auf derselben "Danke"-Seite umentscheidet, wird nicht doppelt gezählt
+let gezaehlteBewertung = null;
+function zaehleBewertung(bewertung) {
+  if (!IST_LADEN) return;
+  const b = leseBewertungen();
+  if (gezaehlteBewertung) b[gezaehlteBewertung] = Math.max(0, b[gezaehlteBewertung] - 1);
+  b[bewertung] += 1;
+  gezaehlteBewertung = bewertung;
+  schreibeBewertungen(b);
+}
+
+let berichtLaeuft = false;
+async function wochenbericht() {
+  if (!IST_LADEN || !MELDEN_AKTIV || berichtLaeuft) return;
+  const b = leseBewertungen();
+  const seit = new Date(b.seit);
+  if (Date.now() - seit.getTime() < BERICHT_TAGE * 24 * 60 * 60 * 1000) return;
+
+  berichtLaeuft = true;
+  try {
+    const bis = new Date();
+    const datum = (d) => d.toLocaleDateString("de-AT", { timeZone: "Europe/Vienna", day: "numeric", month: "numeric", year: "numeric" });
+    const summe = b.gut + b.okay + b.schlecht;
+    const nachricht = [
+      `Bewertungen am Hofladen-Tablet vom ${datum(seit)} bis ${datum(bis)}:`,
+      `😊 Gut: ${b.gut}\n😐 Okay: ${b.okay}\n☹️ Schlecht: ${b.schlecht}`,
+      summe ? `Insgesamt ${summe} Bewertungen, davon ${Math.round((b.gut / summe) * 100)} % „Gut“.` : "In dieser Woche gab es keine Bewertungen.",
+      "Dieser Bericht kommt jede Woche automatisch vom Einkaufshelfer.",
+    ].join("\n\n");
+    if (await sendeEmail(`Hofladen: Wochenbericht – ${summe} Bewertungen`, nachricht)) {
+      // Neue Woche beginnt jetzt. Was während des Sendens dazukam, bleibt erhalten.
+      const jetzt = leseBewertungen();
+      schreibeBewertungen({
+        seit: bis.toISOString(),
+        gut: Math.max(0, jetzt.gut - b.gut),
+        okay: Math.max(0, jetzt.okay - b.okay),
+        schlecht: Math.max(0, jetzt.schlecht - b.schlecht),
+      });
+    }
+  } finally {
+    berichtLaeuft = false;
+  }
+}
+
+// Beim ersten Start auf dem Laden-Tablet: Beginn der ersten Woche merken
+try {
+  if (IST_LADEN && !localStorage.getItem(BEWERTUNGEN)) schreibeBewertungen(leseBewertungen());
+} catch { /* egal */ }
+
+// Im Hintergrund: ungesendete Meldungen nachschicken und ggf. den Wochenbericht senden –
+// beim Start, wenn das Internet zurückkommt, und alle 5 Minuten
+function hintergrundSenden() {
+  sendeWarteschlange();
+  wochenbericht();
+}
+window.addEventListener("online", hintergrundSenden);
+setInterval(hintergrundSenden, 5 * 60 * 1000);
 
 // ===== Neuer Einkauf (mit Bestätigung) =====
 el.neu.addEventListener("click", () => {
@@ -471,6 +706,7 @@ function neuKnopfNormal() {
 function zuruecksetzen() {
   warenkorb = [];
   schliesseTastatur();
+  schliesseMelden();
   schliesseDanke();
   el.warnung.hidden = true;
   neuKnopfNormal();
@@ -545,6 +781,12 @@ el.weiter.addEventListener("click", () => {
 });
 
 setInterval(() => {
+  // "Was hat gefehlt?" offen, aber niemand tippt mehr: nach 2 Minuten neu starten
+  if (!melden.dialog.hidden) {
+    el.warnung.hidden = true;
+    if (Date.now() - letzteAktivitaet >= INAKTIV_MS) zuruecksetzen();
+    return;
+  }
   // Auf der "Danke"-Seite läuft ein eigener Countdown
   if (!el.danke.hidden) {
     el.warnung.hidden = true;
@@ -572,6 +814,7 @@ setInterval(() => {
 // ===== Start =====
 ladeProdukte();
 ladeInhalte();
+hintergrundSenden(); // falls vom letzten Mal noch Meldungen warten oder der Wochenbericht fällig ist
 
 // Offline-Funktion (Service Worker) aktivieren
 if ("serviceWorker" in navigator) {

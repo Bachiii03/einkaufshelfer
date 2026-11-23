@@ -153,8 +153,28 @@
               <span>Schlecht</span>
             </button>
           </div>
-          <button type="button" id="melden" class="link-knopf">Etwas gefehlt? Hier melden</button>
+          <button type="button" id="melden" class="link-knopf" hidden>Etwas gefehlt? Hier melden</button>
+          <p id="melden-danke" class="melden-danke" role="status" hidden>✓ Danke für Ihre Meldung! Wir kümmern uns darum.</p>
         </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- "Was hat gefehlt?" – Meldung kommt per E-Mail an den Hof (Einstellung MELDEN_SCHLUESSEL in app.js) -->
+  <div id="melden-dialog" class="overlay melden-overlay" hidden>
+    <div class="dialog melden-box" role="dialog" aria-modal="true" aria-labelledby="melden-titel">
+      <h2 id="melden-titel">Was hat gefehlt?</h2>
+      <p class="dialog-text">Tippen Sie an, was leer oder ausverkauft war. Wir bekommen Ihre Meldung per E-Mail.</p>
+      <div id="melden-produkte" class="melden-produkte"></div>
+      <label class="namensfeld">
+        Sonst noch etwas? (optional)
+        <textarea id="melden-text" rows="2" maxlength="300" placeholder="z. B. Kürbiskernöl 500 ml war leer"></textarea>
+      </label>
+      <p class="melden-hinweis">Ohne Namen – bitte keine persönlichen Daten eintragen.</p>
+      <p id="melden-fehler" class="fehler" role="alert"></p>
+      <div class="dialog-knoepfe">
+        <button id="melden-abbrechen" type="button" class="btn-zweit">Abbrechen</button>
+        <button id="melden-senden" type="button" class="btn-haupt">Senden</button>
       </div>
     </div>
   </div>

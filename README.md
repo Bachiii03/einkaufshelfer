@@ -45,3 +45,23 @@ müssen als Datei vorhanden sein; Icons (`"icon"`) müssen in `bilder/icons.svg`
 
 *Kein „Edit file“ in der App?* Dann dieselben Schritte auf **github.com** im
 Handy-Browser: Datei öffnen → Stift-Symbol ✏️.
+
+## Meldungen und Wochenbericht per E-Mail
+
+- **„Etwas gefehlt? Hier melden“** (auf der Danke-Seite): Kunden tippen an, was leer
+  war, und wir bekommen sofort eine E-Mail. Ohne Internet wird die Meldung auf dem
+  Gerät gespeichert und später automatisch nachgeschickt.
+- **Wochenbericht:** Das Tablet im Laden zählt die Smileys (Gut / Okay / Schlecht) und
+  schickt alle 7 Tage eine Zusammenfassung – auch in Wochen ohne Bewertung
+  (dann wissen wir, dass das Tablet läuft).
+
+Einrichtung (einmalig):
+
+1. Auf **web3forms.com** mit unserer E-Mail-Adresse einen kostenlosen *Access Key*
+   holen (kommt per E-Mail).
+2. Den Schlüssel in `app.js` oben bei `MELDEN_SCHLUESSEL = "..."` eintragen.
+   Leer = Knopf „Hier melden“ wird nicht angezeigt.
+3. In **Fully Kiosk** als Start-Adresse eintragen:
+   `https://bachiii03.github.io/einkaufshelfer/?laden`
+   Das `?laden` sagt der Seite: „Ich bin das Laden-Tablet“ – nur dieses Gerät zählt
+   die Smileys und schickt den Wochenbericht.
