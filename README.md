@@ -56,6 +56,8 @@ Die Texte der Startseiten-Bereiche stehen in zwei Dateien – genauso änderbar 
   in `products.json` geschrieben), zeigt die Seite das Icon und „im Laden“.
 - **`geschichten.json`** – `neuigkeiten` (Titel, Art, Datum wie `"2026-03-04"`,
   Absätze in `text`, optional `zitat` und `quelle`) und `ueber_uns`.
+  Mit `"neuigkeiten_sichtbar": false` zeigt „Neuigkeiten & Presse“ nur „Kommt bald“ –
+  die Geschichten bleiben gespeichert. `true` = Geschichten anzeigen.
 - Das Abzeichen „Rezept der Woche“ bekommt das Rezept, dessen Titel genau so in
   `inhalte.json` bei `rezept_der_woche` steht.
 

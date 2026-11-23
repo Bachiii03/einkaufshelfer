@@ -767,7 +767,7 @@ const seiteKoerper = $("seite-koerper");
 const seiteZurueck = $("seite-zurueck");
 const SEITEN_TITEL = { rezepte: "Rezepte", neuigkeiten: "Neuigkeiten & Presse", ueber: "Über uns" };
 let rezepte = [];
-let geschichten = { neuigkeiten: [], ueber_uns: null };
+let geschichten = { sichtbar: false, neuigkeiten: [], ueber_uns: null };
 let rezeptDerWoche = "";   // aus inhalte.json – dieses Rezept bekommt ein Abzeichen
 let aktuelleSeite = "";
 
@@ -783,13 +783,19 @@ async function ladeSeiten() {
     const antwort = await fetch("geschichten.json", { cache: "no-store" });
     if (!antwort.ok) throw new Error("HTTP " + antwort.status);
     const daten = await antwort.json();
-    geschichten = { neuigkeiten: (daten.neuigkeiten || []).filter((g) => g && g.titel), ueber_uns: daten.ueber_uns || null };
+    geschichten = {
+      sichtbar: daten.neuigkeiten_sichtbar === true,   // false → "Neuigkeiten & Presse" zeigt "Kommt bald"
+      neuigkeiten: (daten.neuigkeiten || []).filter((g) => g && g.titel),
+      ueber_uns: daten.ueber_uns || null,
+    };
   } catch (fehler) {
     console.warn("geschichten.json konnte nicht geladen werden:", fehler);
   }
 }
 
 function zeigeSeite(art) {
+  // Neuigkeiten vorerst ausgeblendet? (Schalter "neuigkeiten_sichtbar" in geschichten.json)
+  if (art === "neuigkeiten" && !geschichten.sichtbar) return zeigeBald(SEITEN_TITEL.neuigkeiten);
   aktuelleSeite = art;
   startseite.hidden = true;
   bald.hidden = true;
