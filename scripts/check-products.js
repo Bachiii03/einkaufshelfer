@@ -16,6 +16,16 @@ const NAME_MAX = 30;
 
 const fehler = [];
 
+// Alle Icon-Namen aus bilder/icons.svg (<symbol id="...">)
+const ICONS = (() => {
+  try {
+    const svg = fs.readFileSync(path.join(ORDNER, "bilder", "icons.svg"), "utf8");
+    return [...svg.matchAll(/<symbol\s+id="([^"]+)"/g)].map((m) => m[1]);
+  } catch {
+    return [];
+  }
+})();
+
 function pruefeProdukt(p, nr) {
   const wer = p && typeof p.name === "string" && p.name.trim() ? `"${p.name}"` : `Produkt Nr. ${nr}`;
   const melde = (text) => fehler.push(`${wer}: ${text}`);
@@ -55,6 +65,14 @@ function pruefeProdukt(p, nr) {
         }
       }
     });
+  }
+
+  // Icon (optional) – muss es in bilder/icons.svg geben
+  if (p.icon !== undefined && p.icon !== "") {
+    if (typeof p.icon !== "string") melde('"icon" muss ein Name in Anführungszeichen sein, z. B. "apfel".');
+    else if (!ICONS.includes(p.icon)) {
+      melde(`Icon "${p.icon}" gibt es nicht. Vorhanden: ${ICONS.join(", ") || "(bilder/icons.svg nicht gefunden)"}.`);
+    }
   }
 
   // Foto (optional) – die Datei muss wirklich existieren

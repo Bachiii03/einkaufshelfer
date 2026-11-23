@@ -22,6 +22,8 @@ GitHub-App am Handy:
    - Produkt ausverkauft? `"verfuegbar": false` – wieder da? `"verfuegbar": true`.
    - Im Reiter „★ Beliebt“ zeigen? `"beliebt": true`.
    - Neues Produkt: eine bestehende Zeile kopieren und anpassen. Komma zwischen den Produkten nicht vergessen!
+   - Bild auf der Kachel: `"icon": "apfel"` wählt eine Zeichnung aus `bilder/icons.svg`
+     (Namen stehen dort bei `id="..."`). Ein echtes Foto mit `"foto": "bilder/…jpg"` hat Vorrang.
 5. Oben rechts **Commit changes** tippen, kurz beschreiben (z. B. „Äpfel 2,20 €“) und
    direkt in **main** speichern.
 6. Nach 1–2 Minuten ist die Änderung online. Das Tablet holt sich die neuen Preise
@@ -39,7 +41,7 @@ Geprüft wird: gültiges JSON (Kommas, Klammern), jedes Produkt hat einen Namen
 (höchstens 30 Zeichen) und eine dieser Kategorien: *Gemüse, Obst & Getränke, Öle,
 Milch & Eier, Vorrat & Gläser*; mindestens eine Größe oder `"preis_variabel": true`;
 Preise zwischen 0.10 und 100 € mit höchstens 2 Nachkommastellen; Fotos (`"foto"`)
-müssen als Datei vorhanden sein.
+müssen als Datei vorhanden sein; Icons (`"icon"`) müssen in `bilder/icons.svg` existieren.
 
 *Kein „Edit file“ in der App?* Dann dieselben Schritte auf **github.com** im
 Handy-Browser: Datei öffnen → Stift-Symbol ✏️.

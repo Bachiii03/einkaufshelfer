@@ -66,6 +66,7 @@ async function ladeProdukte() {
         beliebt: p.beliebt === true,
         info: p.info || "",
         foto: p.foto || "",
+        icon: p.icon || "",
         variabel: p.preis_variabel === true,   // Preis steht am Produkt → Ziffernfeld
         groessen: (p.groessen || [])
           .filter((g) => g && typeof g.preis === "number" && g.preis > 0)
@@ -144,21 +145,34 @@ function zeichneKacheln() {
   zeichneWarenkorb();
 }
 
-// Foto – oder, solange es keins gibt, der Anfangsbuchstabe + "Foto folgt"
+// Bild oben auf der Kachel: Foto (falls eingetragen) → sonst Icon aus bilder/icons.svg
+// → sonst der Anfangsbuchstabe + "Foto folgt"
+const ICON_DATEI = "bilder/icons.svg";
+
 function fotoStreifen(p) {
   const streifen = neu("div", "foto");
-  const platzhalter = () => {
-    streifen.replaceChildren(neu("span", "foto-buchstabe", p.name.charAt(0)), neu("span", "foto-text", "Foto folgt"));
+  const ohneFoto = () => {
+    if (p.icon) {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "produkt-icon");
+      svg.setAttribute("aria-hidden", "true");
+      const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+      use.setAttribute("href", `${ICON_DATEI}#${p.icon}`);
+      svg.append(use);
+      streifen.replaceChildren(svg);
+    } else {
+      streifen.replaceChildren(neu("span", "foto-buchstabe", p.name.charAt(0)), neu("span", "foto-text", "Foto folgt"));
+    }
   };
   if (p.foto) {
     const bild = neu("img");
     bild.src = p.foto;
     bild.alt = "";
     bild.loading = "lazy";
-    bild.addEventListener("error", platzhalter);
+    bild.addEventListener("error", ohneFoto);
     streifen.append(bild);
   } else {
-    platzhalter();
+    ohneFoto();
   }
   return streifen;
 }
