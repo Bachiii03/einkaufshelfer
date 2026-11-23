@@ -39,7 +39,7 @@ jobs:
       - name: Nur die Website-Dateien zusammenstellen
         run: |
           mkdir _site
-          cp index.html style.css app.js sw.js products.json inhalte.json manifest.json icon.svg _site/
+          cp index.html style.css app.js sw.js products.json inhalte.json rezepte.json geschichten.json manifest.json icon.svg _site/
           cp -r bilder fonts _site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4

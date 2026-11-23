@@ -17,6 +17,7 @@ const MELDEN_SCHLUESSEL = "";
 // ===== Zustand =====
 let produkte = [];      // aus products.json (nur verfügbare)
 let alleProduktNamen = []; // alle Namen, auch ausverkaufte (für "Was hat gefehlt?")
+let produktIcons = {};  // Name → Icon, auch für ausverkaufte (für die Rezepte)
 let warenkorb = [];     // Zeilen: { schluessel, produkt, name, detail, cent, menge, anders }
 let aktiverTab = START_TAB;
 let andersZaehler = 0;
@@ -65,6 +66,7 @@ async function ladeProdukte() {
     if (!antwort.ok) throw new Error("HTTP " + antwort.status);
     const daten = await antwort.json();
     alleProduktNamen = (daten.produkte || []).filter((p) => p && p.name).map((p) => p.name);
+    produktIcons = Object.fromEntries((daten.produkte || []).filter((p) => p && p.name).map((p) => [p.name, p.icon || ""]));
     produkte = (daten.produkte || [])
       .filter((p) => p && p.name && p.verfuegbar !== false)   // ausverkaufte ausblenden
       .map((p) => ({
@@ -156,17 +158,22 @@ function zeichneKacheln() {
 // → sonst der Anfangsbuchstabe + "Foto folgt"
 const ICON_DATEI = "bilder/icons.svg";
 
+// Ein Icon aus bilder/icons.svg als <svg>-Element
+function iconSvg(icon, klasse) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", klasse);
+  svg.setAttribute("aria-hidden", "true");
+  const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+  use.setAttribute("href", `${ICON_DATEI}#${icon}`);
+  svg.append(use);
+  return svg;
+}
+
 function fotoStreifen(p) {
   const streifen = neu("div", "foto");
   const ohneFoto = () => {
     if (p.icon) {
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svg.setAttribute("class", "produkt-icon");
-      svg.setAttribute("aria-hidden", "true");
-      const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-      use.setAttribute("href", `${ICON_DATEI}#${p.icon}`);
-      svg.append(use);
-      streifen.replaceChildren(svg);
+      streifen.replaceChildren(iconSvg(p.icon, "produkt-icon"));
     } else {
       streifen.replaceChildren(neu("span", "foto-buchstabe", p.name.charAt(0)), neu("span", "foto-text", "Foto folgt"));
     }
@@ -715,6 +722,7 @@ function zuruecksetzen() {
   zeigeStartseite();
   ladeProdukte(); // Preise im Hintergrund auffrischen, falls sie geändert wurden
   ladeInhalte();
+  ladeSeiten();
 }
 
 // ===== Startseite & "Kommt bald" =====
@@ -724,6 +732,7 @@ const bald = $("bald");
 function zeigeStartseite() {
   schliesseTastatur();
   bald.hidden = true;
+  seite.hidden = true;
   startseite.hidden = false;
   startseite.scrollTop = 0;
 }
@@ -731,6 +740,7 @@ function zeigeStartseite() {
 function zeigeRechner() {
   startseite.hidden = true;
   bald.hidden = true;
+  seite.hidden = true;
   waehleTab(START_TAB);
   aktivitaet();
 }
@@ -738,6 +748,7 @@ function zeigeRechner() {
 function zeigeBald(titel) {
   $("bald-titel").textContent = titel;
   startseite.hidden = true;
+  seite.hidden = true;
   bald.hidden = false;
 }
 
@@ -748,12 +759,212 @@ document.querySelectorAll("[data-bald]").forEach((k) =>
   k.addEventListener("click", () => zeigeBald(k.dataset.bald))
 );
 
+// ===== Inhaltsseiten: Rezepte, Neuigkeiten & Presse, Über uns =====
+// Die Texte stehen in rezepte.json und geschichten.json (ohne Programmieren änderbar).
+const seite = $("seite");
+const seiteTitel = $("seite-titel");
+const seiteKoerper = $("seite-koerper");
+const seiteZurueck = $("seite-zurueck");
+const SEITEN_TITEL = { rezepte: "Rezepte", neuigkeiten: "Neuigkeiten & Presse", ueber: "Über uns" };
+let rezepte = [];
+let geschichten = { neuigkeiten: [], ueber_uns: null };
+let rezeptDerWoche = "";   // aus inhalte.json – dieses Rezept bekommt ein Abzeichen
+let aktuelleSeite = "";
+
+async function ladeSeiten() {
+  try {
+    const antwort = await fetch("rezepte.json", { cache: "no-store" });
+    if (!antwort.ok) throw new Error("HTTP " + antwort.status);
+    rezepte = ((await antwort.json()).rezepte || []).filter((r) => r && r.titel);
+  } catch (fehler) {
+    console.warn("rezepte.json konnte nicht geladen werden:", fehler);
+  }
+  try {
+    const antwort = await fetch("geschichten.json", { cache: "no-store" });
+    if (!antwort.ok) throw new Error("HTTP " + antwort.status);
+    const daten = await antwort.json();
+    geschichten = { neuigkeiten: (daten.neuigkeiten || []).filter((g) => g && g.titel), ueber_uns: daten.ueber_uns || null };
+  } catch (fehler) {
+    console.warn("geschichten.json konnte nicht geladen werden:", fehler);
+  }
+}
+
+function zeigeSeite(art) {
+  aktuelleSeite = art;
+  startseite.hidden = true;
+  bald.hidden = true;
+  seite.hidden = false;
+  if (art === "ueber") zeigeUeberUns();
+  else zeichneUebersicht();
+  aktivitaet();
+}
+
+function seiteAnfang(titel, mitZurueck) {
+  seiteTitel.textContent = titel;
+  seiteZurueck.hidden = !mitZurueck;
+  seiteKoerper.replaceChildren();
+  seite.scrollTop = 0;
+}
+
+function leerHinweis() {
+  seiteKoerper.append(neu("p", "seite-leer", "Hier gibt es gerade nichts zu sehen. Schauen Sie bald wieder vorbei!"));
+}
+
+// "2026-03-04" → "4. März 2026"
+function datumText(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T12:00:00");
+  return isNaN(d) ? "" : d.toLocaleDateString("de-AT", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function absaetze(ziel, texte) {
+  (texte || []).forEach((t) => ziel.append(neu("p", "absatz", t)));
+}
+
+function zitatBlock(zitat) {
+  const block = neu("figure", "zitat");
+  block.append(neu("blockquote", "", `„${zitat.text}“`));
+  if (zitat.von) block.append(neu("figcaption", "", "– " + zitat.von));
+  return block;
+}
+
+// --- Übersicht (Karten) ---
+function zeichneUebersicht() {
+  seiteAnfang(SEITEN_TITEL[aktuelleSeite], false);
+  const liste = aktuelleSeite === "rezepte" ? rezepte : geschichten.neuigkeiten;
+  if (!liste.length) return leerHinweis();
+
+  const karten = neu("div", "karten");
+  liste.forEach((eintrag) => {
+    const karte = neu("button", "karte");
+    karte.type = "button";
+    if (aktuelleSeite === "rezepte") {
+      const icons = neu("div", "karte-icons");
+      (eintrag.zutaten || [])
+        .map((z) => produktIcons[z.produkt])
+        .filter((icon, i, alle) => icon && alle.indexOf(icon) === i)
+        .slice(0, 4)
+        .forEach((icon) => icons.append(iconSvg(icon, "karte-icon")));
+      karte.append(icons);
+      if (rezeptDerWoche && eintrag.titel.trim() === rezeptDerWoche.trim()) karte.append(neu("span", "abzeichen", "Rezept der Woche"));
+      karte.append(neu("h2", "karte-titel", eintrag.titel), neu("p", "karte-text", eintrag.kurz || ""));
+      karte.append(neu("p", "karte-meta", [eintrag.dauer, eintrag.portionen].filter(Boolean).join(" · ")));
+      karte.addEventListener("click", () => zeigeRezept(eintrag));
+    } else {
+      const meta = [eintrag.art, datumText(eintrag.datum)].filter(Boolean).join(" · ");
+      if (meta) karte.append(neu("p", "karte-meta karte-meta-oben", meta));
+      karte.append(neu("h2", "karte-titel", eintrag.titel), neu("p", "karte-text", eintrag.kurz || ""));
+      karte.append(neu("span", "karte-weiter", "Weiterlesen →"));
+      karte.addEventListener("click", () => zeigeGeschichte(eintrag));
+    }
+    karten.append(karte);
+  });
+  seiteKoerper.append(karten);
+}
+
+// --- Ein Rezept ---
+function zeigeRezept(r) {
+  seiteAnfang(SEITEN_TITEL.rezepte, true);
+  const artikel = neu("article", "artikel");
+  const meta = [r.dauer, r.portionen].filter(Boolean).join(" · ");
+  if (meta) artikel.append(neu("p", "artikel-meta", meta));
+  artikel.append(neu("h2", "artikel-titel", r.titel));
+  if (r.kurz) artikel.append(neu("p", "artikel-kurz", r.kurz));
+
+  const spalten = neu("div", "rezept-spalten");
+  const zutaten = neu("section", "zutaten");
+  zutaten.append(neu("h3", "", "Zutaten"));
+  const ul = neu("ul", "zutaten-liste");
+  (r.zutaten || []).forEach((z) => {
+    const li = neu("li");
+    const icon = produktIcons[z.produkt];
+    li.append(icon ? iconSvg(icon, "zutat-icon") : neu("span", "zutat-punkt"));
+    const text = neu("span", "zutat-text");
+    if (z.menge) text.append(neu("strong", "", z.menge + " "));
+    text.append(document.createTextNode(z.text || ""));
+    li.append(text);
+    if (produkte.some((p) => p.name === z.produkt)) li.append(neu("span", "im-laden", "im Laden"));
+    ul.append(li);
+  });
+  zutaten.append(ul);
+
+  const zubereitung = neu("section", "zubereitung");
+  zubereitung.append(neu("h3", "", "Zubereitung"));
+  const ol = neu("ol", "schritte");
+  (r.schritte || []).forEach((s) => ol.append(neu("li", "", s)));
+  zubereitung.append(ol);
+  if (r.tipp) {
+    const tipp = neu("p", "tipp");
+    tipp.append(neu("strong", "", "Tipp: "), document.createTextNode(r.tipp));
+    zubereitung.append(tipp);
+  }
+  spalten.append(zutaten, zubereitung);
+  artikel.append(spalten);
+  seiteKoerper.append(artikel);
+}
+
+// --- Eine Geschichte (Neuigkeit oder Presse) ---
+function zeigeGeschichte(g) {
+  seiteAnfang(SEITEN_TITEL.neuigkeiten, true);
+  const artikel = neu("article", "artikel artikel-text");
+  const meta = [g.art, datumText(g.datum)].filter(Boolean).join(" · ");
+  if (meta) artikel.append(neu("p", "artikel-meta", meta));
+  artikel.append(neu("h2", "artikel-titel", g.titel));
+  if (g.kurz) artikel.append(neu("p", "artikel-kurz", g.kurz));
+  const text = g.text || [];
+  absaetze(artikel, text.slice(0, 2));
+  if (g.zitat && g.zitat.text) artikel.append(zitatBlock(g.zitat));
+  absaetze(artikel, text.slice(2));
+  if (g.quelle) artikel.append(neu("p", "quelle", "Quelle: " + g.quelle));
+  seiteKoerper.append(artikel);
+}
+
+// --- Über uns ---
+function zeigeUeberUns() {
+  seiteAnfang(SEITEN_TITEL.ueber, false);
+  const u = geschichten.ueber_uns;
+  if (!u) return leerHinweis();
+  const artikel = neu("article", "artikel artikel-text");
+  artikel.append(neu("h2", "artikel-titel", u.titel || "Über uns"));
+  if (u.untertitel) artikel.append(neu("p", "artikel-kurz", u.untertitel));
+  absaetze(artikel, u.text);
+  if (u.zitat && u.zitat.text) artikel.append(zitatBlock(u.zitat));
+
+  if (u.fakten && u.fakten.length) {
+    const fakten = neu("dl", "fakten");
+    u.fakten.forEach((f) => {
+      const box = neu("div", "fakt");
+      box.append(neu("dt", "", f.titel), neu("dd", "", f.text));
+      fakten.append(box);
+    });
+    artikel.append(fakten);
+  }
+  if (u.partner && u.partner.length) {
+    artikel.append(neu("h3", "partner-titel", "Unsere Partner aus der Region"));
+    const partner = neu("ul", "partner");
+    u.partner.forEach((p) => {
+      const li = neu("li");
+      li.append(neu("strong", "", p.produkt), neu("span", "", [p.betrieb, p.ort].filter(Boolean).join(", ")));
+      partner.append(li);
+    });
+    artikel.append(partner);
+  }
+  seiteKoerper.append(artikel);
+}
+
+document.querySelectorAll("[data-seite]").forEach((k) =>
+  k.addEventListener("click", () => zeigeSeite(k.dataset.seite))
+);
+$("seite-start").addEventListener("click", zeigeStartseite);
+seiteZurueck.addEventListener("click", zeichneUebersicht);
+
 // Texte für die Startseite aus inhalte.json (kann man ohne Programmieren ändern)
 async function ladeInhalte() {
   try {
     const antwort = await fetch("inhalte.json", { cache: "no-store" });
     if (!antwort.ok) throw new Error("HTTP " + antwort.status);
     const inhalte = await antwort.json();
+    rezeptDerWoche = typeof inhalte.rezept_der_woche === "string" ? inhalte.rezept_der_woche : "";
     setzeTeaser("teaser-rezept", inhalte.rezept_der_woche);
     setzeTeaser("teaser-neu", inhalte.neu_im_laden);
   } catch (fehler) {
@@ -814,6 +1025,7 @@ setInterval(() => {
 // ===== Start =====
 ladeProdukte();
 ladeInhalte();
+ladeSeiten();
 hintergrundSenden(); // falls vom letzten Mal noch Meldungen warten oder der Wochenbericht fällig ist
 
 // Offline-Funktion (Service Worker) aktivieren

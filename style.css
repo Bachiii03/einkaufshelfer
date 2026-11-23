@@ -872,3 +872,172 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   .ziffern button { height: 52px; }
   .anzeige { font-size: 2.2rem; }
 }
+
+/* ===== Inhaltsseiten: Rezepte, Neuigkeiten & Presse, Über uns ===== */
+.seite {
+  position: fixed;
+  inset: 0;
+  z-index: 28;               /* wie die Startseite */
+  overflow-y: auto;
+  padding: 20px 32px 40px;
+  background: var(--kraft);
+}
+.seite[hidden] { display: none; }
+.seite-inhalt { max-width: 1220px; margin: 0 auto; }
+.seite-kopf { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; }
+.seite-kopf h1 { font-size: 48px; min-width: 0; }
+.seite-kopf .btn-startseite[hidden] { display: none; }
+#seite-zurueck { margin-left: 0; }
+.seite-leer { font-size: 1.3rem; }
+
+/* Karten-Übersicht */
+.karten {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 22px;
+  padding: 0 6px 6px 0;
+}
+.karte {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 18px 20px 20px;
+  text-align: left;
+  background: var(--papier);
+  border: var(--rand);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 var(--tinte);
+}
+.karte:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0 var(--tinte); }
+.karte-icons {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--kraft);
+}
+.karte-icon { width: 56px; height: 56px; flex: none; }
+.karte-titel { font-size: 30px; line-height: 1.1; }
+.karte-text { margin: 0; font-size: 1.15rem; color: var(--tinte-mild); }
+.karte-meta { margin: auto 0 0; font-size: 1.05rem; font-weight: 700; color: var(--braun); }
+.karte-meta-oben { margin: 0; }
+.karte-weiter { margin-top: auto; font-weight: 700; color: var(--gruen); font-size: 1.15rem; }
+.abzeichen {
+  position: absolute;
+  top: -12px;
+  right: 14px;
+  padding: 4px 12px;
+  border: var(--rand);
+  border-radius: 999px;
+  background: var(--orange);
+  color: var(--tinte);
+  font-weight: 700;
+  font-size: 1rem;
+  transform: rotate(3deg);
+}
+
+/* Ein Artikel / Rezept */
+.artikel {
+  padding: 28px 34px 34px;
+  background: var(--papier);
+  border: var(--rand);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 var(--tinte);
+}
+.artikel-text { max-width: 900px; margin: 0 auto; }
+.artikel-meta { margin: 0 0 6px; font-weight: 700; color: var(--braun); font-size: 1.1rem; }
+.artikel-titel { font-size: 44px; line-height: 1.08; }
+.artikel-kurz { margin: 10px 0 0; font-size: 1.35rem; font-weight: 600; color: var(--tinte-mild); }
+.absatz { margin: 16px 0 0; font-size: 1.25rem; line-height: 1.5; }
+.zitat { margin: 24px 0 8px; padding: 12px 0 12px 22px; border-left: 6px solid var(--orange); }
+.zitat blockquote { margin: 0; font-family: var(--schrift-titel); font-weight: 600; font-size: 1.6rem; line-height: 1.3; }
+.zitat figcaption { margin-top: 8px; font-size: 1.05rem; color: var(--tinte-mild); }
+.quelle { margin: 24px 0 0; padding-top: 12px; border-top: 2px dashed var(--braun); font-size: 1rem; color: var(--tinte-mild); }
+
+/* Rezept: Zutaten links, Zubereitung rechts */
+.rezept-spalten {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: 32px;
+  margin-top: 24px;
+}
+.rezept-spalten h3 { font-size: 1.8rem; margin-bottom: 10px; }
+.zutaten { padding: 18px 20px; background: var(--papier-hell); border: var(--rand); border-radius: var(--rundung); align-self: start; }
+.zutaten-liste { list-style: none; margin: 0; padding: 0; }
+.zutaten-liste li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px dashed rgba(122, 78, 45, .45);
+  font-size: 1.15rem;
+  line-height: 1.25;
+}
+.zutaten-liste li:last-child { border-bottom: 0; }
+.zutat-icon { width: 38px; height: 38px; flex: none; }
+.zutat-punkt { width: 38px; flex: none; text-align: center; }
+.zutat-punkt::before { content: "•"; color: var(--braun); font-size: 1.4rem; }
+.zutat-text { flex: 1; min-width: 0; }
+.im-laden {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--gruen);
+  color: var(--weiss);
+  font-size: .9rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.schritte { margin: 0; padding: 0; list-style: none; counter-reset: schritt; }
+.schritte li {
+  position: relative;
+  counter-increment: schritt;
+  padding: 0 0 16px 54px;
+  font-size: 1.2rem;
+  line-height: 1.45;
+}
+.schritte li::before {
+  content: counter(schritt);
+  position: absolute;
+  left: 0;
+  top: -2px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: var(--rand);
+  border-radius: 50%;
+  background: var(--orange);
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+.tipp { margin: 6px 0 0; padding: 12px 16px; border-left: 6px solid var(--gruen); background: var(--papier-hell); font-size: 1.15rem; }
+
+/* Über uns: Fakten und Partner */
+.fakten { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 26px 0 0; }
+.fakt { padding: 12px 16px; background: var(--papier-hell); border: var(--rand); border-radius: var(--rundung); }
+.fakt dt { font-weight: 700; color: var(--braun); font-size: 1rem; }
+.fakt dd { margin: 2px 0 0; font-size: 1.15rem; font-weight: 600; overflow-wrap: anywhere; }
+.partner-titel { font-size: 1.9rem; margin: 30px 0 12px; }
+.partner { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.partner li { display: flex; flex-direction: column; padding: 10px 14px; border: 2px dashed var(--braun); border-radius: var(--rundung); font-size: 1.1rem; }
+.partner li span { color: var(--tinte-mild); }
+
+/* Handy / schmal */
+@media (max-width: 899px) {
+  .seite { padding: 12px 12px 32px; }
+  .seite-kopf { flex-wrap: wrap; gap: 10px; }
+  .seite-kopf h1 { font-size: 32px; order: 3; flex: 1 1 100%; }
+  .karten { grid-template-columns: 1fr; gap: 18px; }
+  .karte-titel { font-size: 26px; }
+  .artikel { padding: 18px 18px 22px; }
+  .artikel-titel { font-size: 32px; }
+  .artikel-kurz { font-size: 1.2rem; }
+  .absatz { font-size: 1.15rem; }
+  .rezept-spalten { grid-template-columns: 1fr; gap: 22px; }
+  .zitat blockquote { font-size: 1.3rem; }
+}

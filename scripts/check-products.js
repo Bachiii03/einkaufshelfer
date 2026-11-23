@@ -1,4 +1,4 @@
-// Prüft products.json, bevor die Seite veröffentlicht wird.
+// Prüft products.json (und die Texte in rezepte.json / geschichten.json), bevor die Seite veröffentlicht wird.
 // Aufruf:  node scripts/check-products.js
 // Findet das Skript einen Fehler, beendet es sich mit Code 1 –
 // dann wird die Seite NICHT veröffentlicht und die alte Version bleibt online.
@@ -108,14 +108,77 @@ function main() {
   }
 
   daten.produkte.forEach((p, i) => pruefeProdukt(p, i + 1));
+  const produktNamen = daten.produkte.filter((p) => p && typeof p.name === "string").map((p) => p.name);
+  const anzahl = pruefeTexte(produktNamen);
 
   if (fehler.length) {
-    console.error(`✗ ${fehler.length} Fehler in products.json:`);
+    console.error(`✗ ${fehler.length} Fehler gefunden:`);
     fehler.forEach((f) => console.error("  – " + f));
     console.error("Die Seite wird erst wieder veröffentlicht, wenn alle Fehler behoben sind.");
     process.exit(1);
   }
   console.log(`✓ products.json ist in Ordnung (${daten.produkte.length} Produkte geprüft).`);
+  console.log(`✓ rezepte.json und geschichten.json sind in Ordnung (${anzahl.rezepte} Rezepte, ${anzahl.geschichten} Geschichten).`);
+}
+
+// ===== rezepte.json und geschichten.json (Texte für die Startseite) =====
+function leseJson(datei) {
+  let text;
+  try {
+    text = fs.readFileSync(path.join(ORDNER, datei), "utf8");
+  } catch {
+    fehler.push(`${datei} wurde nicht gefunden.`);
+    return null;
+  }
+  try {
+    return JSON.parse(text.replace(/^﻿/, ""));
+  } catch (e) {
+    fehler.push(`${datei} ist kein gültiges JSON – vermutlich fehlt ein Komma, eine Klammer oder ein Anführungszeichen. (${e.message})`);
+    return null;
+  }
+}
+
+const istText = (t) => typeof t === "string" && t.trim() !== "";
+const istTextListe = (l) => Array.isArray(l) && l.length > 0 && l.every(istText);
+
+function pruefeTexte(produktNamen) {
+  const anzahl = { rezepte: 0, geschichten: 0 };
+
+  const r = leseJson("rezepte.json");
+  if (r && !Array.isArray(r.rezepte)) fehler.push('rezepte.json muss so aufgebaut sein: { "rezepte": [ ... ] }');
+  else if (r) {
+    anzahl.rezepte = r.rezepte.length;
+    r.rezepte.forEach((rz, i) => {
+      const wer = `rezepte.json, ${rz && istText(rz.titel) ? `"${rz.titel}"` : `Rezept Nr. ${i + 1}`}`;
+      if (!rz || !istText(rz.titel)) fehler.push(`${wer}: "titel" fehlt.`);
+      if (!rz || !Array.isArray(rz.zutaten) || rz.zutaten.length === 0) fehler.push(`${wer}: braucht eine Liste "zutaten".`);
+      else rz.zutaten.forEach((z) => {
+        if (!z || !istText(z.text)) fehler.push(`${wer}: eine Zutat hat keinen "text".`);
+        else if (z.produkt !== undefined && z.produkt !== "" && !produktNamen.includes(z.produkt)) {
+          fehler.push(`${wer}: Zutat "${z.text}" verweist auf das Produkt "${z.produkt}" – das gibt es in products.json nicht (genau gleich schreiben!).`);
+        }
+      });
+      if (!rz || !istTextListe(rz.schritte)) fehler.push(`${wer}: braucht eine Liste "schritte" mit Text.`);
+    });
+  }
+
+  const g = leseJson("geschichten.json");
+  if (g) {
+    if (!Array.isArray(g.neuigkeiten)) fehler.push('geschichten.json: "neuigkeiten" muss eine Liste [ ... ] sein.');
+    else {
+      anzahl.geschichten = g.neuigkeiten.length;
+      g.neuigkeiten.forEach((n, i) => {
+        const wer = `geschichten.json, ${n && istText(n.titel) ? `"${n.titel}"` : `Geschichte Nr. ${i + 1}`}`;
+        if (!n || !istText(n.titel)) fehler.push(`${wer}: "titel" fehlt.`);
+        if (!n || !istTextListe(n.text)) fehler.push(`${wer}: braucht eine Liste "text" mit mindestens einem Absatz.`);
+        if (n && n.datum && !/^\d{4}-\d{2}-\d{2}$/.test(n.datum)) fehler.push(`${wer}: Datum bitte so schreiben: "2026-03-04" (oder leer lassen: "").`);
+      });
+    }
+    if (g.ueber_uns !== undefined && (!g.ueber_uns || !istTextListe(g.ueber_uns.text))) {
+      fehler.push('geschichten.json: "ueber_uns" braucht eine Liste "text" mit mindestens einem Absatz.');
+    }
+  }
+  return anzahl;
 }
 
 main();

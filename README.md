@@ -46,6 +46,21 @@ müssen als Datei vorhanden sein; Icons (`"icon"`) müssen in `bilder/icons.svg`
 *Kein „Edit file“ in der App?* Dann dieselben Schritte auf **github.com** im
 Handy-Browser: Datei öffnen → Stift-Symbol ✏️.
 
+## Rezepte, Neuigkeiten und „Über uns“ ändern
+
+Die Texte der Startseiten-Bereiche stehen in zwei Dateien – genauso änderbar wie
+`products.json` (auch in der GitHub-App):
+
+- **`rezepte.json`** – jedes Rezept mit `titel`, `kurz`, `dauer`, `portionen`,
+  `zutaten` und `schritte`. Steht bei einer Zutat `"produkt": "Erdäpfel"` (genau wie
+  in `products.json` geschrieben), zeigt die Seite das Icon und „im Laden“.
+- **`geschichten.json`** – `neuigkeiten` (Titel, Art, Datum wie `"2026-03-04"`,
+  Absätze in `text`, optional `zitat` und `quelle`) und `ueber_uns`.
+- Das Abzeichen „Rezept der Woche“ bekommt das Rezept, dessen Titel genau so in
+  `inhalte.json` bei `rezept_der_woche` steht.
+
+Die automatische Prüfung kontrolliert auch diese beiden Dateien.
+
 ## Meldungen und Wochenbericht per E-Mail
 
 - **„Etwas gefehlt? Hier melden“** (auf der Danke-Seite): Kunden tippen an, was leer

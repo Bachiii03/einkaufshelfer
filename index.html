@@ -203,7 +203,7 @@
         </button>
 
         <!-- 2: Rezepte -->
-        <button type="button" class="start-kachel" data-bald="Rezepte">
+        <button type="button" class="start-kachel" data-seite="rezepte">
           <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 22h36M28 17h8M12 26h40v18a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8zM12 31H6M52 31h6M24 11q-3-3 0-7M32 11q-3-3 0-7M40 11q-3-3 0-7"/></svg>
           <span class="start-titel">Rezepte</span>
           <span class="start-text">Was koche ich heute? Ideen mit unseren Produkten.</span>
@@ -211,7 +211,7 @@
         </button>
 
         <!-- 3: Neuigkeiten & Presse -->
-        <button type="button" class="start-kachel" data-bald="Neuigkeiten &amp; Presse">
+        <button type="button" class="start-kachel" data-seite="neuigkeiten">
           <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 12h38v40H14a4 4 0 0 1-4-4zM48 22h6v26a4 4 0 0 1-4 4M16 20h26M16 28h10v8H16zM31 29h11M31 35h11M16 42h26M16 47h26"/></svg>
           <span class="start-titel">Neuigkeiten &amp; Presse</span>
           <span class="start-text">Was gibt's Neues am Hof? Und was die Zeitung über uns schreibt.</span>
@@ -220,7 +220,7 @@
       </div>
 
       <div class="start-unten">
-        <button type="button" class="btn-zweit start-klein" data-bald="Über uns">Über uns</button>
+        <button type="button" class="btn-zweit start-klein" data-seite="ueber">Über uns</button>
         <button type="button" class="btn-zweit start-klein" data-bald="Wünsche &amp; Feedback">Wünsche &amp; Feedback</button>
       </div>
     </div>
@@ -233,6 +233,19 @@
       <p class="bald-gross">Kommt bald</p>
       <p class="bald-text">Diese Seite ist noch in Arbeit. Schauen Sie bald wieder vorbei!</p>
       <button id="bald-zurueck" type="button" class="btn-haupt">Zurück zur Startseite</button>
+    </div>
+  </div>
+
+  <!-- ===== Inhaltsseiten: Rezepte, Neuigkeiten & Presse, Über uns =====
+       Texte stehen in rezepte.json und geschichten.json -->
+  <div id="seite" class="seite" role="region" aria-labelledby="seite-titel" hidden>
+    <div class="seite-inhalt">
+      <header class="seite-kopf">
+        <button id="seite-zurueck" type="button" class="btn-startseite" hidden>← Übersicht</button>
+        <h1 id="seite-titel">Rezepte</h1>
+        <button id="seite-start" type="button" class="btn-startseite">← Startseite</button>
+      </header>
+      <div id="seite-koerper"></div>
     </div>
   </div>
 

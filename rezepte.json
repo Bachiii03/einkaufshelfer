@@ -1,0 +1,148 @@
+{
+  "rezepte": [
+    {
+      "titel": "Kürbiscremesuppe mit Kürbiskernöl",
+      "kurz": "Cremig, wärmend und in 40 Minuten fertig – der Klassiker für den Herbst.",
+      "dauer": "40 Min.",
+      "portionen": "4 Portionen",
+      "zutaten": [
+        { "menge": "1 kleiner", "text": "Speisekürbis (ca. 1 kg, z. B. Hokkaido)", "produkt": "Speisekürbis" },
+        { "menge": "2", "text": "Erdäpfel", "produkt": "Erdäpfel" },
+        { "menge": "1", "text": "Zwiebel", "produkt": "Zwiebel gelb" },
+        { "menge": "1 Zehe", "text": "Knoblauch", "produkt": "Knoblauch" },
+        { "menge": "2 EL", "text": "Rapsöl", "produkt": "Rapsöl" },
+        { "menge": "800 ml", "text": "Gemüsesuppe" },
+        { "menge": "100 ml", "text": "Vollmilch", "produkt": "Vollmilch" },
+        { "menge": "", "text": "Salz, Pfeffer, Muskatnuss" },
+        { "menge": "zum Beträufeln", "text": "Kürbiskernöl", "produkt": "Kürbiskernöl" }
+      ],
+      "schritte": [
+        "Kürbis waschen, halbieren, Kerne herauslöffeln und in Würfel schneiden. Hokkaido muss nicht geschält werden.",
+        "Erdäpfel schälen und würfeln. Zwiebel und Knoblauch fein hacken.",
+        "Rapsöl in einem Topf erhitzen, Zwiebel und Knoblauch darin glasig anschwitzen.",
+        "Kürbis und Erdäpfel dazugeben, kurz mitrösten und mit der Gemüsesuppe aufgießen. Zugedeckt ca. 20 Minuten weich köcheln.",
+        "Milch dazugießen, alles fein pürieren und mit Salz, Pfeffer und Muskatnuss abschmecken.",
+        "In Teller füllen und mit ein paar Tropfen Kürbiskernöl beträufeln."
+      ],
+      "tipp": "Ein paar geröstete Kürbiskerne obendrauf machen die Suppe noch knuspriger."
+    },
+    {
+      "titel": "Erdäpfelsalat mit Kürbiskernöl",
+      "kurz": "Saftig, mit roter Zwiebel und einem Schuss Kürbiskernöl – passt zu fast allem.",
+      "dauer": "45 Min.",
+      "portionen": "4 Portionen",
+      "zutaten": [
+        { "menge": "1 kg", "text": "Erdäpfel (festkochend)", "produkt": "Erdäpfel" },
+        { "menge": "1", "text": "rote Zwiebel", "produkt": "Zwiebel rot" },
+        { "menge": "125 ml", "text": "warme Gemüsesuppe" },
+        { "menge": "3 EL", "text": "Apfelessig" },
+        { "menge": "1 TL", "text": "Senf" },
+        { "menge": "", "text": "Salz, Pfeffer, 1 Prise Zucker" },
+        { "menge": "3 EL", "text": "Rapsöl", "produkt": "Rapsöl" },
+        { "menge": "2 EL", "text": "Kürbiskernöl", "produkt": "Kürbiskernöl" },
+        { "menge": "", "text": "Schnittlauch" }
+      ],
+      "schritte": [
+        "Erdäpfel mit der Schale in Salzwasser ca. 20–25 Minuten kochen, bis sie weich sind.",
+        "Noch warm schälen und in dünne Scheiben schneiden. Die rote Zwiebel fein hacken.",
+        "Warme Suppe mit Essig, Senf, Salz, Pfeffer und Zucker verrühren und über die Erdäpfel gießen. Zwiebel dazugeben, vorsichtig mischen und 15 Minuten ziehen lassen.",
+        "Rapsöl untermischen und nochmals abschmecken.",
+        "Vor dem Servieren mit Kürbiskernöl beträufeln und mit Schnittlauch bestreuen."
+      ],
+      "tipp": "Am besten lauwarm servieren – dann schmeckt der Salat am saftigsten."
+    },
+    {
+      "titel": "Chinakohlsalat mit Apfel",
+      "kurz": "Knackig und frisch, mit einem Joghurt-Honig-Dressing. In 15 Minuten fertig.",
+      "dauer": "15 Min.",
+      "portionen": "4 Portionen",
+      "zutaten": [
+        { "menge": "½", "text": "Chinakohl", "produkt": "Chinakohl grün" },
+        { "menge": "1", "text": "Apfel", "produkt": "Äpfel" },
+        { "menge": "150 g", "text": "Naturjoghurt", "produkt": "Naturjoghurt" },
+        { "menge": "1 TL", "text": "Honig", "produkt": "Honig" },
+        { "menge": "1 EL", "text": "Rapsöl", "produkt": "Rapsöl" },
+        { "menge": "1 EL", "text": "Apfelessig oder Zitronensaft" },
+        { "menge": "", "text": "Salz, Pfeffer" }
+      ],
+      "schritte": [
+        "Chinakohl in feine Streifen schneiden, waschen und gut abtropfen lassen.",
+        "Apfel waschen, entkernen und in dünne Stifte schneiden.",
+        "Joghurt, Honig, Rapsöl und Essig verrühren, mit Salz und Pfeffer abschmecken.",
+        "Chinakohl und Apfel mit dem Dressing mischen und 10 Minuten ziehen lassen."
+      ],
+      "tipp": "Mit einem Teil violettem Chinakohl wird der Salat schön bunt."
+    },
+    {
+      "titel": "Pak Choi mit Knoblauch und Honig",
+      "kurz": "Schnelle Beilage aus der Pfanne – außen leicht gebraten, innen knackig.",
+      "dauer": "15 Min.",
+      "portionen": "2 Portionen als Beilage",
+      "zutaten": [
+        { "menge": "2", "text": "Pak Choi", "produkt": "Pak Choi" },
+        { "menge": "2 Zehen", "text": "Knoblauch", "produkt": "Knoblauch" },
+        { "menge": "1 EL", "text": "Rapsöl", "produkt": "Rapsöl" },
+        { "menge": "2 EL", "text": "Sojasauce" },
+        { "menge": "1 TL", "text": "Honig", "produkt": "Honig" },
+        { "menge": "", "text": "Sesam (nach Belieben)" }
+      ],
+      "schritte": [
+        "Pak Choi waschen und der Länge nach halbieren oder vierteln. Knoblauch in feine Scheiben schneiden.",
+        "Rapsöl in einer Pfanne stark erhitzen. Pak Choi mit der Schnittfläche nach unten 2–3 Minuten anbraten.",
+        "Knoblauch dazugeben und 1 Minute mitbraten.",
+        "Sojasauce, Honig und 2 EL Wasser verrühren, dazugießen und zugedeckt ca. 2 Minuten dünsten, bis die Stiele bissfest sind.",
+        "Nach Belieben mit Sesam bestreuen."
+      ],
+      "tipp": "Passt wunderbar zu Reis oder zu Ofenerdäpfeln."
+    },
+    {
+      "titel": "Ofenerdäpfel mit Kräutertopfen",
+      "kurz": "Knusprige Erdäpfel aus dem Rohr mit Topfen und einem Schuss Leinöl.",
+      "dauer": "45 Min.",
+      "portionen": "4 Portionen",
+      "zutaten": [
+        { "menge": "1 kg", "text": "Erdäpfel", "produkt": "Erdäpfel" },
+        { "menge": "2 EL", "text": "Rapsöl", "produkt": "Rapsöl" },
+        { "menge": "", "text": "Salz, Kümmel" },
+        { "menge": "250 g", "text": "Topfen", "produkt": "Topfen" },
+        { "menge": "125 g", "text": "Naturjoghurt", "produkt": "Naturjoghurt" },
+        { "menge": "1 Zehe", "text": "Knoblauch", "produkt": "Knoblauch" },
+        { "menge": "", "text": "Schnittlauch oder andere frische Kräuter" },
+        { "menge": "2 EL", "text": "Leinöl", "produkt": "Leinöl" }
+      ],
+      "schritte": [
+        "Backrohr auf 200 °C Ober-/Unterhitze vorheizen.",
+        "Erdäpfel gründlich waschen und je nach Größe halbieren oder in Spalten schneiden.",
+        "Mit Rapsöl, Salz und Kümmel mischen, auf ein Backblech legen und 35–40 Minuten goldbraun backen.",
+        "Inzwischen Topfen mit Joghurt glatt rühren. Knoblauch hineinreiben, Kräuter fein schneiden und untermischen, mit Salz und Pfeffer abschmecken.",
+        "Kräutertopfen anrichten, eine kleine Mulde machen und das Leinöl hineinträufeln. Mit den heißen Erdäpfeln servieren."
+      ],
+      "tipp": "Leinöl nicht erhitzen – es schmeckt kalt am besten."
+    },
+    {
+      "titel": "Apfelschmarrn",
+      "kurz": "Flaumiger Schmarrn mit Äpfeln, Freilandeiern und Honig – süß und schnell gemacht.",
+      "dauer": "30 Min.",
+      "portionen": "2–3 Portionen",
+      "zutaten": [
+        { "menge": "4", "text": "Freilandeier", "produkt": "Freilandeier" },
+        { "menge": "250 ml", "text": "Vollmilch", "produkt": "Vollmilch" },
+        { "menge": "150 g", "text": "glattes Mehl" },
+        { "menge": "1 Prise", "text": "Salz" },
+        { "menge": "2", "text": "Äpfel", "produkt": "Äpfel" },
+        { "menge": "2 EL", "text": "Butter" },
+        { "menge": "1 EL", "text": "Zucker" },
+        { "menge": "zum Servieren", "text": "Staubzucker und Honig", "produkt": "Honig" }
+      ],
+      "schritte": [
+        "Eier trennen. Dotter mit Milch, Mehl und Salz zu einem glatten Teig verrühren.",
+        "Eiklar zu steifem Schnee schlagen und vorsichtig unter den Teig heben.",
+        "Äpfel entkernen und in dünne Spalten schneiden.",
+        "Butter in einer großen Pfanne erhitzen, Äpfel kurz anbraten und den Teig darübergießen. Bei mittlerer Hitze ca. 5 Minuten stocken lassen, bis die Unterseite goldbraun ist.",
+        "Den Teig vierteln, wenden und mit zwei Gabeln in Stücke reißen. Zucker darüberstreuen und kurz karamellisieren lassen.",
+        "Mit Staubzucker bestreuen und mit Honig servieren."
+      ],
+      "tipp": "Statt Honig passt auch ein Glas Apfelsaft zum Trinken dazu."
+    }
+  ]
+}

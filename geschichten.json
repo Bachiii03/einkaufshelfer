@@ -1,0 +1,74 @@
+{
+  "neuigkeiten": [
+    {
+      "titel": "Michael Bachl ist neuer Obmann der IG Erdäpfelbau",
+      "art": "Presse",
+      "datum": "2026-03-04",
+      "kurz": "Im Interview mit top agrar spricht Michael über Kosten, Herkunft und die Zukunft des Erdäpfelbaus.",
+      "text": [
+        "Michael Bachl führt bei uns in Streitdorf den familieneigenen Betrieb in nächster Generation weiter – mit Schwerpunkt auf Erdäpfeln und Gemüse. Seit Kurzem ist er außerdem Obmann der Interessengemeinschaft Erdäpfelbau (IGE). Die IGE wurde 1994 gegründet und vertritt rund 550 Mitgliedsbetriebe.",
+        "Im Interview mit dem Fachmagazin top agrar erklärt er, warum in Österreich 2026 wohl weniger Erdäpfel angebaut werden: hohe Vorinvestitionen, Risiken über das ganze Jahr und Preise, die im Speisebereich derzeit nicht kostendeckend sind. Er rechnet mit einem Rückgang der Fläche im höheren einstelligen Prozentbereich.",
+        "Ein zentrales Anliegen ist ihm die Herkunftskennzeichnung: Bei frischen Erdäpfeln gibt es das AMA-Gütesiegel, bei verarbeiteten Produkten und in der Gastronomie sei aber noch viel zu tun.",
+        "Auch der Klimawandel ist ein Thema. Er trifft die traditionellen Erdäpfelbetriebe im Weinviertel besonders hart – Bewässerungsmöglichkeiten wären hier ein wichtiger Schritt."
+      ],
+      "zitat": {
+        "text": "Die Konsumentinnen und Konsumenten haben ein Recht zu wissen wo ihre Lebensmittel gewachsen sind und verarbeitet wurden.",
+        "von": "Michael Bachl im Interview mit top agrar"
+      },
+      "quelle": "top agrar Österreich, Interview von Roland Pittner, 4. März 2026"
+    },
+    {
+      "titel": "Neu im Hofladen: der Einkaufshelfer",
+      "art": "Neuigkeit",
+      "datum": "2026-11-23",
+      "kurz": "Produkte antippen, Summe sehen, in die Kassa legen – unser Tablet rechnet für Sie zusammen.",
+      "text": [
+        "Ab sofort hilft Ihnen in unserem Hofladen ein Tablet beim Zusammenrechnen: Einfach die Produkte antippen, die Sie mitnehmen, und der Einkaufshelfer zeigt Ihnen, wie viel Sie in die Kassa legen.",
+        "Für Produkte ohne fixen Preis – zum Beispiel einen Speisekürbis – tippen Sie den Preis ein, der am Produkt steht.",
+        "Etwas war leer oder ausverkauft? Nach dem Einkauf können Sie es mit wenigen Tipps melden. Die Meldung kommt direkt per E-Mail zu uns, und wir füllen so schnell wie möglich nach."
+      ]
+    },
+    {
+      "titel": "Vom Feld direkt in den Laden",
+      "art": "Hofladen",
+      "datum": "",
+      "kurz": "Täglich geöffnet, Selbstbedienung, frisch vom Feld – so funktioniert unser Hofladen.",
+      "text": [
+        "In unserem Hofladen in Streitdorf bedienen Sie sich selbst – jeden Tag. Was wir auf unseren Feldern anbauen, kommt auf kürzestem Weg ins Regal: zum Beispiel Erdäpfel, Zwiebel und Chinakohl.",
+        "Dazu gibt es Produkte von Betrieben aus der Region – von Milch und Freilandeiern über Honig und Säfte bis zu Lein- und Rapsöl. Wer unsere Partner sind, lesen Sie unter „Über uns“.",
+        "Bezahlt wird bar: Legen Sie den Betrag einfach in die Kassa. Danke für Ihr Vertrauen!"
+      ]
+    }
+  ],
+
+  "ueber_uns": {
+    "titel": "Bachl's Feldgemüse",
+    "untertitel": "Familienbetrieb in Streitdorf im Weinviertel",
+    "text": [
+      "Wir sind ein Familienbetrieb in Streitdorf im Weinviertel und bauen vor allem Erdäpfel und Gemüse an. In unserem Selbstbedienungs-Hofladen verkaufen wir unsere Ernte direkt vom Feld.",
+      "Michael Bachl führt den familieneigenen Ackerbaubetrieb in nächster Generation weiter. Er ist außerdem Obmann der Interessengemeinschaft Erdäpfelbau (IGE), die sich für die heimischen Erdäpfelbäuerinnen und -bauern einsetzt.",
+      "Was wir nicht selbst anbauen, beziehen wir von Betrieben aus der Region. So wissen Sie bei jedem Produkt, woher es kommt."
+    ],
+    "zitat": {
+      "text": "Ganz sicher ist, dass Erdäpfelbau in Österreich, so wie auch bei mir am Betrieb, nur funktioniert, wenn die ganze Familie dahintersteht.",
+      "von": "Michael Bachl im Interview mit top agrar, März 2026"
+    },
+    "fakten": [
+      { "titel": "Adresse", "text": "Untere Dorfstraße 17, 2004 Streitdorf" },
+      { "titel": "Geöffnet", "text": "Täglich – Selbstbedienung" },
+      { "titel": "Bezahlung", "text": "Nur Bargeld" },
+      { "titel": "E-Mail", "text": "bachls.feldgemuese@gmail.com" }
+    ],
+    "partner": [
+      { "produkt": "Vollmilch, Joghurt, Topfen", "betrieb": "Anzböck Milch", "ort": "Unterrohrbach" },
+      { "produkt": "Freilandeier", "betrieb": "Hof Trabauer", "ort": "Zaina" },
+      { "produkt": "Äpfel und Apfelsaft", "betrieb": "Karl Mayr", "ort": "Langenlebarn" },
+      { "produkt": "Traubensaft", "betrieb": "Weingut Kopp", "ort": "Hütteldorf" },
+      { "produkt": "Honig", "betrieb": "Matthias Tröstl", "ort": "Rückersdorf" },
+      { "produkt": "Leinöl und Rapsöl", "betrieb": "Andreas Poigner", "ort": "Niederhollabrunn" },
+      { "produkt": "Rote Zwiebel", "betrieb": "Gerald Zinsberger", "ort": "Bruderndorf" },
+      { "produkt": "Knoblauch", "betrieb": "Christoph Labschütz", "ort": "Schmida" },
+      { "produkt": "Knoblauchpaste", "betrieb": "Bio-Hof Schnepps", "ort": "Bruderndorf" }
+    ]
+  }
+}
