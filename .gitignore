@@ -1,6 +1,10 @@
 # Persönliche Claude-Code-Einstellungen (nicht teilen)
 .claude/settings.local.json
 
+# Shop-Mails: erlaubte Absender und erledigte Mails (privat, nur auf diesem Computer)
+.claude/shop-mails-absender.txt
+.claude/shop-mails-erledigt.txt
+
 # Eigene Notizen – bleiben nur auf diesem Computer (Repository ist öffentlich)
 CLAUDE.md
 PROJEKT-BRIEF.md
