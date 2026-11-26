@@ -579,6 +579,16 @@ async function sendeWarteschlange() {
 
 async function sendeMeldung(m) {
   const zeit = new Date(m.zeit).toLocaleString("de-AT", { timeZone: "Europe/Vienna", dateStyle: "medium", timeStyle: "short" });
+  if (m.art === "feedback") {
+    // Nachricht aus "Wünsche & Feedback"
+    const teile = [
+      `Nachricht vom ${zeit} aus „Wünsche & Feedback“ im Einkaufshelfer.`,
+      `Thema: ${m.thema}`,
+      "Nachricht:\n" + m.text,
+      m.kontakt ? `Kontakt für eine Antwort: ${m.kontakt}` : "Keine Kontaktangabe (anonym).",
+    ];
+    return sendeEmail(`Hofladen-Feedback: ${m.thema}`, teile.join("\n\n"));
+  }
   const teile = [`Gemeldet am ${zeit} im Einkaufshelfer.`];
   if (m.produkte.length) teile.push("Gefehlt hat:\n" + m.produkte.map((p) => "• " + p).join("\n"));
   if (m.text) teile.push("Nachricht:\n" + m.text);
@@ -765,7 +775,7 @@ const seite = $("seite");
 const seiteTitel = $("seite-titel");
 const seiteKoerper = $("seite-koerper");
 const seiteZurueck = $("seite-zurueck");
-const SEITEN_TITEL = { rezepte: "Rezepte", neuigkeiten: "Neuigkeiten & Presse", ueber: "Über uns", impressum: "Impressum & Datenschutz" };
+const SEITEN_TITEL = { rezepte: "Rezepte", neuigkeiten: "Neuigkeiten & Presse", ueber: "Über uns", impressum: "Impressum & Datenschutz", wuensche: "Wünsche & Feedback" };
 let rezepte = [];
 let geschichten = { sichtbar: false, neuigkeiten: [], ueber_uns: null, impressum: null, datenschutz: null };
 let rezeptDerWoche = "";   // aus inhalte.json – dieses Rezept bekommt ein Abzeichen
@@ -798,12 +808,15 @@ async function ladeSeiten() {
 function zeigeSeite(art) {
   // Neuigkeiten vorerst ausgeblendet? (Schalter "neuigkeiten_sichtbar" in geschichten.json)
   if (art === "neuigkeiten" && !geschichten.sichtbar) return zeigeBald(SEITEN_TITEL.neuigkeiten);
+  // Wünsche & Feedback braucht den Web3Forms-Schlüssel – ohne ihn "Kommt bald"
+  if (art === "wuensche" && !MELDEN_AKTIV) return zeigeBald(SEITEN_TITEL.wuensche);
   aktuelleSeite = art;
   startseite.hidden = true;
   bald.hidden = true;
   seite.hidden = false;
   if (art === "ueber") zeigeUeberUns();
   else if (art === "impressum") zeigeImpressum();
+  else if (art === "wuensche") zeigeWuensche();
   else zeichneUebersicht();
   aktivitaet();
 }
@@ -974,6 +987,112 @@ function zeigeImpressum() {
       (a.text || []).forEach((t) => artikel.append(neu("p", "", t)));
     });
   });
+  seiteKoerper.append(artikel);
+}
+
+// --- Wünsche & Feedback (per E-Mail über Web3Forms, wie "Etwas gefehlt?") ---
+const FEEDBACK_THEMEN = ["Produktwunsch", "Lob", "Verbesserungsvorschlag", "Problem im Laden", "Sonstiges"];
+const FEEDBACK_PRO_TAG = 10;                         // höchstens so viele Nachrichten pro Gerät und Tag
+const FEEDBACK_ZAEHLER = "einkaufshelfer-feedback-zaehler";
+
+function feedbackHeute() {
+  const heute = new Date().toISOString().slice(0, 10);
+  try {
+    const z = JSON.parse(localStorage.getItem(FEEDBACK_ZAEHLER) || "null");
+    return z && z.tag === heute ? z.anzahl : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function feedbackZaehlen() {
+  const heute = new Date().toISOString().slice(0, 10);
+  try { localStorage.setItem(FEEDBACK_ZAEHLER, JSON.stringify({ tag: heute, anzahl: feedbackHeute() + 1 })); } catch { /* egal */ }
+}
+
+function zeigeWuensche() {
+  seiteAnfang(SEITEN_TITEL.wuensche, false);
+  const artikel = neu("article", "artikel artikel-text wunsch");
+  artikel.append(
+    neu("h2", "artikel-titel", "Ihre Meinung ist uns wichtig"),
+    neu("p", "artikel-kurz", "Fehlt Ihnen ein Produkt, haben Sie eine Idee oder ist etwas nicht in Ordnung? Schreiben Sie uns – die Nachricht kommt direkt per E-Mail zu uns.")
+  );
+
+  artikel.append(neu("h3", "", "Worum geht es?"));
+  const themen = neu("div", "wunsch-themen");
+  let thema = "";
+  FEEDBACK_THEMEN.forEach((t) => {
+    const b = neu("button", "melden-produkt", t);
+    b.type = "button";
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => {
+      themen.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      thema = t;
+      fehler.textContent = "";
+    });
+    themen.append(b);
+  });
+  artikel.append(themen);
+
+  const textFeld = neu("label", "namensfeld", "Ihre Nachricht");
+  const text = neu("textarea");
+  text.id = "wunsch-text";
+  text.rows = 4;
+  text.maxLength = 600;
+  text.placeholder = "z. B. Es wäre toll, wenn es bei Ihnen auch … gäbe.";
+  textFeld.append(text);
+
+  const kontaktFeld = neu("label", "namensfeld", "Möchten Sie eine Antwort? E-Mail oder Telefon (optional)");
+  const kontakt = neu("input");
+  kontakt.id = "wunsch-kontakt";
+  kontakt.type = "text";
+  kontakt.maxLength = 100;
+  kontakt.autocomplete = "off";
+  kontaktFeld.append(kontakt);
+
+  const hinweis = neu("p", "melden-hinweis", "Ihre Kontaktdaten verwenden wir nur, um Ihnen zu antworten. Ohne Angabe bleibt Ihre Nachricht anonym.");
+  const fehler = neu("p", "fehler");
+  fehler.setAttribute("role", "alert");
+  const senden = neu("button", "btn-haupt wunsch-senden", "Senden");
+  senden.type = "button";
+  artikel.append(textFeld, kontaktFeld, hinweis, fehler, senden);
+
+  senden.addEventListener("click", () => {
+    const nachricht = text.value.trim();
+    if (nachricht.length < 3) {
+      fehler.textContent = "Bitte schreiben Sie uns kurz, worum es geht.";
+      return;
+    }
+    if (feedbackHeute() >= FEEDBACK_PRO_TAG) {
+      fehler.textContent = "Heute wurden auf diesem Gerät schon viele Nachrichten gesendet. Bitte versuchen Sie es morgen wieder.";
+      return;
+    }
+    // Wie bei "Etwas gefehlt?": erst auf dem Gerät speichern, dann senden
+    const liste = leseWarteschlange();
+    liste.push({
+      id: Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+      zeit: new Date().toISOString(),
+      art: "feedback",
+      thema: thema || "Sonstiges",
+      text: nachricht,
+      kontakt: kontakt.value.trim(),
+    });
+    schreibeWarteschlange(liste);
+    feedbackZaehlen();
+    sendeWarteschlange();
+
+    // Danke-Ansicht
+    artikel.replaceChildren(
+      neu("h2", "artikel-titel", "Danke für Ihre Nachricht!"),
+      neu("p", "artikel-kurz", "Wir lesen jede Nachricht und kümmern uns darum.")
+    );
+    const zurueck = neu("button", "btn-haupt wunsch-senden", "Zurück zur Startseite");
+    zurueck.type = "button";
+    zurueck.addEventListener("click", zeigeStartseite);
+    artikel.append(zurueck);
+    seite.scrollTop = 0;
+  });
+
   seiteKoerper.append(artikel);
 }
 

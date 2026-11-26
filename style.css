@@ -1027,6 +1027,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .partner li { display: flex; flex-direction: column; padding: 10px 14px; border: 2px dashed var(--braun); border-radius: var(--rundung); font-size: 1.1rem; }
 .partner li span { color: var(--tinte-mild); }
 
+/* Wünsche & Feedback */
+.wunsch h3 { font-size: 1.5rem; margin: 22px 0 10px; }
+.wunsch-themen {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 0 6px 6px 0;
+}
+.wunsch .namensfeld { margin-top: 18px; font-size: 1.15rem; }
+.wunsch-senden { width: 100%; max-width: 420px; min-height: 68px; margin-top: 18px; font-size: 1.35rem; }
+
 /* Impressum & Datenschutz */
 .rechtliches .artikel-titel + h3 { margin-top: 12px; }
 .rechtliches h2.artikel-titel:not(:first-child) { margin-top: 40px; padding-top: 24px; border-top: 2px dashed var(--braun); }

@@ -104,6 +104,10 @@
         "Wenn Sie nach dem Einkauf melden, dass etwas gefehlt hat, schicken wir die ausgewählten Produkte, Ihren optionalen Text und den Zeitpunkt über den Dienst Web3Forms (web3forms.com) per E-Mail an uns. Wir fragen dabei keinen Namen und keine Kontaktdaten ab – bitte tragen Sie auch keine persönlichen Daten ein.",
         "Ohne Internet wird die Meldung kurz auf dem Gerät gespeichert und später gesendet."
       ] },
+      { "titel": "Wünsche & Feedback", "text": [
+        "Wenn Sie uns über „Wünsche & Feedback“ schreiben, senden wir das gewählte Thema, Ihre Nachricht, den Zeitpunkt und – nur wenn Sie sie angeben – Ihre Kontaktdaten über den Dienst Web3Forms per E-Mail an uns.",
+        "Ihre Kontaktdaten verwenden wir ausschließlich, um Ihnen zu antworten, und löschen die Nachricht, sobald Ihr Anliegen erledigt ist. Ohne Kontaktangabe bleibt Ihre Nachricht anonym."
+      ] },
       { "titel": "Kontakt per E-Mail oder Telefon", "text": ["Wenn Sie uns kontaktieren, verwenden wir Ihre Angaben nur, um Ihre Anfrage zu beantworten."] },
       { "titel": "Ihre Rechte", "text": [
         "Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Schreiben Sie uns dazu einfach eine E-Mail.",
