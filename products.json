@@ -7,7 +7,7 @@
     { "name": "Pak Choi", "icon": "pak-choi", "kategorie": "Gemüse", "beliebt": false, "verfuegbar": true,
       "groessen": [ { "einheit": "1 Stück", "preis": 1.80 } ] },
     { "name": "Erdäpfel", "icon": "erdaepfel", "kategorie": "Gemüse", "beliebt": true, "verfuegbar": true,
-      "groessen": [ { "einheit": "2 kg", "preis": 3.00 }, { "einheit": "5 kg", "preis": 6.00 } ] },
+      "groessen": [ { "einheit": "2 kg", "preis": 4.00 }, { "einheit": "5 kg", "preis": 7.00 } ] },
     { "name": "Knoblauch", "icon": "knoblauch", "kategorie": "Gemüse", "beliebt": false, "verfuegbar": true,
       "groessen": [ { "einheit": "250 g", "preis": 2.50 } ] },
     { "name": "Zwiebel gelb", "icon": "zwiebel-gelb", "kategorie": "Gemüse", "beliebt": true, "verfuegbar": true,
