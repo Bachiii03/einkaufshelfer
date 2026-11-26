@@ -20,20 +20,16 @@ jobs:
       - name: products.json prüfen
         run: node scripts/check-products.js
 
-  veroeffentlichen:
-    name: Website veröffentlichen
+  # Zwei getrennte Schritte (wie in GitHubs eigener Vorlage): erst zusammenpacken,
+  # dann veröffentlichen. In einem gemeinsamen Schritt findet GitHub das Paket manchmal nicht.
+  bauen:
+    name: Website zusammenstellen
     needs: pruefen
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
-      id-token: write
-    concurrency:
-      group: pages
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v5
       - name: Nur die Website-Dateien zusammenstellen
@@ -45,6 +41,21 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
+
+  veroeffentlichen:
+    name: Website veröffentlichen
+    needs: bauen
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Veröffentlichen
         id: deployment
         uses: actions/deploy-pages@v4
