@@ -36,6 +36,13 @@ function pruefeProdukt(p, nr) {
   if (typeof p.name !== "string" || !p.name.trim()) melde('"name" fehlt oder ist leer.');
   else if (p.name.length > NAME_MAX) melde(`Name ist ${p.name.length} Zeichen lang, erlaubt sind höchstens ${NAME_MAX}.`);
 
+  // Englischer Name / Info (optional)
+  if (p.name_en !== undefined) {
+    if (typeof p.name_en !== "string" || !p.name_en.trim()) melde('"name_en" ist leer – entweder einen englischen Namen eintragen oder die Zeile weglassen.');
+    else if (p.name_en.length > NAME_MAX) melde(`Englischer Name ist ${p.name_en.length} Zeichen lang, erlaubt sind höchstens ${NAME_MAX}.`);
+  }
+  if (p.info_en !== undefined && typeof p.info_en !== "string") melde('"info_en" muss ein Text in Anführungszeichen sein.');
+
   // Kategorie
   if (!KATEGORIEN.includes(p.kategorie)) {
     melde(`Kategorie "${p.kategorie ?? ""}" gibt es nicht. Erlaubt: ${KATEGORIEN.join(", ")}.`);

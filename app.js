@@ -59,6 +59,179 @@ function neu(tag, klasse, text) {
   return e;
 }
 
+// ===== Sprache: Deutsch / English =====
+// Der deutsche Text ist das Stichwort. Fehlt eine Übersetzung, bleibt der deutsche Text stehen.
+// Produktnamen kommen aus products.json ("name_en", "info_en").
+// Rezepte, Über uns, Neuigkeiten und Impressum bleiben deutsch (mit Hinweis).
+let sprache = "de";
+const ENGLISCH = {
+  // Kopf, Reiter, Warenkorb
+  "Einkaufshelfer": "Shopping Helper",
+  "Tippen Sie auf den Preis – wir rechnen für Sie zusammen.": "Tap a price – we add it up for you.",
+  "← Startseite": "← Home",
+  "Kategorien": "Categories",
+  "★ Beliebt": "★ Popular",
+  "Gemüse": "Vegetables",
+  "Obst & Getränke": "Fruit & Drinks",
+  "Öle": "Oils",
+  "Milch & Eier": "Milk & Eggs",
+  "Vorrat & Gläser": "Pantry & Jars",
+  "Produkte": "Products",
+  "Die Preisliste konnte nicht geladen werden. Bitte die Seite neu laden.": "The price list could not be loaded. Please reload the page.",
+  "Warenkorb": "Basket",
+  "Ihr Einkauf": "Your basket",
+  "Noch nichts ausgewählt.": "Nothing selected yet.",
+  "Summe": "Total",
+  "Fertig – zur Kassa": "Done – pay at the cash box",
+  "Neuer Einkauf": "New purchase",
+  "Wirklich alles löschen? Nochmal tippen": "Really clear everything? Tap again",
+  "Bei Abweichungen gelten die Preise, die direkt bei den Produkten angeschrieben sind.": "If prices differ, the price shown on the product applies.",
+  "Tippen Sie auf ein Produkt": "Tap a product",
+  "Bitte": "Please put",
+  "in die Kassa legen": "into the cash box",
+  "Tippen Sie auf einen Preis, um zu beginnen": "Tap a price to start",
+  "{name} {detail}: eins weniger": "{name} {detail}: one less",
+  "{name} {detail}: eins mehr": "{name} {detail}: one more",
+  // Kacheln
+  "Preis steht am Produkt": "Price is on the product",
+  "Preis eingeben": "Enter price",
+  "{name}: Preis eingeben": "{name}: enter price",
+  "{name}, {einheit}, {preis} – in den Warenkorb": "{name}, {einheit}, {preis} – add to basket",
+  "Foto folgt": "Photo coming soon",
+  "Betrag eingeben": "Enter amount",
+  "Anderer Preis": "Other price",
+  "Preis am Produkt": "Price on product",
+  // Ziffernfeld
+  "Preis eingeben, der auf dem Produkt steht:": "Enter the price shown on the product:",
+  "Letzte Ziffer löschen": "Delete last digit",
+  "Name (optional)": "Name (optional)",
+  "z. B. Paprika": "e.g. peppers",
+  "Abbrechen": "Cancel",
+  "Hinzufügen": "Add",
+  "Höchstens 2 Stellen nach dem Komma.": "At most 2 decimal places.",
+  "Höchstens {betrag} pro Eintrag.": "At most {betrag} per entry.",
+  "Bitte einen Betrag eingeben.": "Please enter an amount.",
+  // Warnung
+  "Sind Sie noch da?": "Are you still there?",
+  "Der Einkauf wird gelöscht in": "Your basket will be cleared in",
+  "Sekunden.": "seconds.",
+  "Weiter einkaufen": "Continue shopping",
+  // Danke-Seite
+  "Danke für Ihren Einkauf!": "Thank you for your purchase!",
+  "Bitte legen Sie": "Please put",
+  "in die Kassa.": "into the cash box.",
+  "Sie zahlen mit einem Schein? Antippen:": "Paying with a banknote? Tap it:",
+  "Ihr Wechselgeld:": "Your change:",
+  "Zurück zum Einkauf": "Back to shopping",
+  "Startet automatisch neu in": "Restarts automatically in",
+  "Wie war Ihr Einkauf?": "How was your visit?",
+  "Danke für Ihre Bewertung!": "Thank you for your rating!",
+  "Gut": "Good",
+  "Okay": "Okay",
+  "Schlecht": "Bad",
+  "Etwas gefehlt? Hier melden": "Something missing? Let us know",
+  "✓ Danke für Ihre Meldung! Wir kümmern uns darum.": "✓ Thank you for letting us know! We'll take care of it.",
+  // "Was hat gefehlt?"
+  "Was hat gefehlt?": "What was missing?",
+  "Tippen Sie an, was leer oder ausverkauft war. Wir bekommen Ihre Meldung per E-Mail.": "Tap what was empty or sold out. Your message reaches us by email.",
+  "Sonst noch etwas? (optional)": "Anything else? (optional)",
+  "z. B. Kürbiskernöl 500 ml war leer": "e.g. pumpkin seed oil 500 ml was empty",
+  "Ohne Namen – bitte keine persönlichen Daten eintragen.": "Anonymous – please don't enter any personal data.",
+  "Senden": "Send",
+  "Bitte ein Produkt antippen oder etwas schreiben.": "Please tap a product or write something.",
+  // Startseite
+  "Willkommen in unserem Hofladen!": "Welcome to our farm shop!",
+  "Selbstbedienung rund um die Uhr. Was möchten Sie tun?": "Self-service around the clock. What would you like to do?",
+  "Einkauf zusammenrechnen": "Add up my shopping",
+  "Produkte antippen, Summe sehen, in die Kassa legen.": "Tap products, see the total, put the money in the cash box.",
+  "Los geht's": "Let's go",
+  "Rezepte": "Recipes",
+  "Was koche ich heute? Ideen mit unseren Produkten.": "What shall I cook today? Ideas with our products.",
+  "Diese Woche:": "This week:",
+  "Neuigkeiten & Presse": "News & Press",
+  "Was gibt's Neues am Hof? Und was die Zeitung über uns schreibt.": "What's new at the farm? And what the press says about us.",
+  "Neu im Laden:": "New in the shop:",
+  "Über uns": "About us",
+  "Wünsche & Feedback": "Wishes & Feedback",
+  "Impressum & Datenschutz": "Legal notice & Privacy",
+  "Kommt bald": "Coming soon",
+  "Diese Seite ist noch in Arbeit. Schauen Sie bald wieder vorbei!": "This page is still being prepared. Please check back soon!",
+  "Zurück zur Startseite": "Back to home",
+  // Inhaltsseiten
+  "← Übersicht": "← Overview",
+  "Diese Seite gibt es nur auf Deutsch.": "This page is only available in German.",
+  "Hier gibt es gerade nichts zu sehen. Schauen Sie bald wieder vorbei!": "Nothing here at the moment. Please check back soon!",
+  "Rezept der Woche": "Recipe of the week",
+  "Weiterlesen →": "Read more →",
+  "Zutaten": "Ingredients",
+  "Zubereitung": "Method",
+  "im Laden": "in the shop",
+  "Tipp: ": "Tip: ",
+  "Quelle: ": "Source: ",
+  "Unsere Partner aus der Region": "Our regional partners",
+  // Wünsche & Feedback
+  "Ihre Meinung ist uns wichtig": "Your opinion matters to us",
+  "Fehlt Ihnen ein Produkt, haben Sie eine Idee oder ist etwas nicht in Ordnung? Schreiben Sie uns – die Nachricht kommt direkt per E-Mail zu uns.":
+    "Missing a product, have an idea, or is something not right? Write to us – your message reaches us directly by email.",
+  "Worum geht es?": "What is it about?",
+  "Produktwunsch": "Product request",
+  "Lob": "Praise",
+  "Verbesserungsvorschlag": "Suggestion",
+  "Problem im Laden": "Problem in the shop",
+  "Sonstiges": "Other",
+  "Ihre Nachricht": "Your message",
+  "z. B. Es wäre toll, wenn es bei Ihnen auch … gäbe.": "e.g. It would be great if you also had …",
+  "Möchten Sie eine Antwort? E-Mail oder Telefon (optional)": "Would you like a reply? Email or phone (optional)",
+  "Ihre Kontaktdaten verwenden wir nur, um Ihnen zu antworten. Ohne Angabe bleibt Ihre Nachricht anonym.":
+    "We only use your contact details to reply to you. Without them, your message stays anonymous.",
+  "Bitte schreiben Sie uns kurz, worum es geht.": "Please tell us briefly what it is about.",
+  "Heute wurden auf diesem Gerät schon viele Nachrichten gesendet. Bitte versuchen Sie es morgen wieder.":
+    "Many messages have already been sent from this device today. Please try again tomorrow.",
+  "Danke für Ihre Nachricht!": "Thank you for your message!",
+  "Wir lesen jede Nachricht und kümmern uns darum.": "We read every message and take care of it.",
+};
+
+// Text in der aktuellen Sprache. {platzhalter} werden mit "werte" ersetzt.
+function t(deutsch, werte) {
+  let text = sprache === "en" && ENGLISCH[deutsch] !== undefined ? ENGLISCH[deutsch] : deutsch;
+  if (werte) text = text.replace(/\{(\w+)\}/g, (_, k) => (werte[k] !== undefined ? werte[k] : ""));
+  return text;
+}
+
+// Produktname / Einheit / Info in der aktuellen Sprache
+let produktNamenEn = {};
+function pName(name) {
+  return sprache === "en" && produktNamenEn[name] ? produktNamenEn[name] : name;
+}
+function einheitText(einheit) {
+  if (sprache !== "en") return einheit;
+  return einheit
+    .replace(/^1 Stück$/, "1 piece")
+    .replace(/(\d+) Stück/, "$1 pieces")
+    .replace("Glas", "jar")
+    .replace("Liter", "litre");
+}
+
+// Alle festen Texte der Seite (data-i18n …) in die aktuelle Sprache bringen
+function uebersetzeSeite() {
+  document.documentElement.lang = sprache;
+  const tausche = (e, lesen, schreiben, merker) => {
+    if (e.dataset[merker] === undefined) e.dataset[merker] = lesen(e);
+    const deutsch = e.dataset[merker];
+    schreiben(e, sprache === "de" ? deutsch : t(deutsch.replace(/­/g, "").trim()));
+  };
+  document.querySelectorAll("[data-i18n]").forEach((e) =>
+    tausche(e, (x) => x.textContent, (x, v) => (x.textContent = v), "de"));
+  document.querySelectorAll("[data-i18n-ph]").forEach((e) =>
+    tausche(e, (x) => x.placeholder, (x, v) => (x.placeholder = v), "dePh"));
+  document.querySelectorAll("[data-i18n-aria]").forEach((e) =>
+    tausche(e, (x) => x.getAttribute("aria-label"), (x, v) => x.setAttribute("aria-label", v), "deAria"));
+  document.querySelectorAll("[data-sprache-knopf]").forEach((b) => {
+    b.textContent = sprache === "de" ? "English" : "Deutsch";
+    b.lang = sprache === "de" ? "en" : "de";
+  });
+}
+
 // ===== Produkte laden =====
 async function ladeProdukte() {
   try {
@@ -67,6 +240,7 @@ async function ladeProdukte() {
     const daten = await antwort.json();
     alleProduktNamen = (daten.produkte || []).filter((p) => p && p.name).map((p) => p.name);
     produktIcons = Object.fromEntries((daten.produkte || []).filter((p) => p && p.name).map((p) => [p.name, p.icon || ""]));
+    produktNamenEn = Object.fromEntries((daten.produkte || []).filter((p) => p && p.name && p.name_en).map((p) => [p.name, p.name_en]));
     produkte = (daten.produkte || [])
       .filter((p) => p && p.name && p.verfuegbar !== false)   // ausverkaufte ausblenden
       .map((p) => ({
@@ -74,6 +248,7 @@ async function ladeProdukte() {
         kategorie: p.kategorie || "",
         beliebt: p.beliebt === true,
         info: p.info || "",
+        infoEn: p.info_en || "",
         foto: p.foto || "",
         icon: p.icon || "",
         variabel: p.preis_variabel === true,   // Preis steht am Produkt → Ziffernfeld
@@ -119,16 +294,17 @@ function zeichneKacheln() {
     const kachel = neu("div", "kachel");
     kachel.dataset.produkt = p.name;
 
-    kachel.append(fotoStreifen(p), neu("h3", "name", p.name));
-    if (p.info) kachel.append(neu("p", "info", p.info));
+    kachel.append(fotoStreifen(p), neu("h3", "name", pName(p.name)));
+    const info = sprache === "en" && p.infoEn ? p.infoEn : p.info;
+    if (info) kachel.append(neu("p", "info", info));
 
     const groessen = neu("div", "groessen");
     if (p.variabel) {
       // Variabler Preis: ein Knopf "Preis eingeben" → Ziffernfeld mit dem Namen schon ausgefüllt
-      kachel.append(neu("p", "info", "Preis steht am Produkt"));
-      const knopf = neu("button", "groesse groesse-mitte", "Preis eingeben");
+      kachel.append(neu("p", "info", t("Preis steht am Produkt")));
+      const knopf = neu("button", "groesse groesse-mitte", t("Preis eingeben"));
       knopf.type = "button";
-      knopf.setAttribute("aria-label", `${p.name}: Preis eingeben`);
+      knopf.setAttribute("aria-label", t("{name}: Preis eingeben", { name: pName(p.name) }));
       knopf.addEventListener("click", () => oeffneTastatur(p.name));
       groessen.append(knopf);
     }
@@ -136,8 +312,8 @@ function zeichneKacheln() {
     p.groessen.forEach((g) => {
       const knopf = neu("button", "groesse");
       knopf.type = "button";
-      knopf.setAttribute("aria-label", `${p.name}, ${g.einheit}, ${euro(g.cent)} – in den Warenkorb`);
-      knopf.append(neu("span", "g-einheit", g.einheit), neu("span", "g-preis", euro(g.cent)));
+      knopf.setAttribute("aria-label", t("{name}, {einheit}, {preis} – in den Warenkorb", { name: pName(p.name), einheit: einheitText(g.einheit), preis: euro(g.cent) }));
+      knopf.append(neu("span", "g-einheit", einheitText(g.einheit)), neu("span", "g-preis", euro(g.cent)));
       knopf.addEventListener("click", () => groesseHinzufuegen(p, g));
       groessen.append(knopf);
     });
@@ -175,7 +351,7 @@ function fotoStreifen(p) {
     if (p.icon) {
       streifen.replaceChildren(iconSvg(p.icon, "produkt-icon"));
     } else {
-      streifen.replaceChildren(neu("span", "foto-buchstabe", p.name.charAt(0)), neu("span", "foto-text", "Foto folgt"));
+      streifen.replaceChildren(neu("span", "foto-buchstabe", pName(p.name).charAt(0)), neu("span", "foto-text", t("Foto folgt")));
     }
   };
   if (p.foto) {
@@ -196,12 +372,12 @@ function andersKachel() {
   const streifen = neu("div", "foto");
   streifen.innerHTML =
     '<svg class="etikett" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 10h22l26 26-20 20L10 30V10z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><circle cx="21" cy="21" r="5" fill="none" stroke="currentColor" stroke-width="4"/></svg>';
-  const knopf = neu("button", "groesse groesse-mitte", "Betrag eingeben");
+  const knopf = neu("button", "groesse groesse-mitte", t("Betrag eingeben"));
   knopf.type = "button";
   knopf.addEventListener("click", () => oeffneTastatur(""));
   const groessen = neu("div", "groessen");
   groessen.append(knopf);
-  kachel.append(streifen, neu("h3", "name", "Anderer Preis"), neu("p", "info", "Preis steht am Produkt"), groessen);
+  kachel.append(streifen, neu("h3", "name", t("Anderer Preis")), neu("p", "info", t("Preis steht am Produkt")), groessen);
   return kachel;
 }
 
@@ -224,21 +400,35 @@ function mengeAendern(schluessel, aenderung) {
   zeichneWarenkorb();
 }
 
+// Name und Detail einer Warenkorb-Zeile – immer in der aktuellen Sprache
+function zeileName(z) {
+  if (!z.anders) return pName(z.produkt);
+  if (z.eigenerName) return z.eigenerName;                 // selbst eingetippter Name
+  return z.produkt ? pName(z.produkt) : t("Anderer Preis");
+}
+function zeileDetail(z) {
+  if (!z.anders) return einheitText(z.detail);
+  if (z.produkt) return `${t("Preis am Produkt")} · ${euro(z.cent)}`;
+  if (z.eigenerName) return `${t("Anderer Preis")} · ${euro(z.cent)}`;
+  return "";
+}
+
 function zeichneWarenkorb() {
   el.liste.innerHTML = "";
 
   warenkorb.forEach((z) => {
     const li = neu("li", "zeile");
 
-    const name = neu("div", "zeile-name", z.name);
-    const detail = z.anders ? (z.detail || euro(z.cent)) : `${z.detail} · ${euro(z.cent)}`;
+    const name = neu("div", "zeile-name", zeileName(z));
+    const detail = z.anders ? (zeileDetail(z) || euro(z.cent)) : `${zeileDetail(z)} · ${euro(z.cent)}`;
     name.append(neu("small", "", detail));
 
+    const werte = { name: zeileName(z), detail: zeileDetail(z) };
     const steuerung = neu("div", "zeile-steuerung");
     steuerung.append(
-      rundKnopf("−", `${z.name} ${z.detail}: eins weniger`, () => mengeAendern(z.schluessel, -1)),
+      rundKnopf("−", t("{name} {detail}: eins weniger", werte), () => mengeAendern(z.schluessel, -1)),
       neu("span", "menge", String(z.menge)),
-      rundKnopf("+", `${z.name} ${z.detail}: eins mehr`, () => mengeAendern(z.schluessel, +1))
+      rundKnopf("+", t("{name} {detail}: eins mehr", werte), () => mengeAendern(z.schluessel, +1))
     );
 
     li.append(name, neu("div", "zeile-betrag", euro(z.cent * z.menge)), steuerung);
@@ -263,16 +453,16 @@ function zeichneWarenkorb() {
     el.summeBetrag.textContent = euro(summeCent());
     el.summeBetrag.classList.remove("summe-leer");
   } else {
-    el.summeBetrag.textContent = "Tippen Sie auf ein Produkt";
+    el.summeBetrag.textContent = t("Tippen Sie auf ein Produkt");
     el.summeBetrag.classList.add("summe-leer");
   }
   el.fertig.hidden = warenkorb.length === 0;
 
   // Leiste unten (Handy) – Betrag in eigenem <span>, damit er in der Preis-Schrift erscheint
   if (warenkorb.length) {
-    el.summentext.replaceChildren("Bitte ", neu("span", "betrag", euro(summeCent())), " in die Kassa legen");
+    el.summentext.replaceChildren(t("Bitte") + " ", neu("span", "betrag", euro(summeCent())), " " + t("in die Kassa legen"));
   } else {
-    el.summentext.textContent = "Tippen Sie auf einen Preis, um zu beginnen";
+    el.summentext.textContent = t("Tippen Sie auf einen Preis, um zu beginnen");
   }
 }
 
@@ -291,8 +481,8 @@ let tastaturProdukt = "";
 function oeffneTastatur(produktName = "") {
   tastaturProdukt = produktName;
   eingabe = "";
-  el.name.value = produktName;
-  $("tastatur-titel").textContent = produktName || "Anderer Preis";
+  el.name.value = produktName ? pName(produktName) : "";
+  $("tastatur-titel").textContent = produktName ? pName(produktName) : t("Anderer Preis");
   zeigeFehler("");
   zeichneAnzeige();
   el.tastatur.hidden = false;
@@ -330,14 +520,14 @@ function taste(t) {
     // Ziffer
     if (hatKomma) {
       if (komma.length >= 2) {
-        zeigeFehler("Höchstens 2 Stellen nach dem Komma.");
+        zeigeFehler(t("Höchstens 2 Stellen nach dem Komma."));
         return;
       }
       eingabe += t;
     } else if (eingabe === "0") {
       eingabe = t; // führende Null ersetzen
     } else if (ganz.length >= 3) {
-      zeigeFehler(`Höchstens ${euro(MAX_BETRAG_CENT)} pro Eintrag.`);
+      zeigeFehler(t("Höchstens {betrag} pro Eintrag.", { betrag: euro(MAX_BETRAG_CENT) }));
       return;
     } else {
       eingabe += t;
@@ -346,27 +536,30 @@ function taste(t) {
 
   zeichneAnzeige();
   if (eingabeInCent() > MAX_BETRAG_CENT) {
-    zeigeFehler(`Höchstens ${euro(MAX_BETRAG_CENT)} pro Eintrag.`);
+    zeigeFehler(t("Höchstens {betrag} pro Eintrag.", { betrag: euro(MAX_BETRAG_CENT) }));
   }
 }
 
 function andersHinzufuegen() {
   const cent = eingabeInCent();
   if (cent <= 0) {
-    zeigeFehler("Bitte einen Betrag eingeben.");
+    zeigeFehler(t("Bitte einen Betrag eingeben."));
     return;
   }
   if (cent > MAX_BETRAG_CENT) {
-    zeigeFehler(`Höchstens ${euro(MAX_BETRAG_CENT)} pro Eintrag.`);
+    zeigeFehler(t("Höchstens {betrag} pro Eintrag.", { betrag: euro(MAX_BETRAG_CENT) }));
     return;
   }
   const name = el.name.value.trim();
+  // Nur ein wirklich selbst eingetippter Name wird gespeichert – der vorausgefüllte Produktname nicht
+  // (dann erscheint der Name später immer in der gerade gewählten Sprache).
+  const eigenerName = name && name !== tastaturProdukt && name !== pName(tastaturProdukt) ? name : "";
   andersZaehler++;
   warenkorb.push({
     schluessel: "anders-" + andersZaehler,       // jede Eingabe ist eine eigene Zeile
     produkt: tastaturProdukt,                    // damit das Abzeichen auf "Speisekürbis" zählt
-    name: name || tastaturProdukt || "Anderer Preis",
-    detail: tastaturProdukt ? `Preis am Produkt · ${euro(cent)}` : name ? `Anderer Preis · ${euro(cent)}` : "",
+    eigenerName,
+    detail: "",
     cent,
     menge: 1,
     anders: true,
@@ -401,7 +594,7 @@ function zeigeDanke() {
   el.belegListe.innerHTML = "";
   warenkorb.forEach((z) => {
     const li = neu("li");
-    const text = z.anders ? z.name : `${z.name} ${z.detail}`;
+    const text = z.anders ? zeileName(z) : `${zeileName(z)} ${zeileDetail(z)}`;
     li.append(
       neu("span", "beleg-name", `${z.menge} × ${text}`),
       neu("span", "beleg-punkte"),
@@ -415,10 +608,38 @@ function zeigeDanke() {
   el.feedback.hidden = !FEEDBACK_AKTIV;
   bewertungZuruecksetzen();
   meldenZuruecksetzen();
+  zeichneWechsel();
 
   el.danke.hidden = false;
   el.danke.scrollTop = 0;
   starteDankeCountdown();
+}
+
+// ===== Wechselgeld-Hilfe =====
+// Zeigt die nächsten 3 Scheine, die größer als die Summe sind. Antippen → Wechselgeld.
+const SCHEINE_CENT = [500, 1000, 2000, 5000, 10000];
+
+function zeichneWechsel() {
+  const summe = summeCent();
+  const passend = SCHEINE_CENT.filter((s) => s > summe).slice(0, 3);
+  const box = $("wechsel-scheine");
+  const ergebnis = $("wechsel-ergebnis");
+  $("wechsel").hidden = passend.length === 0;   // über 100 € → keine Wechselgeld-Hilfe
+  ergebnis.hidden = true;
+  box.replaceChildren(
+    ...passend.map((schein) => {
+      const b = neu("button", "wechsel-schein", euro(schein).replace(",00 €", " €"));
+      b.type = "button";
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => {
+        box.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        $("wechsel-betrag").textContent = euro(schein - summe);
+        ergebnis.hidden = false;
+        starteDankeCountdown();   // genug Zeit zum Nehmen des Wechselgelds
+      });
+      return b;
+    })
+  );
 }
 
 // Countdown bis zum automatischen Neustart (startet immer wieder bei 20 Sekunden)
@@ -458,7 +679,7 @@ const feedbackTitel = $("feedback-titel");
 
 function bewertungZuruecksetzen() {
   smileys.forEach((s) => s.setAttribute("aria-pressed", "false"));
-  feedbackTitel.textContent = "Wie war Ihr Einkauf?";
+  feedbackTitel.textContent = t("Wie war Ihr Einkauf?");
   gezaehlteBewertung = null;
 }
 
@@ -466,7 +687,7 @@ smileys.forEach((s) =>
   s.addEventListener("click", () => {
     if (s.getAttribute("aria-pressed") === "true") return; // derselbe Smiley nochmal: nichts tun
     smileys.forEach((andere) => andere.setAttribute("aria-pressed", String(andere === s)));
-    feedbackTitel.textContent = "Danke für Ihre Bewertung!";
+    feedbackTitel.textContent = t("Danke für Ihre Bewertung!");
     zaehleBewertung(s.dataset.bewertung);
   })
 );
@@ -498,8 +719,9 @@ function oeffneMelden() {
   dankeTimer = null;
   melden.produkte.replaceChildren(
     ...alleProduktNamen.map((name) => {
-      const b = neu("button", "melden-produkt", name);
+      const b = neu("button", "melden-produkt", pName(name));
       b.type = "button";
+      b.dataset.name = name;   // für die E-Mail an den Hof immer der deutsche Name
       b.setAttribute("aria-pressed", "false");
       b.addEventListener("click", () => {
         b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true"));
@@ -525,10 +747,10 @@ function meldenAbbrechen() {
 }
 
 function meldenAbschicken() {
-  const gewaehlt = [...melden.produkte.querySelectorAll('[aria-pressed="true"]')].map((b) => b.textContent);
+  const gewaehlt = [...melden.produkte.querySelectorAll('[aria-pressed="true"]')].map((b) => b.dataset.name);
   const text = melden.text.value.trim();
   if (gewaehlt.length === 0 && text === "") {
-    melden.fehler.textContent = "Bitte ein Produkt antippen oder etwas schreiben.";
+    melden.fehler.textContent = t("Bitte ein Produkt antippen oder etwas schreiben.");
     return;
   }
   // Zuerst auf dem Gerät speichern – so geht ohne Internet nichts verloren
@@ -710,18 +932,23 @@ el.neu.addEventListener("click", () => {
     return;
   }
   el.neu.classList.add("bestaetigen");
-  el.neu.textContent = "Wirklich alles löschen? Nochmal tippen";
+  el.neu.textContent = t("Wirklich alles löschen? Nochmal tippen");
   neuTimer = setTimeout(neuKnopfNormal, 4000);
 });
 
 function neuKnopfNormal() {
   clearTimeout(neuTimer);
   el.neu.classList.remove("bestaetigen");
-  el.neu.textContent = "Neuer Einkauf";
+  el.neu.textContent = t("Neuer Einkauf");
 }
 
 function zuruecksetzen() {
   warenkorb = [];
+  // Nächster Kunde beginnt wieder auf Deutsch
+  if (sprache !== "de") {
+    sprache = "de";
+    uebersetzeSeite();
+  }
   schliesseTastatur();
   schliesseMelden();
   schliesseDanke();
@@ -755,8 +982,10 @@ function zeigeRechner() {
   aktivitaet();
 }
 
+let baldTitel = "";
 function zeigeBald(titel) {
-  $("bald-titel").textContent = titel;
+  baldTitel = titel;
+  $("bald-titel").textContent = t(titel);
   startseite.hidden = true;
   seite.hidden = true;
   bald.hidden = false;
@@ -821,15 +1050,17 @@ function zeigeSeite(art) {
   aktivitaet();
 }
 
-function seiteAnfang(titel, mitZurueck) {
-  seiteTitel.textContent = titel;
+// nurDeutsch: Inhalt gibt es nur auf Deutsch → auf Englisch kommt oben ein Hinweis
+function seiteAnfang(titel, mitZurueck, nurDeutsch = true) {
+  seiteTitel.textContent = t(titel);
   seiteZurueck.hidden = !mitZurueck;
   seiteKoerper.replaceChildren();
+  if (nurDeutsch && sprache === "en") seiteKoerper.append(neu("p", "nur-deutsch", t("Diese Seite gibt es nur auf Deutsch.")));
   seite.scrollTop = 0;
 }
 
 function leerHinweis() {
-  seiteKoerper.append(neu("p", "seite-leer", "Hier gibt es gerade nichts zu sehen. Schauen Sie bald wieder vorbei!"));
+  seiteKoerper.append(neu("p", "seite-leer", t("Hier gibt es gerade nichts zu sehen. Schauen Sie bald wieder vorbei!")));
 }
 
 // "2026-03-04" → "4. März 2026"
@@ -868,7 +1099,7 @@ function zeichneUebersicht() {
         .slice(0, 4)
         .forEach((icon) => icons.append(iconSvg(icon, "karte-icon")));
       karte.append(icons);
-      if (rezeptDerWoche && eintrag.titel.trim() === rezeptDerWoche.trim()) karte.append(neu("span", "abzeichen", "Rezept der Woche"));
+      if (rezeptDerWoche && eintrag.titel.trim() === rezeptDerWoche.trim()) karte.append(neu("span", "abzeichen", t("Rezept der Woche")));
       karte.append(neu("h2", "karte-titel", eintrag.titel), neu("p", "karte-text", eintrag.kurz || ""));
       karte.append(neu("p", "karte-meta", [eintrag.dauer, eintrag.portionen].filter(Boolean).join(" · ")));
       karte.addEventListener("click", () => zeigeRezept(eintrag));
@@ -876,7 +1107,7 @@ function zeichneUebersicht() {
       const meta = [eintrag.art, datumText(eintrag.datum)].filter(Boolean).join(" · ");
       if (meta) karte.append(neu("p", "karte-meta karte-meta-oben", meta));
       karte.append(neu("h2", "karte-titel", eintrag.titel), neu("p", "karte-text", eintrag.kurz || ""));
-      karte.append(neu("span", "karte-weiter", "Weiterlesen →"));
+      karte.append(neu("span", "karte-weiter", t("Weiterlesen →")));
       karte.addEventListener("click", () => zeigeGeschichte(eintrag));
     }
     karten.append(karte);
@@ -895,7 +1126,7 @@ function zeigeRezept(r) {
 
   const spalten = neu("div", "rezept-spalten");
   const zutaten = neu("section", "zutaten");
-  zutaten.append(neu("h3", "", "Zutaten"));
+  zutaten.append(neu("h3", "", t("Zutaten")));
   const ul = neu("ul", "zutaten-liste");
   (r.zutaten || []).forEach((z) => {
     const li = neu("li");
@@ -905,19 +1136,19 @@ function zeigeRezept(r) {
     if (z.menge) text.append(neu("strong", "", z.menge + " "));
     text.append(document.createTextNode(z.text || ""));
     li.append(text);
-    if (produkte.some((p) => p.name === z.produkt)) li.append(neu("span", "im-laden", "im Laden"));
+    if (produkte.some((p) => p.name === z.produkt)) li.append(neu("span", "im-laden", t("im Laden")));
     ul.append(li);
   });
   zutaten.append(ul);
 
   const zubereitung = neu("section", "zubereitung");
-  zubereitung.append(neu("h3", "", "Zubereitung"));
+  zubereitung.append(neu("h3", "", t("Zubereitung")));
   const ol = neu("ol", "schritte");
   (r.schritte || []).forEach((s) => ol.append(neu("li", "", s)));
   zubereitung.append(ol);
   if (r.tipp) {
     const tipp = neu("p", "tipp");
-    tipp.append(neu("strong", "", "Tipp: "), document.createTextNode(r.tipp));
+    tipp.append(neu("strong", "", t("Tipp: ")), document.createTextNode(r.tipp));
     zubereitung.append(tipp);
   }
   spalten.append(zutaten, zubereitung);
@@ -937,7 +1168,7 @@ function zeigeGeschichte(g) {
   absaetze(artikel, text.slice(0, 2));
   if (g.zitat && g.zitat.text) artikel.append(zitatBlock(g.zitat));
   absaetze(artikel, text.slice(2));
-  if (g.quelle) artikel.append(neu("p", "quelle", "Quelle: " + g.quelle));
+  if (g.quelle) artikel.append(neu("p", "quelle", t("Quelle: ") + g.quelle));
   seiteKoerper.append(artikel);
 }
 
@@ -962,7 +1193,7 @@ function zeigeUeberUns() {
     artikel.append(fakten);
   }
   if (u.partner && u.partner.length) {
-    artikel.append(neu("h3", "partner-titel", "Unsere Partner aus der Region"));
+    artikel.append(neu("h3", "partner-titel", t("Unsere Partner aus der Region")));
     const partner = neu("ul", "partner");
     u.partner.forEach((p) => {
       const li = neu("li");
@@ -1011,38 +1242,38 @@ function feedbackZaehlen() {
 }
 
 function zeigeWuensche() {
-  seiteAnfang(SEITEN_TITEL.wuensche, false);
+  seiteAnfang(SEITEN_TITEL.wuensche, false, false);   // komplett übersetzt → kein "nur Deutsch"-Hinweis
   const artikel = neu("article", "artikel artikel-text wunsch");
   artikel.append(
-    neu("h2", "artikel-titel", "Ihre Meinung ist uns wichtig"),
-    neu("p", "artikel-kurz", "Fehlt Ihnen ein Produkt, haben Sie eine Idee oder ist etwas nicht in Ordnung? Schreiben Sie uns – die Nachricht kommt direkt per E-Mail zu uns.")
+    neu("h2", "artikel-titel", t("Ihre Meinung ist uns wichtig")),
+    neu("p", "artikel-kurz", t("Fehlt Ihnen ein Produkt, haben Sie eine Idee oder ist etwas nicht in Ordnung? Schreiben Sie uns – die Nachricht kommt direkt per E-Mail zu uns."))
   );
 
-  artikel.append(neu("h3", "", "Worum geht es?"));
+  artikel.append(neu("h3", "", t("Worum geht es?")));
   const themen = neu("div", "wunsch-themen");
-  let thema = "";
-  FEEDBACK_THEMEN.forEach((t) => {
-    const b = neu("button", "melden-produkt", t);
+  let thema = "";   // immer der deutsche Name (für die E-Mail an den Hof)
+  FEEDBACK_THEMEN.forEach((th) => {
+    const b = neu("button", "melden-produkt", t(th));
     b.type = "button";
     b.setAttribute("aria-pressed", "false");
     b.addEventListener("click", () => {
       themen.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-      thema = t;
+      thema = th;
       fehler.textContent = "";
     });
     themen.append(b);
   });
   artikel.append(themen);
 
-  const textFeld = neu("label", "namensfeld", "Ihre Nachricht");
+  const textFeld = neu("label", "namensfeld", t("Ihre Nachricht"));
   const text = neu("textarea");
   text.id = "wunsch-text";
   text.rows = 4;
   text.maxLength = 600;
-  text.placeholder = "z. B. Es wäre toll, wenn es bei Ihnen auch … gäbe.";
+  text.placeholder = t("z. B. Es wäre toll, wenn es bei Ihnen auch … gäbe.");
   textFeld.append(text);
 
-  const kontaktFeld = neu("label", "namensfeld", "Möchten Sie eine Antwort? E-Mail oder Telefon (optional)");
+  const kontaktFeld = neu("label", "namensfeld", t("Möchten Sie eine Antwort? E-Mail oder Telefon (optional)"));
   const kontakt = neu("input");
   kontakt.id = "wunsch-kontakt";
   kontakt.type = "text";
@@ -1050,21 +1281,21 @@ function zeigeWuensche() {
   kontakt.autocomplete = "off";
   kontaktFeld.append(kontakt);
 
-  const hinweis = neu("p", "melden-hinweis", "Ihre Kontaktdaten verwenden wir nur, um Ihnen zu antworten. Ohne Angabe bleibt Ihre Nachricht anonym.");
+  const hinweis = neu("p", "melden-hinweis", t("Ihre Kontaktdaten verwenden wir nur, um Ihnen zu antworten. Ohne Angabe bleibt Ihre Nachricht anonym."));
   const fehler = neu("p", "fehler");
   fehler.setAttribute("role", "alert");
-  const senden = neu("button", "btn-haupt wunsch-senden", "Senden");
+  const senden = neu("button", "btn-haupt wunsch-senden", t("Senden"));
   senden.type = "button";
   artikel.append(textFeld, kontaktFeld, hinweis, fehler, senden);
 
   senden.addEventListener("click", () => {
     const nachricht = text.value.trim();
     if (nachricht.length < 3) {
-      fehler.textContent = "Bitte schreiben Sie uns kurz, worum es geht.";
+      fehler.textContent = t("Bitte schreiben Sie uns kurz, worum es geht.");
       return;
     }
     if (feedbackHeute() >= FEEDBACK_PRO_TAG) {
-      fehler.textContent = "Heute wurden auf diesem Gerät schon viele Nachrichten gesendet. Bitte versuchen Sie es morgen wieder.";
+      fehler.textContent = t("Heute wurden auf diesem Gerät schon viele Nachrichten gesendet. Bitte versuchen Sie es morgen wieder.");
       return;
     }
     // Wie bei "Etwas gefehlt?": erst auf dem Gerät speichern, dann senden
@@ -1083,10 +1314,10 @@ function zeigeWuensche() {
 
     // Danke-Ansicht
     artikel.replaceChildren(
-      neu("h2", "artikel-titel", "Danke für Ihre Nachricht!"),
-      neu("p", "artikel-kurz", "Wir lesen jede Nachricht und kümmern uns darum.")
+      neu("h2", "artikel-titel", t("Danke für Ihre Nachricht!")),
+      neu("p", "artikel-kurz", t("Wir lesen jede Nachricht und kümmern uns darum."))
     );
-    const zurueck = neu("button", "btn-haupt wunsch-senden", "Zurück zur Startseite");
+    const zurueck = neu("button", "btn-haupt wunsch-senden", t("Zurück zur Startseite"));
     zurueck.type = "button";
     zurueck.addEventListener("click", zeigeStartseite);
     artikel.append(zurueck);
@@ -1166,7 +1397,23 @@ setInterval(() => {
   }
 }, 500);
 
+// ===== Sprachknopf "English" / "Deutsch" =====
+function setzeSprache(neueSprache) {
+  sprache = neueSprache;
+  uebersetzeSeite();
+  zeichneKacheln();                 // Kacheln + Warenkorb neu (mit übersetzten Namen)
+  neuKnopfNormal();
+  if (!el.tastatur.hidden) $("tastatur-titel").textContent = tastaturProdukt ? pName(tastaturProdukt) : t("Anderer Preis");
+  if (!bald.hidden && baldTitel) $("bald-titel").textContent = t(baldTitel);
+  if (!seite.hidden && aktuelleSeite) zeigeSeite(aktuelleSeite);   // offene Seite neu aufbauen
+  aktivitaet();
+}
+document.querySelectorAll("[data-sprache-knopf]").forEach((b) =>
+  b.addEventListener("click", () => setzeSprache(sprache === "de" ? "en" : "de"))
+);
+
 // ===== Start =====
+uebersetzeSeite();
 ladeProdukte();
 ladeInhalte();
 ladeSeiten();

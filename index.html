@@ -15,54 +15,53 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Übersetzung: Elemente mit data-i18n bekommen ihren Text aus dem Wörterbuch in app.js
+       (data-i18n-ph = Platzhalter, data-i18n-aria = Beschriftung für Vorlese-Programme) -->
   <header class="kopf">
     <picture>
       <source srcset="bilder/logo-400.webp" type="image/webp">
       <img class="logo" src="bilder/logo-400.png" width="400" height="325" alt="Logo Bachl's Feldgemüse">
     </picture>
     <div>
-      <h1>Einkaufshelfer</h1>
-      <p class="untertitel">Tippen Sie auf den Preis – wir rechnen für Sie zusammen.</p>
+      <h1 data-i18n>Einkaufshelfer</h1>
+      <p class="untertitel" data-i18n>Tippen Sie auf den Preis – wir rechnen für Sie zusammen.</p>
     </div>
-    <button id="zur-startseite" type="button" class="btn-startseite">← Startseite</button>
+    <button type="button" class="btn-sprache" data-sprache-knopf lang="en">English</button>
+    <button id="zur-startseite" type="button" class="btn-startseite" data-i18n>← Startseite</button>
   </header>
 
-  <!-- Reiter: Kategorien (Namen müssen genau wie "kategorie" in products.json geschrieben sein) -->
-  <nav class="tabs" role="tablist" aria-label="Kategorien">
-    <button type="button" class="tab" role="tab" data-tab="beliebt" aria-selected="true">★ Beliebt</button>
-    <button type="button" class="tab" role="tab" data-tab="Gemüse" aria-selected="false">Gemüse</button>
-    <button type="button" class="tab" role="tab" data-tab="Obst &amp; Getränke" aria-selected="false">Obst &amp; Getränke</button>
-    <button type="button" class="tab" role="tab" data-tab="Öle" aria-selected="false">Öle</button>
-    <button type="button" class="tab" role="tab" data-tab="Milch &amp; Eier" aria-selected="false">Milch &amp; Eier</button>
-    <button type="button" class="tab" role="tab" data-tab="Vorrat &amp; Gläser" aria-selected="false">Vorrat &amp; Gläser</button>
+  <!-- Reiter: Kategorien (data-tab muss genau wie "kategorie" in products.json geschrieben sein) -->
+  <nav class="tabs" role="tablist" aria-label="Kategorien" data-i18n-aria>
+    <button type="button" class="tab" role="tab" data-tab="beliebt" aria-selected="true" data-i18n>★ Beliebt</button>
+    <button type="button" class="tab" role="tab" data-tab="Gemüse" aria-selected="false" data-i18n>Gemüse</button>
+    <button type="button" class="tab" role="tab" data-tab="Obst &amp; Getränke" aria-selected="false" data-i18n>Obst &amp; Getränke</button>
+    <button type="button" class="tab" role="tab" data-tab="Öle" aria-selected="false" data-i18n>Öle</button>
+    <button type="button" class="tab" role="tab" data-tab="Milch &amp; Eier" aria-selected="false" data-i18n>Milch &amp; Eier</button>
+    <button type="button" class="tab" role="tab" data-tab="Vorrat &amp; Gläser" aria-selected="false" data-i18n>Vorrat &amp; Gläser</button>
   </nav>
 
   <main class="layout">
     <!-- Produkt-Kacheln (werden aus products.json erzeugt) -->
-    <section id="produkte" class="produkte" role="tabpanel" aria-label="Produkte">
+    <section id="produkte" class="produkte" role="tabpanel" aria-label="Produkte" data-i18n-aria>
       <div id="kacheln" class="kacheln"></div>
-      <p id="ladefehler" class="ladefehler" hidden>
-        Die Preisliste konnte nicht geladen werden. Bitte die Seite neu laden.
-      </p>
+      <p id="ladefehler" class="ladefehler" hidden data-i18n>Die Preisliste konnte nicht geladen werden. Bitte die Seite neu laden.</p>
     </section>
 
     <!-- Warenkorb -->
-    <aside class="warenkorb" aria-label="Warenkorb">
-      <h2>Ihr Einkauf</h2>
-      <p id="leer" class="leer">Noch nichts ausgewählt.</p>
+    <aside class="warenkorb" aria-label="Warenkorb" data-i18n-aria>
+      <h2 data-i18n>Ihr Einkauf</h2>
+      <p id="leer" class="leer" data-i18n>Noch nichts ausgewählt.</p>
       <ul id="liste" class="liste"></ul>
 
       <!-- Unterer Teil des Warenkorbs: Summe und Kassa -->
       <div class="kasse">
         <div class="summe-zeile" aria-live="polite">
-          <span class="summe-label">Summe</span>
+          <span class="summe-label" data-i18n>Summe</span>
           <span id="summe-betrag" class="summe-betrag">Tippen Sie auf ein Produkt</span>
         </div>
-        <button id="fertig" class="btn-fertig" type="button" hidden>Fertig – zur Kassa</button>
+        <button id="fertig" class="btn-fertig" type="button" hidden data-i18n>Fertig – zur Kassa</button>
         <button id="neu" class="btn-neu" type="button">Neuer Einkauf</button>
-        <p class="hinweis">
-          Bei Abweichungen gelten die Preise, die direkt bei den Produkten angeschrieben sind.
-        </p>
+        <p class="hinweis" data-i18n>Bei Abweichungen gelten die Preise, die direkt bei den Produkten angeschrieben sind.</p>
       </div>
     </aside>
   </main>
@@ -76,7 +75,7 @@
   <div id="tastatur" class="overlay" hidden>
     <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="tastatur-titel">
       <h2 id="tastatur-titel">Anderer Preis</h2>
-      <p class="dialog-text">Preis eingeben, der auf dem Produkt steht:</p>
+      <p class="dialog-text" data-i18n>Preis eingeben, der auf dem Produkt steht:</p>
       <div id="anzeige" class="anzeige">0 €</div>
       <p id="fehler" class="fehler" aria-live="assertive"></p>
       <div class="ziffern">
@@ -91,15 +90,15 @@
         <button type="button" data-taste="9">9</button>
         <button type="button" data-taste=",">,</button>
         <button type="button" data-taste="0">0</button>
-        <button type="button" data-taste="zurueck" aria-label="Letzte Ziffer löschen">⌫</button>
+        <button type="button" data-taste="zurueck" aria-label="Letzte Ziffer löschen" data-i18n-aria>⌫</button>
       </div>
       <label class="namensfeld">
-        Name (optional)
-        <input id="name" type="text" maxlength="25" placeholder="z. B. Paprika" autocomplete="off">
+        <span data-i18n>Name (optional)</span>
+        <input id="name" type="text" maxlength="25" placeholder="z. B. Paprika" autocomplete="off" data-i18n-ph>
       </label>
       <div class="dialog-knoepfe">
-        <button id="abbrechen" type="button" class="btn-zweit">Abbrechen</button>
-        <button id="hinzufuegen" type="button" class="btn-haupt">Hinzufügen</button>
+        <button id="abbrechen" type="button" class="btn-zweit" data-i18n>Abbrechen</button>
+        <button id="hinzufuegen" type="button" class="btn-haupt" data-i18n>Hinzufügen</button>
       </div>
     </div>
   </div>
@@ -107,9 +106,9 @@
   <!-- Warnung vor dem automatischen Zurücksetzen -->
   <div id="warnung" class="overlay" hidden>
     <div class="dialog dialog-klein" role="alertdialog" aria-modal="true">
-      <h2>Sind Sie noch da?</h2>
-      <p class="dialog-text">Der Einkauf wird in <strong id="countdown">15</strong> Sekunden gelöscht.</p>
-      <button id="weiter" type="button" class="btn-haupt">Weiter einkaufen</button>
+      <h2 data-i18n>Sind Sie noch da?</h2>
+      <p class="dialog-text"><span data-i18n>Der Einkauf wird gelöscht in</span> <strong id="countdown">15</strong> <span data-i18n>Sekunden.</span></p>
+      <button id="weiter" type="button" class="btn-haupt" data-i18n>Weiter einkaufen</button>
     </div>
   </div>
 
@@ -121,43 +120,53 @@
           <source srcset="bilder/logo-400.webp" type="image/webp">
           <img class="danke-logo" src="bilder/logo-400.png" width="400" height="325" alt="Logo Bachl's Feldgemüse">
         </picture>
-        <h2 id="danke-titel">Danke für Ihren Einkauf!</h2>
-        <p class="danke-text">Bitte legen Sie</p>
+        <h2 id="danke-titel" data-i18n>Danke für Ihren Einkauf!</h2>
+        <p class="danke-text" data-i18n>Bitte legen Sie</p>
         <p id="danke-betrag" class="danke-betrag">0,00 €</p>
-        <p class="danke-text">in die Kassa.</p>
-        <div class="danke-knoepfe">
-          <button id="danke-neu" type="button" class="btn-haupt">Neuer Einkauf</button>
-          <button id="danke-zurueck" type="button" class="btn-zweit">Zurück zum Einkauf</button>
+        <p class="danke-text" data-i18n>in die Kassa.</p>
+
+        <!-- Wechselgeld-Hilfe: Schein antippen → Wechselgeld wird angezeigt -->
+        <div id="wechsel" class="wechsel">
+          <p class="wechsel-frage" data-i18n>Sie zahlen mit einem Schein? Antippen:</p>
+          <div id="wechsel-scheine" class="wechsel-scheine"></div>
+          <p id="wechsel-ergebnis" class="wechsel-ergebnis" aria-live="polite" hidden>
+            <span data-i18n>Ihr Wechselgeld:</span> <strong id="wechsel-betrag">0,00 €</strong>
+          </p>
         </div>
-        <p class="danke-countdown">Startet in <strong id="danke-sekunden">20</strong> Sekunden automatisch neu.</p>
+
+        <div class="danke-knoepfe">
+          <button id="danke-neu" type="button" class="btn-haupt" data-i18n>Neuer Einkauf</button>
+          <button id="danke-zurueck" type="button" class="btn-zweit" data-i18n>Zurück zum Einkauf</button>
+        </div>
+        <p class="danke-countdown"><span data-i18n>Startet automatisch neu in</span> <strong id="danke-sekunden">20</strong> <span data-i18n>Sekunden.</span></p>
       </div>
 
       <div class="danke-rechts">
         <section class="beleg" aria-labelledby="beleg-titel">
-          <h3 id="beleg-titel">Ihr Einkauf</h3>
+          <h3 id="beleg-titel" data-i18n>Ihr Einkauf</h3>
           <ul id="beleg-liste" class="beleg-liste"></ul>
-          <div class="beleg-summe"><span>Summe</span><span id="beleg-summe">0,00 €</span></div>
+          <div class="beleg-summe"><span data-i18n>Summe</span><span id="beleg-summe">0,00 €</span></div>
         </section>
 
-        <!-- Bewertung: Aufbau steht schon, wird über FEEDBACK_AKTIV in app.js eingeschaltet -->
+        <!-- Bewertung: wird über FEEDBACK_AKTIV in app.js eingeschaltet -->
         <section id="feedback" class="feedback" aria-labelledby="feedback-titel" hidden>
           <h3 id="feedback-titel">Wie war Ihr Einkauf?</h3>
           <div class="smileys">
             <button type="button" class="smiley" data-bewertung="gut">
               <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle class="auge" cx="23" cy="26" r="3"/><circle class="auge" cx="41" cy="26" r="3"/><path d="M20 38q12 12 24 0"/></svg>
-              <span>Gut</span>
+              <span data-i18n>Gut</span>
             </button>
             <button type="button" class="smiley" data-bewertung="okay">
               <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle class="auge" cx="23" cy="26" r="3"/><circle class="auge" cx="41" cy="26" r="3"/><path d="M21 42h22"/></svg>
-              <span>Okay</span>
+              <span data-i18n>Okay</span>
             </button>
             <button type="button" class="smiley" data-bewertung="schlecht">
               <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27"/><circle class="auge" cx="23" cy="26" r="3"/><circle class="auge" cx="41" cy="26" r="3"/><path d="M20 46q12 -12 24 0"/></svg>
-              <span>Schlecht</span>
+              <span data-i18n>Schlecht</span>
             </button>
           </div>
-          <button type="button" id="melden" class="link-knopf" hidden>Etwas gefehlt? Hier melden</button>
-          <p id="melden-danke" class="melden-danke" role="status" hidden>✓ Danke für Ihre Meldung! Wir kümmern uns darum.</p>
+          <button type="button" id="melden" class="link-knopf" hidden data-i18n>Etwas gefehlt? Hier melden</button>
+          <p id="melden-danke" class="melden-danke" role="status" hidden data-i18n>✓ Danke für Ihre Meldung! Wir kümmern uns darum.</p>
         </section>
       </div>
     </div>
@@ -166,18 +175,18 @@
   <!-- "Was hat gefehlt?" – Meldung kommt per E-Mail an den Hof (Einstellung MELDEN_SCHLUESSEL in app.js) -->
   <div id="melden-dialog" class="overlay melden-overlay" hidden>
     <div class="dialog melden-box" role="dialog" aria-modal="true" aria-labelledby="melden-titel">
-      <h2 id="melden-titel">Was hat gefehlt?</h2>
-      <p class="dialog-text">Tippen Sie an, was leer oder ausverkauft war. Wir bekommen Ihre Meldung per E-Mail.</p>
+      <h2 id="melden-titel" data-i18n>Was hat gefehlt?</h2>
+      <p class="dialog-text" data-i18n>Tippen Sie an, was leer oder ausverkauft war. Wir bekommen Ihre Meldung per E-Mail.</p>
       <div id="melden-produkte" class="melden-produkte"></div>
       <label class="namensfeld">
-        Sonst noch etwas? (optional)
-        <textarea id="melden-text" rows="2" maxlength="300" placeholder="z. B. Kürbiskernöl 500 ml war leer"></textarea>
+        <span data-i18n>Sonst noch etwas? (optional)</span>
+        <textarea id="melden-text" rows="2" maxlength="300" placeholder="z. B. Kürbiskernöl 500 ml war leer" data-i18n-ph></textarea>
       </label>
-      <p class="melden-hinweis">Ohne Namen – bitte keine persönlichen Daten eintragen.</p>
+      <p class="melden-hinweis" data-i18n>Ohne Namen – bitte keine persönlichen Daten eintragen.</p>
       <p id="melden-fehler" class="fehler" role="alert"></p>
       <div class="dialog-knoepfe">
-        <button id="melden-abbrechen" type="button" class="btn-zweit">Abbrechen</button>
-        <button id="melden-senden" type="button" class="btn-haupt">Senden</button>
+        <button id="melden-abbrechen" type="button" class="btn-zweit" data-i18n>Abbrechen</button>
+        <button id="melden-senden" type="button" class="btn-haupt" data-i18n>Senden</button>
       </div>
     </div>
   </div>
@@ -185,14 +194,17 @@
   <!-- ===== Startseite: erster Bildschirm und Ziel nach jedem Zurücksetzen ===== -->
   <div id="start" class="start" role="region" aria-labelledby="start-titel">
     <div class="start-inhalt">
+      <div class="start-sprache">
+        <button type="button" class="btn-sprache" data-sprache-knopf lang="en">English</button>
+      </div>
       <header class="start-kopf">
         <picture>
           <source srcset="bilder/logo-400.webp" type="image/webp">
           <img class="start-logo" src="bilder/logo-400.png" width="400" height="325" alt="Logo Bachl's Feldgemüse">
         </picture>
         <div>
-          <h1 id="start-titel">Willkommen in unserem Hofladen!</h1>
-          <p class="start-untertitel">Selbstbedienung rund um die Uhr. Was möchten Sie tun?</p>
+          <h1 id="start-titel" data-i18n>Willkommen in unserem Hofladen!</h1>
+          <p class="start-untertitel" data-i18n>Selbstbedienung rund um die Uhr. Was möchten Sie tun?</p>
         </div>
       </header>
 
@@ -200,32 +212,32 @@
         <!-- 1: Rechner -->
         <button id="start-rechner" type="button" class="start-kachel start-gruen">
           <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 26h52M10 26l5 26h34l5-26M22 26l8-14M42 26l-8-14M24 34v11M32 34v11M40 34v11"/></svg>
-          <span class="start-titel">Einkauf zusammen&shy;rechnen</span>
-          <span class="start-text">Produkte antippen, Summe sehen, in die Kassa legen.</span>
-          <span class="start-los">Los geht's</span>
+          <span class="start-titel" data-i18n>Einkauf zusammen&shy;rechnen</span>
+          <span class="start-text" data-i18n>Produkte antippen, Summe sehen, in die Kassa legen.</span>
+          <span class="start-los" data-i18n>Los geht's</span>
         </button>
 
         <!-- 2: Rezepte -->
         <button type="button" class="start-kachel" data-seite="rezepte">
           <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 22h36M28 17h8M12 26h40v18a8 8 0 0 1-8 8H20a8 8 0 0 1-8-8zM12 31H6M52 31h6M24 11q-3-3 0-7M32 11q-3-3 0-7M40 11q-3-3 0-7"/></svg>
-          <span class="start-titel">Rezepte</span>
-          <span class="start-text">Was koche ich heute? Ideen mit unseren Produkten.</span>
-          <span id="teaser-rezept" class="start-teaser" hidden><strong>Diese Woche:</strong> <span></span></span>
+          <span class="start-titel" data-i18n>Rezepte</span>
+          <span class="start-text" data-i18n>Was koche ich heute? Ideen mit unseren Produkten.</span>
+          <span id="teaser-rezept" class="start-teaser" hidden><strong data-i18n>Diese Woche:</strong> <span></span></span>
         </button>
 
         <!-- 3: Neuigkeiten & Presse -->
         <button type="button" class="start-kachel" data-seite="neuigkeiten">
           <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 12h38v40H14a4 4 0 0 1-4-4zM48 22h6v26a4 4 0 0 1-4 4M16 20h26M16 28h10v8H16zM31 29h11M31 35h11M16 42h26M16 47h26"/></svg>
-          <span class="start-titel">Neuigkeiten &amp; Presse</span>
-          <span class="start-text">Was gibt's Neues am Hof? Und was die Zeitung über uns schreibt.</span>
-          <span id="teaser-neu" class="start-teaser" hidden><strong>Neu im Laden:</strong> <span></span></span>
+          <span class="start-titel" data-i18n>Neuigkeiten &amp; Presse</span>
+          <span class="start-text" data-i18n>Was gibt's Neues am Hof? Und was die Zeitung über uns schreibt.</span>
+          <span id="teaser-neu" class="start-teaser" hidden><strong data-i18n>Neu im Laden:</strong> <span></span></span>
         </button>
       </div>
 
       <div class="start-unten">
-        <button type="button" class="btn-zweit start-klein" data-seite="ueber">Über uns</button>
-        <button type="button" class="btn-zweit start-klein" data-seite="wuensche">Wünsche &amp; Feedback</button>
-        <button type="button" class="btn-zweit start-klein" data-seite="impressum">Impressum &amp; Datenschutz</button>
+        <button type="button" class="btn-zweit start-klein" data-seite="ueber" data-i18n>Über uns</button>
+        <button type="button" class="btn-zweit start-klein" data-seite="wuensche" data-i18n>Wünsche &amp; Feedback</button>
+        <button type="button" class="btn-zweit start-klein" data-seite="impressum" data-i18n>Impressum &amp; Datenschutz</button>
       </div>
     </div>
   </div>
@@ -234,20 +246,20 @@
   <div id="bald" class="bald" role="region" aria-labelledby="bald-titel" hidden>
     <div class="bald-karte">
       <h2 id="bald-titel">Rezepte</h2>
-      <p class="bald-gross">Kommt bald</p>
-      <p class="bald-text">Diese Seite ist noch in Arbeit. Schauen Sie bald wieder vorbei!</p>
-      <button id="bald-zurueck" type="button" class="btn-haupt">Zurück zur Startseite</button>
+      <p class="bald-gross" data-i18n>Kommt bald</p>
+      <p class="bald-text" data-i18n>Diese Seite ist noch in Arbeit. Schauen Sie bald wieder vorbei!</p>
+      <button id="bald-zurueck" type="button" class="btn-haupt" data-i18n>Zurück zur Startseite</button>
     </div>
   </div>
 
-  <!-- ===== Inhaltsseiten: Rezepte, Neuigkeiten & Presse, Über uns =====
+  <!-- ===== Inhaltsseiten: Rezepte, Neuigkeiten & Presse, Über uns, Impressum, Wünsche & Feedback =====
        Texte stehen in rezepte.json und geschichten.json -->
   <div id="seite" class="seite" role="region" aria-labelledby="seite-titel" hidden>
     <div class="seite-inhalt">
       <header class="seite-kopf">
-        <button id="seite-zurueck" type="button" class="btn-startseite" hidden>← Übersicht</button>
+        <button id="seite-zurueck" type="button" class="btn-startseite" hidden data-i18n>← Übersicht</button>
         <h1 id="seite-titel">Rezepte</h1>
-        <button id="seite-start" type="button" class="btn-startseite">← Startseite</button>
+        <button id="seite-start" type="button" class="btn-startseite" data-i18n>← Startseite</button>
       </header>
       <div id="seite-koerper"></div>
     </div>

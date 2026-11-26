@@ -1027,6 +1027,61 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .partner li { display: flex; flex-direction: column; padding: 10px 14px; border: 2px dashed var(--braun); border-radius: var(--rundung); font-size: 1.1rem; }
 .partner li span { color: var(--tinte-mild); }
 
+/* ===== Sprachknopf "English" / "Deutsch" ===== */
+.btn-sprache {
+  flex: none;
+  height: 56px;
+  padding: 0 18px;
+  border: var(--rand);
+  border-radius: var(--rundung);
+  background: var(--papier);
+  color: var(--tinte);
+  font-weight: 700;
+  font-size: 1.15rem;
+  box-shadow: 3px 3px 0 var(--tinte);
+}
+.btn-sprache:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--tinte); }
+.kopf .btn-sprache { margin-left: auto; }
+.kopf .btn-sprache + .btn-startseite { margin-left: 0; }
+.start-sprache { display: flex; justify-content: flex-end; margin-bottom: -12px; }
+@media (max-width: 520px) {
+  .kopf .btn-sprache { display: none; }               /* am Handy: Umschalten auf der Startseite */
+  .kopf .btn-sprache + .btn-startseite { margin-left: auto; }
+}
+
+/* ===== Wechselgeld-Hilfe (Danke-Seite) ===== */
+.wechsel { margin: 16px 0 0; }
+.wechsel[hidden], .wechsel-ergebnis[hidden] { display: none; }
+.wechsel-frage { margin: 0 0 8px; font-size: 1.2rem; font-weight: 600; }
+.wechsel-scheine { display: flex; flex-wrap: wrap; gap: 12px; padding: 0 4px 4px 0; }
+.wechsel-schein {
+  min-width: 100px;
+  min-height: 60px;
+  padding: 0 18px;
+  border: var(--rand);
+  border-radius: var(--rundung);
+  background: var(--papier-hell);
+  color: var(--tinte);
+  box-shadow: 3px 3px 0 var(--tinte);
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+.wechsel-schein:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--tinte); }
+.wechsel-schein[aria-pressed="true"] { background: var(--orange); }
+.wechsel-ergebnis { margin: 12px 0 0; font-size: 1.4rem; font-weight: 700; }
+.wechsel-ergebnis strong { font-family: var(--schrift-titel); font-size: 2.6rem; color: var(--gruen); white-space: nowrap; }
+
+/* Hinweis auf Englisch: Seite nur auf Deutsch */
+.nur-deutsch {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-left: 6px solid var(--orange);
+  background: var(--papier-hell);
+  font-weight: 600;
+  font-size: 1.15rem;
+}
+
 /* Wünsche & Feedback */
 .wunsch h3 { font-size: 1.5rem; margin: 22px 0 10px; }
 .wunsch-themen {

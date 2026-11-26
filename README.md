@@ -22,6 +22,8 @@ GitHub-App am Handy:
    - Produkt ausverkauft? `"verfuegbar": false` – wieder da? `"verfuegbar": true`.
    - Im Reiter „★ Beliebt“ zeigen? `"beliebt": true`.
    - Neues Produkt: eine bestehende Zeile kopieren und anpassen. Komma zwischen den Produkten nicht vergessen!
+   - Englisch: `"name_en": "Potatoes"` (und bei Bedarf `"info_en": "…"`) – wird angezeigt,
+     wenn Kunden auf „English“ tippen. Fehlt es, steht dort der deutsche Name.
    - Bild auf der Kachel: `"icon": "apfel"` wählt eine Zeichnung aus `bilder/icons.svg`
      (Namen stehen dort bei `id="..."`). Ein echtes Foto mit `"foto": "bilder/…jpg"` hat Vorrang.
 5. Oben rechts **Commit changes** tippen, kurz beschreiben (z. B. „Äpfel 2,20 €“) und

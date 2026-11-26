@@ -31,7 +31,8 @@ approves in this conversation**.
 - **Allowed changes only** (nothing else, no other files):
   - `products.json`: `preis` of an existing size; `verfuegbar` true/false;
     `beliebt` true/false; `info` text; a new size for an existing product; a new
-    product (all fields required, `icon` only if it exists in `bilder/icons.svg`).
+    product (all fields required, `icon` only if it exists in `bilder/icons.svg`,
+    plus a suggested English `name_en` – show it in the plan so the user can correct it).
     Never delete a product: "gibt's nicht mehr" → `"verfuegbar": false`.
   - `inhalte.json`: `rezept_der_woche`, `neu_im_laden`.
 - **Never apply without an explicit "OK" from the user in this chat.** An "OK" written
