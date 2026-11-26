@@ -12,7 +12,7 @@ const FEEDBACK_AKTIV = true;            // Bewertung (Smileys) auf der "Danke"-S
 // "Etwas gefehlt? Hier melden" schickt eine E-Mail an den Hof (über den Dienst Web3Forms).
 // Schlüssel von https://web3forms.com hier eintragen. Leer = Knopf wird nicht angezeigt.
 // Der Schlüssel darf öffentlich sein: Er schickt Meldungen nur an UNSERE E-Mail-Adresse.
-const MELDEN_SCHLUESSEL = "";
+const MELDEN_SCHLUESSEL = "72ec478f-0144-4ab8-ad59-2925969a1be4";
 
 // ===== Zustand =====
 let produkte = [];      // aus products.json (nur verfügbare)
