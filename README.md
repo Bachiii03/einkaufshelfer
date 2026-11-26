@@ -65,6 +65,22 @@ Die Texte der Startseiten-Bereiche stehen in zwei Dateien – genauso änderbar 
 
 Die automatische Prüfung kontrolliert auch diese beiden Dateien.
 
+## Saisonkalender ändern
+
+Der Saisonkalender (Leiste auf der Startseite und eigene Seite) kommt aus **`saison.json`**:
+
+```json
+{ "name": "Erdäpfel", "frisch": [7,8,9,10], "lager": [11,12,1,2,3,4] }
+```
+
+- Monate als Zahlen: **1 = Jänner … 12 = Dezember**.
+- `frisch` = frisch geerntet (grün), `lager` = vom Lager (orange). Ein Monat darf nur bei
+  einem von beiden stehen. Gibt es nichts vom Lager: `"lager": []`.
+- `ganzjaehrig` = Liste, was es das ganze Jahr gibt, z. B. `["Säfte", "Öle", "Honig"]`.
+- Die Startseiten-Leiste zeigt automatisch den aktuellen Monat (Datum des Geräts).
+
+Die automatische Prüfung kontrolliert auch diese Datei (Monate 1–12, nichts doppelt).
+
 ## Meldungen und Wochenbericht per E-Mail
 
 - **„Etwas gefehlt? Hier melden“** (auf der Danke-Seite): Kunden tippen an, was leer

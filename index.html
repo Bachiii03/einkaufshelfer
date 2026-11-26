@@ -194,9 +194,6 @@
   <!-- ===== Startseite: erster Bildschirm und Ziel nach jedem Zurücksetzen ===== -->
   <div id="start" class="start" role="region" aria-labelledby="start-titel">
     <div class="start-inhalt">
-      <div class="start-sprache">
-        <button type="button" class="btn-sprache" data-sprache-knopf lang="en">English</button>
-      </div>
       <header class="start-kopf">
         <picture>
           <source srcset="bilder/logo-400.webp" type="image/webp">
@@ -206,6 +203,7 @@
           <h1 id="start-titel" data-i18n>Willkommen in unserem Hofladen!</h1>
           <p class="start-untertitel" data-i18n>Selbstbedienung rund um die Uhr. Was möchten Sie tun?</p>
         </div>
+        <button type="button" class="btn-sprache" data-sprache-knopf lang="en">English</button>
       </header>
 
       <div class="start-kacheln">
@@ -233,6 +231,20 @@
           <span id="teaser-neu" class="start-teaser" hidden><strong data-i18n>Neu im Laden:</strong> <span></span></span>
         </button>
       </div>
+
+      <!-- Saison-Leiste: was es JETZT gibt (aus saison.json, aktueller Monat) – antippen öffnet den Kalender -->
+      <button id="saison-leiste" type="button" class="saison-leiste" hidden>
+        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M10 14h44v40H10zM10 25h44M22 8v11M42 8v11M18 33h6M29 33h6M40 33h6M18 43h6M29 43h6"/></svg>
+        <span class="sl-kopf">
+          <span class="sl-titel" data-i18n>Saisonkalender</span>
+          <span id="saison-jetzt" class="sl-monat">Jetzt im Jänner:</span>
+        </span>
+        <span class="sl-chips">
+          <span id="sl-frisch" class="chip-zeile"><span class="chip-label" data-i18n>frisch</span><span class="chips"></span></span>
+          <span id="sl-lager" class="chip-zeile"><span class="chip-label" data-i18n>vom Lager</span><span class="chips"></span></span>
+        </span>
+        <span class="sl-mehr" data-i18n>Ganzes Jahr ansehen ›</span>
+      </button>
 
       <div class="start-unten">
         <button type="button" class="btn-zweit start-klein" data-seite="ueber" data-i18n>Über uns</button>
@@ -262,6 +274,48 @@
         <button id="seite-start" type="button" class="btn-startseite" data-i18n>← Startseite</button>
       </header>
       <div id="seite-koerper"></div>
+    </div>
+  </div>
+
+  <!-- ===== Saisonkalender (Daten aus saison.json) ===== -->
+  <div id="saison" class="saison" role="region" aria-labelledby="saison-titel" hidden>
+    <div class="saison-inhalt">
+      <header class="saison-kopf">
+        <button id="saison-start" type="button" class="btn-startseite" data-i18n>← Startseite</button>
+        <picture>
+          <source srcset="bilder/logo-400.webp" type="image/webp">
+          <img class="saison-logo" src="bilder/logo-400.png" width="400" height="325" alt="Logo Bachl's Feldgemüse">
+        </picture>
+        <div>
+          <h1 id="saison-titel" data-i18n>Saisonkalender</h1>
+          <p class="saison-untertitel" data-i18n>Was gibt's wann bei uns? Tippen Sie auf einen Monat.</p>
+        </div>
+      </header>
+
+      <div class="saison-raster">
+        <section class="saison-karte">
+          <div class="saison-rahmen">
+            <div id="saison-tabelle" class="saison-tabelle"></div>
+          </div>
+          <div class="saison-legende">
+            <span class="legende-eintrag"><span class="balken frisch"></span><span data-i18n>frisch geerntet</span></span>
+            <span class="legende-eintrag"><span class="balken lager"></span><span data-i18n>vom Lager</span></span>
+            <span class="legende-hinweis" data-i18n>Je nach Wetter und Ernte kann es sich verschieben.</span>
+          </div>
+        </section>
+
+        <aside class="saison-spalte">
+          <section class="saison-monat-karte" aria-live="polite">
+            <h2 id="saison-monat-titel">Im Jänner</h2>
+            <ul id="saison-monat-liste" class="saison-monat-liste"></ul>
+          </section>
+          <section class="saison-jahr-karte">
+            <h3 data-i18n>Das ganze Jahr</h3>
+            <div id="saison-jahr" class="chips"></div>
+          </section>
+          <button id="saison-einkauf" type="button" class="btn-haupt saison-einkauf" data-i18n>Zum Einkauf</button>
+        </aside>
+      </div>
     </div>
   </div>
 

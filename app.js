@@ -189,6 +189,27 @@ const ENGLISCH = {
     "Many messages have already been sent from this device today. Please try again tomorrow.",
   "Danke für Ihre Nachricht!": "Thank you for your message!",
   "Wir lesen jede Nachricht und kümmern uns darum.": "We read every message and take care of it.",
+  // Saisonkalender
+  "Saisonkalender": "Seasonal calendar",
+  "Jetzt im {monat}:": "Now in {monat}:",
+  "frisch": "fresh",
+  "vom Lager": "from storage",
+  "Ganzes Jahr ansehen ›": "See the whole year ›",
+  "Was gibt's wann bei uns? Tippen Sie auf einen Monat.": "What's in season when? Tap a month.",
+  "frisch geerntet": "freshly harvested",
+  "Je nach Wetter und Ernte kann es sich verschieben.": "Depending on weather and harvest, this may shift.",
+  "Im {monat}": "In {monat}",
+  "Das ganze Jahr": "All year round",
+  "Zum Einkauf": "Go shopping",
+  "In diesem Monat gibt es nichts aus der Saison-Liste.": "Nothing from the seasonal list this month.",
+  "{name} im {monat}: {art}": "{name} in {monat}: {art}",
+  // Namen im Saisonkalender, die es so nicht in products.json gibt
+  "Zwiebel": "Onions",
+  "Jungzwiebel": "Spring onions",
+  "Chinakohl": "Napa cabbage",
+  "Säfte": "Juices",
+  "Milch & Joghurt": "Milk & yoghurt",
+  "Eier": "Eggs",
 };
 
 // Text in der aktuellen Sprache. {platzhalter} werden mit "werte" ersetzt.
@@ -960,6 +981,7 @@ function zuruecksetzen() {
   ladeProdukte(); // Preise im Hintergrund auffrischen, falls sie geändert wurden
   ladeInhalte();
   ladeSeiten();
+  ladeSaison();
 }
 
 // ===== Startseite & "Kommt bald" =====
@@ -970,14 +992,17 @@ function zeigeStartseite() {
   schliesseTastatur();
   bald.hidden = true;
   seite.hidden = true;
+  saisonSeite.hidden = true;
   startseite.hidden = false;
   startseite.scrollTop = 0;
+  zeichneSaisonLeiste();   // immer der aktuelle Monat
 }
 
 function zeigeRechner() {
   startseite.hidden = true;
   bald.hidden = true;
   seite.hidden = true;
+  saisonSeite.hidden = true;
   waehleTab(START_TAB);
   aktivitaet();
 }
@@ -988,6 +1013,7 @@ function zeigeBald(titel) {
   $("bald-titel").textContent = t(titel);
   startseite.hidden = true;
   seite.hidden = true;
+  saisonSeite.hidden = true;
   bald.hidden = false;
 }
 
@@ -1042,6 +1068,7 @@ function zeigeSeite(art) {
   aktuelleSeite = art;
   startseite.hidden = true;
   bald.hidden = true;
+  saisonSeite.hidden = true;
   seite.hidden = false;
   if (art === "ueber") zeigeUeberUns();
   else if (art === "impressum") zeigeImpressum();
@@ -1397,6 +1424,147 @@ setInterval(() => {
   }
 }, 500);
 
+// ===== Saisonkalender (Daten aus saison.json) =====
+// Monate: 1 = Jänner … 12 = Dezember. "frisch" = grün, "vom Lager" = orange.
+const MONATE = {
+  de: ["Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+  en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+};
+const MONATE_KURZ = {
+  de: ["Jän", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+};
+const saisonSeite = $("saison");
+let saison = { produkte: [], ganzjaehrig: [] };
+let saisonMonat = aktuellerMonat();   // im Kalender gewählter Monat
+
+function aktuellerMonat() {
+  return new Date().getMonth() + 1;   // Datum des Geräts
+}
+function monatName(m) {
+  return MONATE[sprache][m - 1];
+}
+// Name in der aktuellen Sprache: zuerst products.json (name_en), sonst Wörterbuch
+function saisonName(name) {
+  const p = pName(name);
+  return p !== name ? p : t(name);
+}
+function saisonArt(p, m) {
+  return p.frisch.includes(m) ? "frisch" : p.lager.includes(m) ? "lager" : "";
+}
+
+async function ladeSaison() {
+  try {
+    const antwort = await fetch("saison.json", { cache: "no-store" });
+    if (!antwort.ok) throw new Error("HTTP " + antwort.status);
+    const daten = await antwort.json();
+    const monate = (l) => (Array.isArray(l) ? l.filter((m) => Number.isInteger(m) && m >= 1 && m <= 12) : []);
+    saison = {
+      produkte: (daten.produkte || [])
+        .filter((p) => p && typeof p.name === "string" && p.name.trim())
+        .map((p) => ({ name: p.name, frisch: monate(p.frisch), lager: monate(p.lager) })),
+      ganzjaehrig: (daten.ganzjaehrig || []).filter((x) => typeof x === "string" && x.trim()),
+    };
+  } catch (fehler) {
+    console.warn("saison.json konnte nicht geladen werden:", fehler);
+  }
+  zeichneSaisonLeiste();
+  if (!saisonSeite.hidden) zeichneSaisonkalender();
+}
+
+// --- Leiste auf der Startseite: was es JETZT gibt ---
+function zeichneSaisonLeiste() {
+  const leiste = $("saison-leiste");
+  leiste.hidden = saison.produkte.length === 0;
+  if (leiste.hidden) return;
+  const m = aktuellerMonat();
+  $("saison-jetzt").textContent = t("Jetzt im {monat}:", { monat: monatName(m) });
+  for (const art of ["frisch", "lager"]) {
+    const zeile = $(art === "frisch" ? "sl-frisch" : "sl-lager");
+    const namen = saison.produkte.filter((p) => saisonArt(p, m) === art).map((p) => saisonName(p.name));
+    zeile.hidden = namen.length === 0;   // leere Zeile ausblenden
+    zeile.querySelector(".chips").replaceChildren(...namen.map((n) => neu("span", `chip chip-${art}`, n)));
+  }
+}
+
+function zeigeSaison() {
+  startseite.hidden = true;
+  bald.hidden = true;
+  seite.hidden = true;
+  saisonMonat = aktuellerMonat();
+  zeichneSaisonkalender();
+  saisonSeite.hidden = false;
+  saisonSeite.scrollTop = 0;
+  // Schmaler Bildschirm (Tabelle wischt seitlich): gleich zum aktuellen Monat scrollen
+  const rahmen = saisonSeite.querySelector(".saison-rahmen");
+  const aktiv = rahmen.querySelector(".saison-monat.aktiv");
+  rahmen.scrollLeft = aktiv ? Math.max(0, aktiv.offsetLeft - rahmen.clientWidth / 2) : 0;
+  aktivitaet();
+}
+
+// --- Kalenderseite ---
+function zeichneSaisonkalender() {
+  const tabelle = $("saison-tabelle");
+  tabelle.replaceChildren(neu("span", "saison-ecke"));
+
+  // Kopfzeile: 12 Monatsknöpfe (stehen im selben Raster wie die Balken)
+  for (let m = 1; m <= 12; m++) {
+    const b = neu("button", "saison-monat" + (m === saisonMonat ? " aktiv" : ""), MONATE_KURZ[sprache][m - 1]);
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(m === saisonMonat));
+    b.setAttribute("aria-label", monatName(m));
+    b.addEventListener("click", () => {
+      saisonMonat = m;
+      zeichneSaisonkalender();
+      aktivitaet();
+    });
+    tabelle.append(b);
+  }
+
+  // Eine Zeile pro Produkt: Name + 12 Zellen mit Balken
+  saison.produkte.forEach((p) => {
+    const name = saisonName(p.name);
+    tabelle.append(neu("span", "saison-name", name));
+    for (let m = 1; m <= 12; m++) {
+      const art = saisonArt(p, m);
+      const zelle = neu("span", "saison-zelle" + (m === saisonMonat ? " aktiv" : ""));
+      if (art) {
+        // Balken laufen ohne Lücke durch, solange die Art gleich bleibt
+        const links = m > 1 && saisonArt(p, m - 1) === art;
+        const rechts = m < 12 && saisonArt(p, m + 1) === art;
+        zelle.append(neu("span", `balken ${art}${links ? " offen-links" : ""}${rechts ? " offen-rechts" : ""}`));
+        zelle.setAttribute("role", "img");
+        zelle.setAttribute("aria-label", t("{name} im {monat}: {art}", {
+          name, monat: monatName(m), art: t(art === "frisch" ? "frisch" : "vom Lager"),
+        }));
+      }
+      tabelle.append(zelle);
+    }
+  });
+
+  // Rechte Spalte: Produkte im gewählten Monat
+  $("saison-monat-titel").textContent = t("Im {monat}", { monat: monatName(saisonMonat) });
+  const liste = $("saison-monat-liste");
+  liste.replaceChildren();
+  const imMonat = ["frisch", "lager"].flatMap((art) =>
+    saison.produkte.filter((p) => saisonArt(p, saisonMonat) === art).map((p) => ({ name: saisonName(p.name), art })));
+  if (imMonat.length === 0) {
+    liste.append(neu("li", "saison-leer", t("In diesem Monat gibt es nichts aus der Saison-Liste.")));
+  }
+  imMonat.forEach(({ name, art }) => {
+    const li = neu("li");
+    li.append(neu("span", "", name), neu("span", `chip chip-${art}`, t(art === "frisch" ? "frisch" : "vom Lager")));
+    liste.append(li);
+  });
+
+  // Das ganze Jahr
+  $("saison-jahr").replaceChildren(...saison.ganzjaehrig.map((n) => neu("span", "chip chip-jahr", saisonName(n))));
+}
+
+$("saison-leiste").addEventListener("click", zeigeSaison);
+$("saison-start").addEventListener("click", zeigeStartseite);
+$("saison-einkauf").addEventListener("click", zeigeRechner);
+
 // ===== Sprachknopf "English" / "Deutsch" =====
 function setzeSprache(neueSprache) {
   sprache = neueSprache;
@@ -1406,6 +1574,8 @@ function setzeSprache(neueSprache) {
   if (!el.tastatur.hidden) $("tastatur-titel").textContent = tastaturProdukt ? pName(tastaturProdukt) : t("Anderer Preis");
   if (!bald.hidden && baldTitel) $("bald-titel").textContent = t(baldTitel);
   if (!seite.hidden && aktuelleSeite) zeigeSeite(aktuelleSeite);   // offene Seite neu aufbauen
+  zeichneSaisonLeiste();
+  if (!saisonSeite.hidden) zeichneSaisonkalender();
   aktivitaet();
 }
 document.querySelectorAll("[data-sprache-knopf]").forEach((b) =>
@@ -1417,6 +1587,7 @@ uebersetzeSeite();
 ladeProdukte();
 ladeInhalte();
 ladeSeiten();
+ladeSaison();
 hintergrundSenden(); // falls vom letzten Mal noch Meldungen warten oder der Wochenbericht fällig ist
 
 // Offline-Funktion (Service Worker) aktivieren

@@ -1,0 +1,14 @@
+{
+  "produkte": [
+    { "name": "Erdäpfel",      "frisch": [7,8,9,10],  "lager": [11,12,1,2,3,4] },
+    { "name": "Zwiebel",       "frisch": [8,9,10],    "lager": [11,12,1,2,3,4] },
+    { "name": "Jungzwiebel",   "frisch": [4,5,6],     "lager": [] },
+    { "name": "Knoblauch",     "frisch": [7,8],       "lager": [9,10,11,12,1,2,3] },
+    { "name": "Chinakohl",     "frisch": [10,11,12],  "lager": [1,2] },
+    { "name": "Pak Choi",      "frisch": [10,11,12],  "lager": [1,2] },
+    { "name": "Speisekürbis",  "frisch": [9,10,11],   "lager": [12,1,2] },
+    { "name": "Süßkartoffeln", "frisch": [10,11],     "lager": [12,1] },
+    { "name": "Äpfel",         "frisch": [9,10],      "lager": [11,12,1,2,3,4,5] }
+  ],
+  "ganzjaehrig": ["Säfte", "Öle", "Honig", "Milch & Joghurt", "Eier", "Eingelegtes", "Müsli"]
+}

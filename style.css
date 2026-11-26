@@ -748,26 +748,27 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   max-width: 1220px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
 }
 
-.start-kopf { display: flex; align-items: center; gap: 28px; }
-.start-logo { display: block; height: 150px; width: auto; flex: none; }
-.start-kopf h1 { font-size: 56px; line-height: 1.05; }
-.start-untertitel { margin: 8px 0 0; font-size: 24px; font-weight: 600; color: var(--tinte-mild); }
+.start-kopf { display: flex; align-items: center; gap: 24px; }
+.start-logo { display: block; height: 120px; width: auto; flex: none; }
+.start-kopf h1 { font-size: 50px; line-height: 1.05; }
+.start-untertitel { margin: 6px 0 0; font-size: 22px; font-weight: 600; color: var(--tinte-mild); }
+.start-kopf .btn-sprache { margin-left: auto; align-self: flex-start; }
 
 .start-kacheln {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
+  gap: 22px;
   padding: 0 6px 6px 0;      /* Platz für den Stempel-Schatten */
 }
 .start-kachel {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
-  padding: 22px 24px 24px;
+  gap: 8px;
+  padding: 24px;
   border: var(--rand);
   border-radius: 16px;
   box-shadow: 6px 6px 0 var(--tinte);
@@ -780,8 +781,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .start-gruen { background: var(--gruen); color: var(--weiss); }
 
 .start-kachel svg {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   fill: none;
   stroke: currentColor;
   stroke-width: 3.5;
@@ -791,7 +792,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .start-titel {
   font-family: var(--schrift-titel);
   font-weight: 700;
-  font-size: 40px;
+  font-size: 36px;
   line-height: 1.05;
   hyphens: manual;
 }
@@ -1043,7 +1044,6 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .btn-sprache:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--tinte); }
 .kopf .btn-sprache { margin-left: auto; }
 .kopf .btn-sprache + .btn-startseite { margin-left: 0; }
-.start-sprache { display: flex; justify-content: flex-end; margin-bottom: -12px; }
 @media (max-width: 520px) {
   .kopf .btn-sprache { display: none; }               /* am Handy: Umschalten auf der Startseite */
   .kopf .btn-sprache + .btn-startseite { margin-left: auto; }
@@ -1071,6 +1071,171 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .wechsel-schein[aria-pressed="true"] { background: var(--orange); }
 .wechsel-ergebnis { margin: 12px 0 0; font-size: 1.4rem; font-weight: 700; }
 .wechsel-ergebnis strong { font-family: var(--schrift-titel); font-size: 2.6rem; color: var(--gruen); white-space: nowrap; }
+
+/* ===== Saison-Leiste (Startseite) ===== */
+.saison-leiste {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+  padding: 16px 22px;
+  border: var(--rand);
+  border-radius: 16px;
+  background: var(--papier);
+  color: var(--tinte);
+  box-shadow: 6px 6px 0 var(--tinte);
+  text-align: left;
+  transition: transform .06s ease, box-shadow .06s ease;
+}
+.saison-leiste[hidden] { display: none; }
+.saison-leiste:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--tinte); }
+.saison-leiste > svg {
+  width: 56px; height: 56px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
+}
+.sl-kopf { display: flex; flex-direction: column; flex: none; }
+.sl-titel { font-family: var(--schrift-titel); font-weight: 700; font-size: 28px; line-height: 1.1; }
+.sl-monat { font-size: 1.1rem; font-weight: 600; color: var(--tinte-mild); }
+.sl-chips { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.chip-zeile { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.chip-zeile[hidden] { display: none; }
+.chip-label { min-width: 92px; font-weight: 700; color: var(--tinte-mild); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 3px 12px;
+  border: 2px solid var(--tinte);
+  border-radius: 999px;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.chip-frisch { background: var(--gruen); color: var(--weiss); }
+.chip-lager { background: var(--orange); color: var(--tinte); }
+.chip-jahr { background: var(--papier-hell); color: var(--tinte); }
+.sl-mehr {
+  flex: none;
+  padding: 12px 18px;
+  border: var(--rand);
+  border-radius: var(--rundung);
+  background: var(--papier-hell);
+  font-weight: 700;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  box-shadow: 3px 3px 0 var(--tinte);
+}
+
+/* ===== Saisonkalender (eigene Seite) ===== */
+.saison {
+  position: fixed;
+  inset: 0;
+  z-index: 28;               /* wie die Startseite */
+  overflow-y: auto;
+  padding: 20px 32px 36px;
+  background: var(--kraft);
+}
+.saison[hidden] { display: none; }
+.saison-inhalt { max-width: 1220px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.saison-kopf { display: flex; align-items: center; gap: 20px; }
+.saison-kopf .btn-startseite { margin-left: 0; }
+.saison-logo { display: block; height: 72px; width: auto; }
+.saison-kopf h1 { font-size: 44px; line-height: 1.05; }
+.saison-untertitel { margin: 4px 0 0; font-size: 1.2rem; font-weight: 600; color: var(--tinte-mild); }
+
+.saison-raster { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.saison-raster > * { min-width: 0; }   /* Karten nicht breiter als der Bildschirm – nur die Tabelle wischt seitlich */
+.saison-karte, .saison-jahr-karte, .saison-monat-karte {
+  padding: 18px 20px 20px;
+  border: var(--rand);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 var(--tinte);
+  background: var(--papier);
+}
+.saison-rahmen { position: relative; overflow-x: auto; padding-bottom: 4px; }   /* am Handy seitlich wischen */
+
+/* Tabelle: Namensspalte + 12 Monate, Monatsknöpfe in derselben Spalte wie die Balken */
+.saison-tabelle {
+  display: grid;
+  grid-template-columns: minmax(130px, 1.5fr) repeat(12, minmax(44px, 1fr));
+  min-width: 700px;
+}
+.saison-monat {
+  height: 48px;
+  margin: 0 2px 8px;
+  padding: 0;
+  border: 2px solid var(--tinte);
+  border-radius: 10px;
+  background: var(--papier-hell);
+  color: var(--tinte);
+  font-weight: 700;
+  font-size: 1rem;
+}
+.saison-monat.aktiv { background: var(--tinte); color: var(--papier); }
+.saison-name, .saison-zelle { border-top: 1px dashed rgba(122, 78, 45, .45); }
+.saison-name {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px 6px 0;
+  font-family: var(--schrift-titel);
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 1.1;
+}
+.saison-zelle { display: flex; align-items: center; min-height: 46px; }
+/* Namensspalte bleibt beim seitlichen Wischen (Handy) stehen */
+.saison-name, .saison-ecke { position: sticky; left: 0; z-index: 1; background: var(--papier); }
+.saison-zelle.aktiv { background: rgba(232, 150, 30, .18); }   /* gewählter Monat */
+.balken {
+  display: block;
+  flex: 1;
+  height: 20px;
+  margin: 0 4px;
+  border: 2px solid var(--tinte);
+  border-radius: 999px;
+}
+.balken.frisch { background: var(--gruen); }
+.balken.lager { background: var(--orange); }
+.balken.offen-links { margin-left: 0; border-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.balken.offen-rechts { margin-right: 0; border-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+
+.saison-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; margin-top: 16px; }
+.legende-eintrag { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.legende-eintrag .balken { flex: none; width: 44px; margin: 0; }
+.legende-hinweis { flex-basis: 100%; color: var(--tinte-mild); }
+
+/* Rechte Spalte */
+.saison-spalte { display: flex; flex-direction: column; gap: 20px; }
+.saison-monat-karte { background: var(--gruen); color: var(--weiss); }
+.saison-monat-karte h2 { color: var(--weiss); font-size: 32px; margin-bottom: 8px; }
+.saison-monat-liste { list-style: none; margin: 0; padding: 0; }
+.saison-monat-liste li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, .45);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.saison-monat-liste li:last-child { border-bottom: 0; }
+.saison-monat-karte .chip-frisch { background: var(--weiss); color: var(--gruen); }   /* auf grüner Karte sichtbar */
+.saison-jahr-karte h3 { font-size: 1.6rem; margin-bottom: 10px; }
+.saison-einkauf { width: 100%; min-height: 68px; font-size: 1.35rem; }
+
+/* Handy / schmal */
+@media (max-width: 899px) {
+  .saison-leiste { flex-wrap: wrap; gap: 14px; }
+  .sl-chips { flex-basis: 100%; }
+  .sl-mehr { flex: 1 1 100%; text-align: center; }
+  .saison { padding: 12px 12px 28px; }
+  .saison-kopf { flex-wrap: wrap; gap: 12px; }
+  .saison-kopf h1 { font-size: 32px; }
+  .saison-raster { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .saison-logo { display: none; }
+  .start-kopf .btn-sprache { align-self: center; }
+}
 
 /* Hinweis auf Englisch: Seite nur auf Deutsch */
 .nur-deutsch {

@@ -117,6 +117,7 @@ function main() {
   daten.produkte.forEach((p, i) => pruefeProdukt(p, i + 1));
   const produktNamen = daten.produkte.filter((p) => p && typeof p.name === "string").map((p) => p.name);
   const anzahl = pruefeTexte(produktNamen);
+  anzahl.saison = pruefeSaison();
 
   if (fehler.length) {
     console.error(`✗ ${fehler.length} Fehler gefunden:`);
@@ -126,6 +127,40 @@ function main() {
   }
   console.log(`✓ products.json ist in Ordnung (${daten.produkte.length} Produkte geprüft).`);
   console.log(`✓ rezepte.json und geschichten.json sind in Ordnung (${anzahl.rezepte} Rezepte, ${anzahl.geschichten} Geschichten).`);
+  console.log(`✓ saison.json ist in Ordnung (${anzahl.saison} Produkte im Saisonkalender).`);
+}
+
+// ===== saison.json (Saisonkalender) =====
+function pruefeSaison() {
+  const s = leseJson("saison.json");
+  if (!s) return 0;
+  if (!Array.isArray(s.produkte)) {
+    fehler.push('saison.json muss so aufgebaut sein: { "produkte": [ ... ], "ganzjaehrig": [ ... ] }');
+    return 0;
+  }
+  const monatsListe = (wer, feld, liste) => {
+    if (liste === undefined) return [];
+    if (!Array.isArray(liste)) {
+      fehler.push(`${wer}: "${feld}" muss eine Liste von Monaten sein, z. B. [7,8,9].`);
+      return [];
+    }
+    const falsch = liste.filter((m) => !Number.isInteger(m) || m < 1 || m > 12);
+    if (falsch.length) fehler.push(`${wer}: "${feld}" enthält ${falsch.join(", ")} – erlaubt sind nur die Monate 1 bis 12 (1 = Jänner).`);
+    return liste.filter((m) => Number.isInteger(m));
+  };
+  s.produkte.forEach((p, i) => {
+    const wer = `saison.json, ${p && istText(p.name) ? `"${p.name}"` : `Produkt Nr. ${i + 1}`}`;
+    if (!p || !istText(p.name)) fehler.push(`${wer}: "name" fehlt.`);
+    if (!p) return;
+    const frisch = monatsListe(wer, "frisch", p.frisch);
+    const lager = monatsListe(wer, "lager", p.lager);
+    const doppelt = frisch.filter((m) => lager.includes(m));
+    if (doppelt.length) fehler.push(`${wer}: Monat ${[...new Set(doppelt)].join(", ")} steht bei "frisch" UND "lager" – bitte nur bei einem.`);
+  });
+  if (s.ganzjaehrig !== undefined && (!Array.isArray(s.ganzjaehrig) || !s.ganzjaehrig.every(istText))) {
+    fehler.push('saison.json: "ganzjaehrig" muss eine Liste von Namen sein, z. B. ["Säfte", "Öle"].');
+  }
+  return s.produkte.length;
 }
 
 // ===== rezepte.json und geschichten.json (Texte für die Startseite) =====
