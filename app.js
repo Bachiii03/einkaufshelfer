@@ -765,9 +765,9 @@ const seite = $("seite");
 const seiteTitel = $("seite-titel");
 const seiteKoerper = $("seite-koerper");
 const seiteZurueck = $("seite-zurueck");
-const SEITEN_TITEL = { rezepte: "Rezepte", neuigkeiten: "Neuigkeiten & Presse", ueber: "Über uns" };
+const SEITEN_TITEL = { rezepte: "Rezepte", neuigkeiten: "Neuigkeiten & Presse", ueber: "Über uns", impressum: "Impressum & Datenschutz" };
 let rezepte = [];
-let geschichten = { sichtbar: false, neuigkeiten: [], ueber_uns: null };
+let geschichten = { sichtbar: false, neuigkeiten: [], ueber_uns: null, impressum: null, datenschutz: null };
 let rezeptDerWoche = "";   // aus inhalte.json – dieses Rezept bekommt ein Abzeichen
 let aktuelleSeite = "";
 
@@ -787,6 +787,8 @@ async function ladeSeiten() {
       sichtbar: daten.neuigkeiten_sichtbar === true,   // false → "Neuigkeiten & Presse" zeigt "Kommt bald"
       neuigkeiten: (daten.neuigkeiten || []).filter((g) => g && g.titel),
       ueber_uns: daten.ueber_uns || null,
+      impressum: daten.impressum || null,
+      datenschutz: daten.datenschutz || null,
     };
   } catch (fehler) {
     console.warn("geschichten.json konnte nicht geladen werden:", fehler);
@@ -801,6 +803,7 @@ function zeigeSeite(art) {
   bald.hidden = true;
   seite.hidden = false;
   if (art === "ueber") zeigeUeberUns();
+  else if (art === "impressum") zeigeImpressum();
   else zeichneUebersicht();
   aktivitaet();
 }
@@ -955,6 +958,22 @@ function zeigeUeberUns() {
     });
     artikel.append(partner);
   }
+  seiteKoerper.append(artikel);
+}
+
+// --- Impressum & Datenschutz ---
+function zeigeImpressum() {
+  seiteAnfang(SEITEN_TITEL.impressum, false);
+  const bloecke = [geschichten.impressum, geschichten.datenschutz].filter((b) => b && Array.isArray(b.abschnitte));
+  if (!bloecke.length) return leerHinweis();
+  const artikel = neu("article", "artikel artikel-text rechtliches");
+  bloecke.forEach((block) => {
+    artikel.append(neu("h2", "artikel-titel", block.titel || ""));
+    block.abschnitte.forEach((a) => {
+      if (a.titel) artikel.append(neu("h3", "", a.titel));
+      (a.text || []).forEach((t) => artikel.append(neu("p", "", t)));
+    });
+  });
   seiteKoerper.append(artikel);
 }
 

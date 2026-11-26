@@ -1027,6 +1027,12 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .partner li { display: flex; flex-direction: column; padding: 10px 14px; border: 2px dashed var(--braun); border-radius: var(--rundung); font-size: 1.1rem; }
 .partner li span { color: var(--tinte-mild); }
 
+/* Impressum & Datenschutz */
+.rechtliches .artikel-titel + h3 { margin-top: 12px; }
+.rechtliches h2.artikel-titel:not(:first-child) { margin-top: 40px; padding-top: 24px; border-top: 2px dashed var(--braun); }
+.rechtliches h3 { font-size: 1.35rem; margin: 22px 0 4px; }
+.rechtliches p { margin: 2px 0 0; font-size: 1.15rem; line-height: 1.45; overflow-wrap: anywhere; }
+
 /* Handy / schmal */
 @media (max-width: 899px) {
   .seite { padding: 12px 12px 32px; }

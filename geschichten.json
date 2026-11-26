@@ -72,5 +72,44 @@
       { "produkt": "Knoblauch", "betrieb": "Christoph Labschütz", "ort": "Schmida" },
       { "produkt": "Knoblauchpaste", "betrieb": "Bio-Hof Schnepps", "ort": "Bruderndorf" }
     ]
+  },
+
+  "impressum": {
+    "titel": "Impressum",
+    "abschnitte": [
+      { "titel": "Medieninhaber und Betreiber", "text": ["Landwirtschaftlicher Betrieb Michael Bachl", "Untere Dorfstraße 17, 2004 Streitdorf"] },
+      { "titel": "Kontakt", "text": ["Telefon: 0676/9748835", "E-Mail: bachls.feldgemuese@gmail.com", "E-Mail: office@bachls-feldgemuese.at"] },
+      { "titel": "Unternehmensgegenstand", "text": ["Landwirtschaft und Direktvermarktung landwirtschaftlicher Produkte"] },
+      { "titel": "Mitgliedschaft und Zertifizierung", "text": ["Mitglied der Landes-Landwirtschaftskammer Niederösterreich", "AMA-GAP-zertifizierter landwirtschaftlicher Betrieb"] },
+      { "titel": "Blattlinie", "text": ["Unser Anliegen: Vermarktung landwirtschaftlicher Produkte sowie Information über unsere Produkte."] },
+      { "titel": "Gestaltung und Bilder", "text": [
+        "Diese Seite wurde mit Unterstützung von KI (Claude) erstellt. Alle Inhalte wurden von uns geprüft.",
+        "Logo: Bachl's Feldgemüse. Produkt-Icons und Grafiken: eigene Gestaltung.",
+        "Schriften: Zilla Slab und Source Sans 3 (SIL Open Font License)."
+      ] }
+    ]
+  },
+
+  "datenschutz": {
+    "titel": "Datenschutz",
+    "abschnitte": [
+      { "titel": "Verantwortlich", "text": ["Landwirtschaftlicher Betrieb Michael Bachl, Untere Dorfstraße 17, 2004 Streitdorf, E-Mail: bachls.feldgemuese@gmail.com"] },
+      { "titel": "Keine Cookies, kein Tracking", "text": ["Diese Seite verwendet keine Cookies, keine Analyse- oder Werbedienste und lädt keine Inhalte von fremden Servern."] },
+      { "titel": "Hosting", "text": [
+        "Die Seite wird über GitHub Pages bereitgestellt (GitHub, Inc., USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten wie IP-Adresse, Zeitpunkt und Browsertyp, um die Seite auszuliefern und vor Missbrauch zu schützen. Rechtsgrundlage ist unser berechtigtes Interesse an einer sicheren Bereitstellung (Art. 6 Abs. 1 lit. f DSGVO).",
+        "Dabei können Daten in die USA übermittelt werden. Nähere Informationen: GitHub-Datenschutzerklärung (docs.github.com/site-policy/privacy-policies)."
+      ] },
+      { "titel": "Speicherung auf Ihrem Gerät", "text": ["Damit die Seite auch ohne Internet funktioniert, speichert Ihr Browser die Seiteninhalte lokal. Auf dem Tablet im Hofladen werden außerdem die Bewertungen (Smileys) anonym gezählt. Personenbezogene Daten werden dabei nicht gespeichert."] },
+      { "titel": "Meldung „Etwas gefehlt?“", "text": [
+        "Wenn Sie nach dem Einkauf melden, dass etwas gefehlt hat, schicken wir die ausgewählten Produkte, Ihren optionalen Text und den Zeitpunkt über den Dienst Web3Forms (web3forms.com) per E-Mail an uns. Wir fragen dabei keinen Namen und keine Kontaktdaten ab – bitte tragen Sie auch keine persönlichen Daten ein.",
+        "Ohne Internet wird die Meldung kurz auf dem Gerät gespeichert und später gesendet."
+      ] },
+      { "titel": "Kontakt per E-Mail oder Telefon", "text": ["Wenn Sie uns kontaktieren, verwenden wir Ihre Angaben nur, um Ihre Anfrage zu beantworten."] },
+      { "titel": "Ihre Rechte", "text": [
+        "Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Schreiben Sie uns dazu einfach eine E-Mail.",
+        "Sie können sich außerdem bei der Österreichischen Datenschutzbehörde beschweren (www.dsb.gv.at)."
+      ] },
+      { "titel": "Stand", "text": ["November 2026"] }
+    ]
   }
 }

@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0A6B2D">
+  <!-- Schutzregeln (Content Security Policy): Der Browser lädt nur Dateien von dieser Website
+       und schickt Daten nur an Web3Forms ("Etwas gefehlt? Hier melden"). Alles andere wird blockiert. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
   <title>Einkaufshelfer – Bachl's Feldgemüse</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -222,6 +225,7 @@
       <div class="start-unten">
         <button type="button" class="btn-zweit start-klein" data-seite="ueber">Über uns</button>
         <button type="button" class="btn-zweit start-klein" data-bald="Wünsche &amp; Feedback">Wünsche &amp; Feedback</button>
+        <button type="button" class="btn-zweit start-klein" data-seite="impressum">Impressum &amp; Datenschutz</button>
       </div>
     </div>
   </div>

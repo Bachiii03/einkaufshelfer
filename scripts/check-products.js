@@ -177,6 +177,17 @@ function pruefeTexte(produktNamen) {
     if (g.ueber_uns !== undefined && (!g.ueber_uns || !istTextListe(g.ueber_uns.text))) {
       fehler.push('geschichten.json: "ueber_uns" braucht eine Liste "text" mit mindestens einem Absatz.');
     }
+    for (const teil of ["impressum", "datenschutz"]) {
+      if (g[teil] === undefined) continue;
+      const b = g[teil];
+      if (!b || !Array.isArray(b.abschnitte) || b.abschnitte.length === 0) {
+        fehler.push(`geschichten.json: "${teil}" braucht eine Liste "abschnitte".`);
+        continue;
+      }
+      b.abschnitte.forEach((a, i) => {
+        if (!a || !istTextListe(a.text)) fehler.push(`geschichten.json, ${teil}, Abschnitt ${a && istText(a.titel) ? `"${a.titel}"` : i + 1}: braucht eine Liste "text".`);
+      });
+    }
   }
   return anzahl;
 }
