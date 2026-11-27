@@ -121,6 +121,9 @@ const ENGLISCH = {
   "z. B. Paprika": "e.g. peppers",
   "Abbrechen": "Cancel",
   // Leergut
+  "Flasche oder Glas": "Bottle or jar",
+  "Flasche": "Bottle",
+  "Glas": "Jar",
   "Leergut zurückgeben": "Return empties",
   "Was bringen Sie zurück?": "What are you returning?",
   "Der Einsatz wird von Ihrer Summe abgezogen.": "The deposit is deducted from your total.",
@@ -472,10 +475,10 @@ function zeileDetail(z) {
 }
 
 // ===== Leergut zurückgeben (Einsatz) =====
-// Produkte mit "einsatz" in products.json bilden Rückgabe-Arten: gleiche Art ("Flasche"/"Glas"),
-// gleicher Betrag und gleiche Kategorie → eine Zeile (Apfel- + Traubensaft = "Saftflasche").
+// Alle Produkte mit gleichem "einsatz"-Betrag in products.json werden zu EINER Zeile zusammengefasst
+// (z. B. "Flasche oder Glas – 0,50 €"), weil es beim Zurückgeben egal ist, was drin war.
+// Gibt es einmal einen anderen Betrag (z. B. 1,00 €), kommt dafür automatisch eine zweite Zeile.
 // Im Warenkorb wird Leergut eine eigene Zeile mit negativem Betrag.
-const EINSATZ_ART_EN = { Flasche: "bottle", Glas: "jar" };
 const leergutDialog = $("leergut");
 const leergutListe = $("leergut-liste");
 let leergutEntwurf = {};   // im Dialog: Schlüssel → Anzahl (erst mit "Fertig" übernommen)
@@ -484,66 +487,31 @@ function baueLeergutArten(alle) {
   const arten = [];
   alle.forEach((p) => {
     if (!p || !p.name || typeof p.einsatz !== "number" || !(p.einsatz > 0)) return;
-    const art = p.einsatz_art === "Glas" ? "Glas" : "Flasche";
     const cent = Math.round(p.einsatz * 100);
-    const schluessel = `leergut|${art}|${cent}|${p.kategorie || ""}`;
+    const schluessel = `leergut|${cent}`;
     let a = arten.find((x) => x.schluessel === schluessel);
     if (!a) {
-      a = { schluessel, art, cent, produkte: [], name: "", nameEn: "" };
+      a = { schluessel, cent, flasche: false, glas: false, produkte: [] };
       arten.push(a);
     }
-    a.produkte.push({ de: p.name, en: p.name_en || "" });
-    const eigen = (f) => (typeof p[f] === "string" ? p[f].trim() : "");
-    if (!a.name) a.name = eigen("einsatz_name");
-    if (!a.nameEn) a.nameEn = eigen("einsatz_name_en");
+    if (p.einsatz_art === "Glas") a.glas = true; else a.flasche = true;
+    a.produkte.push({ de: p.name.split(" ")[0], en: (p.name_en || "").split(",")[0].trim() });
   });
-  return arten;
+  return arten.sort((x, y) => x.cent - y.cent);
 }
 
-// Gemeinsame Endung, z. B. "Apfelsaft" + "Traubensaft" → "saft" (mindestens 3 Buchstaben)
-function gemeinsameEndung(woerter) {
-  let ende = "";
-  const kuerzestes = Math.min(...woerter.map((w) => w.length));
-  for (let i = 1; i < kuerzestes; i++) {
-    const teil = woerter[0].slice(-i).toLowerCase();
-    if (!woerter.every((w) => w.slice(-i).toLowerCase() === teil)) break;
-    ende = woerter[0].slice(-i);
-  }
-  return ende.length >= 3 ? ende : "";
-}
-// ["Apfel-", "Birnen-", "Traubensaft"] → "Apfel-, Birnen- oder Traubensaft"
+// ["Apfelsaft", "Vollmilch", "Honig"] → "Apfelsaft, Vollmilch oder Honig"
 function aufzaehlen(teile, oder) {
   return teile.length < 2 ? teile.join("") : `${teile.slice(0, -1).join(", ")} ${oder} ${teile[teile.length - 1]}`;
 }
-const gross = (w) => w.charAt(0).toUpperCase() + w.slice(1);
 
-// Name einer Rückgabe-Art in der aktuellen Sprache, z. B. { kurz: "Saftflasche", zusatz: "Apfel- oder Traubensaft" }
+// Name einer Rückgabe-Zeile in der aktuellen Sprache:
+// { kurz: "Flasche oder Glas", zusatz: "Apfelsaft, Traubensaft, Vollmilch oder Honig" }
 function leergutName(a) {
-  const eigener = sprache === "en" ? a.nameEn : a.name;
-  if (eigener) return { kurz: eigener, zusatz: "" };
-  if (sprache === "en") {
-    const namen = a.produkte.map((p) => p.en.split(",")[0].trim());
-    if (namen.every(Boolean)) {
-      const artEn = EINSATZ_ART_EN[a.art];
-      if (namen.length === 1) return { kurz: `${namen[0]} ${artEn}`, zusatz: "" };
-      const letzte = namen.map((n) => n.split(" ").pop().toLowerCase());
-      if (letzte.every((w) => w === letzte[0])) {
-        const vorne = namen.map((n) => n.split(" ").slice(0, -1).join(" ").toLowerCase());
-        return { kurz: `${gross(letzte[0])} ${artEn}`, zusatz: `${aufzaehlen(vorne, "or")} ${letzte[0]}` };
-      }
-      return { kurz: gross(artEn), zusatz: aufzaehlen(namen, "or") };
-    }
-    // ohne englische Produktnamen: deutsch weiter
-  }
-  const woerter = a.produkte.map((p) => p.de.split(" ")[0]);
-  const artKlein = a.art.toLowerCase();
-  if (woerter.length === 1) return { kurz: woerter[0] + artKlein, zusatz: "" };   // "Honigglas"
-  const ende = gemeinsameEndung(woerter);
-  if (ende) {
-    const vorne = woerter.map((w, i) => (i < woerter.length - 1 ? w.slice(0, -ende.length) + "-" : w));
-    return { kurz: gross(ende) + artKlein, zusatz: aufzaehlen(vorne, "oder") };
-  }
-  return { kurz: a.art, zusatz: aufzaehlen(woerter, "oder") };
+  const en = sprache === "en";
+  const kurz = a.flasche && a.glas ? t("Flasche oder Glas") : a.glas ? t("Glas") : t("Flasche");
+  const namen = a.produkte.map((p) => (en && p.en ? p.en : p.de));
+  return { kurz, zusatz: aufzaehlen(namen, en ? "or" : "oder") };
 }
 
 function oeffneLeergut() {

@@ -62,10 +62,10 @@ In **`products.json`** bei jedem Produkt mit Einsatz:
 
 - `einsatz`: Betrag in Euro mit **Punkt**, zwischen 0.05 und 5.
 - `einsatz_art`: `"Flasche"` oder `"Glas"` – Pflicht, sobald `einsatz` dasteht.
-- Produkte mit gleicher Art, gleichem Betrag und gleicher Kategorie werden im Dialog zu einer
-  Zeile zusammengefasst, z. B. Apfel- und Traubensaft → „Saftflasche (Apfel- oder Traubensaft)“.
-  Der Name entsteht automatisch („Honig“ + „Glas“ = „Honigglas“).
-- Optional eigener Name: `"einsatz_name": "Milchflasche"` und `"einsatz_name_en": "Milk bottle"`.
+- Alle Produkte mit **gleichem Betrag** sind im Dialog **eine Zeile**, z. B.
+  „Flasche oder Glas – 0,50 €“ (darunter klein: Apfelsaft, Traubensaft, Vollmilch oder Honig).
+  Kunden tippen einfach an, wie viele Flaschen/Gläser sie zurückbringen. Hat ein Produkt einen
+  anderen Einsatz (z. B. 1.00), kommt dafür automatisch eine eigene Zeile dazu.
 - Der Text bei `"info"` (z. B. „inkl. 0,50 € Einsatz“) bleibt, wie er ist – den bitte selbst
   mitändern, wenn sich der Einsatz ändert.
 - Auch ausverkaufte Produkte (`"verfuegbar": false`) bleiben im Leergut-Dialog, damit man ihre

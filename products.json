@@ -41,7 +41,7 @@
 
     { "name": "Vollmilch", "name_en": "Whole milk", "icon": "milch", "kategorie": "Milch & Eier", "beliebt": true, "verfuegbar": true,
       "info": "inkl. 0,50 € Einsatz", "info_en": "incl. €0.50 bottle deposit",
-      "einsatz": 0.50, "einsatz_art": "Flasche", "einsatz_name": "Milchflasche", "einsatz_name_en": "Milk bottle",
+      "einsatz": 0.50, "einsatz_art": "Flasche",
       "groessen": [ { "einheit": "1 Liter", "preis": 2.20 } ] },
     { "name": "Naturjoghurt", "name_en": "Natural yoghurt", "icon": "naturjoghurt", "kategorie": "Milch & Eier", "beliebt": false, "verfuegbar": true,
       "groessen": [ { "einheit": "250 ml", "preis": 1.20 } ] },

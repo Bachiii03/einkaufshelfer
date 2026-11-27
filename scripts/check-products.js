@@ -95,12 +95,6 @@ function pruefeProdukt(p, nr) {
     if (!EINSATZ_ARTEN.includes(p.einsatz_art)) melde(`"einsatz_art" "${p.einsatz_art}" gibt es nicht. Erlaubt: ${EINSATZ_ARTEN.map((a) => `"${a}"`).join(" oder ")}.`);
     if (p.einsatz === undefined) melde('hat "einsatz_art", aber keinen Betrag "einsatz" (z. B. 0.50).');
   }
-  for (const feld of ["einsatz_name", "einsatz_name_en"]) {
-    if (p[feld] === undefined) continue;
-    if (typeof p[feld] !== "string" || !p[feld].trim()) melde(`"${feld}" ist leer – entweder einen Namen eintragen oder die Zeile weglassen.`);
-    else if (p[feld].length > NAME_MAX) melde(`"${feld}" ist ${p[feld].length} Zeichen lang, erlaubt sind höchstens ${NAME_MAX}.`);
-    if (p.einsatz === undefined) melde(`hat "${feld}", aber keinen "einsatz".`);
-  }
 
   // Icon (optional) – muss es in bilder/icons.svg geben
   if (p.icon !== undefined && p.icon !== "") {
