@@ -128,7 +128,7 @@
       "Rund um die Uhr geöffnet – Selbstbedienung",
       "Etwas fehlt oder ist leer? Am Tablet auf ‚Etwas gefehlt?‘ tippen."
     ],
-    "video_hinweis": "[Text zur Videoüberwachung – bitte ausfüllen]"
+    "video_hinweis": "Die Ab-Hof-Hütte wird zum Schutz vor Diebstahl und Vandalismus videoüberwacht."
   },
   "so_gehts_en": {
     "titel": "How our farm shop works",
@@ -142,6 +142,6 @@
       "Open around the clock – self-service",
       "Something missing or empty? Tap ‘Something missing?’ on the tablet."
     ],
-    "video_hinweis": "[Text about video surveillance – please fill in]"
+    "video_hinweis": "The farm shop hut is under video surveillance to protect against theft and vandalism."
   }
 }
