@@ -143,6 +143,7 @@
   <!-- "Danke"-Seite nach "Fertig – zur Kassa" -->
   <div id="danke" class="danke" role="dialog" aria-modal="true" aria-labelledby="danke-titel" hidden>
     <div class="danke-karte">
+      <div class="deko deko-danke" aria-hidden="true"><span class="deko-ecke deko-links"></span><span class="deko-ecke deko-rechts"></span></div>
       <div class="danke-links">
         <picture>
           <source srcset="bilder/logo-400.webp" type="image/webp">
@@ -239,6 +240,8 @@
 
   <!-- ===== Startseite: erster Bildschirm und Ziel nach jedem Zurücksetzen ===== -->
   <div id="start" class="start" role="region" aria-labelledby="start-titel">
+    <!-- Jahreszeiten-Dekoration (hinter dem Inhalt, nur wenn ein Thema aktiv ist) -->
+    <div class="deko" aria-hidden="true"><span class="deko-ecke deko-links"></span><span class="deko-ecke deko-rechts"></span><span class="deko-rand"></span></div>
     <div class="start-inhalt">
       <header class="start-kopf">
         <picture>
@@ -248,6 +251,7 @@
         <div>
           <h1 id="start-titel" data-i18n>Willkommen in unserem Hofladen!</h1>
           <p class="start-untertitel" data-i18n>Selbstbedienung rund um die Uhr. Was möchten Sie tun?</p>
+          <p id="start-gruss" class="start-gruss" hidden></p>
         </div>
         <button type="button" class="btn-sprache" data-sprache-knopf lang="en">English</button>
       </header>
@@ -389,6 +393,8 @@
       <img src="bilder/logo-400.png" width="400" height="325" alt="">
       <p data-i18n>Zum Einkaufen bitte antippen</p>
     </div>
+    <div class="deko deko-schoner" aria-hidden="true"><span class="deko-ecke deko-links"></span><span class="deko-ecke deko-rechts"></span></div>
+    <div id="schnee" class="schnee" aria-hidden="true"></div>
     <div id="schoner-dimmer" class="schoner-dimmer"></div>
   </div>
 

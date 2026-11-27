@@ -154,6 +154,37 @@ function main() {
   console.log(`✓ inhalte.json ist in Ordnung (${schonerInfo}).`);
 }
 
+// ===== inhalte.json: Jahreszeiten-Look =====
+const THEMEN_NAMEN = ["winter", "fruehling", "ostern", "sommer", "herbst", "kuerbis", "advent"];
+const TAGE_IM_MONAT = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const istMonatTag = (text) => {
+  const m = /^(\d{2})-(\d{2})$/.exec(typeof text === "string" ? text : "");
+  return !!m && Number(m[1]) >= 1 && Number(m[1]) <= 12 && Number(m[2]) >= 1 && Number(m[2]) <= TAGE_IM_MONAT[Number(m[1]) - 1];
+};
+function pruefeJahreszeiten(j) {
+  if (j === undefined) return;
+  const wer = 'inhalte.json, "jahreszeiten"';
+  if (!j || typeof j !== "object" || Array.isArray(j)) return fehler.push(`${wer}: muss ein Block { "aktiv": true, "themen": { ... } } sein.`);
+  if (typeof j.aktiv !== "boolean") fehler.push(`${wer}: "aktiv" muss true oder false sein (ohne Anführungszeichen).`);
+  if (!j.themen || typeof j.themen !== "object" || Array.isArray(j.themen)) return fehler.push(`${wer}: "themen" muss ein Block { ... } sein.`);
+  for (const [name, th] of Object.entries(j.themen)) {
+    const w = `${wer}, Thema "${name}"`;
+    if (!THEMEN_NAMEN.includes(name)) { fehler.push(`${w}: gibt es nicht. Erlaubt: ${THEMEN_NAMEN.join(", ")}.`); continue; }
+    if (!th || typeof th !== "object" || Array.isArray(th)) { fehler.push(`${w}: muss ein Block { ... } sein.`); continue; }
+    if (th.aktiv !== undefined && typeof th.aktiv !== "boolean") fehler.push(`${w}: "aktiv" muss true oder false sein.`);
+    const auto = th.automatisch === true;
+    if (th.automatisch !== undefined && typeof th.automatisch !== "boolean") fehler.push(`${w}: "automatisch" muss true oder false sein.`);
+    if (auto && name !== "ostern" && name !== "advent") fehler.push(`${w}: "automatisch" gibt es nur bei "ostern" und "advent".`);
+    const felder = auto ? (name === "advent" ? ["bis"] : []) : ["von", "bis"];
+    for (const f of felder) {
+      if (!istMonatTag(th[f])) fehler.push(`${w}: "${f}" bitte als Monat-Tag schreiben, z. B. "03-01" (1. März).`);
+    }
+    for (const f of ["von", "bis"]) {
+      if (!felder.includes(f) && th[f] !== undefined && !istMonatTag(th[f])) fehler.push(`${w}: "${f}" bitte als Monat-Tag schreiben, z. B. "03-01".`);
+    }
+  }
+}
+
 // ===== inhalte.json: Bildschirmschoner-Einstellungen =====
 function pruefeBildschirmschoner() {
   const d = leseJson("inhalte.json");
@@ -173,6 +204,7 @@ function pruefeBildschirmschoner() {
       }
     }
   }
+  pruefeJahreszeiten(d.jahreszeiten);
   const k = d.kinderecke;
   if (k !== undefined) {
     if (!k || typeof k !== "object" || Array.isArray(k)) {

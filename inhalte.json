@@ -11,5 +11,17 @@
     "nacht_von": "22:00",
     "nacht_bis": "06:00",
     "nacht_helligkeit": 0.45
+  },
+  "jahreszeiten": {
+    "aktiv": true,
+    "themen": {
+      "winter": { "aktiv": true, "von": "01-07", "bis": "02-28" },
+      "fruehling": { "aktiv": true, "von": "03-01", "bis": "05-31" },
+      "ostern": { "aktiv": true, "automatisch": true },
+      "sommer": { "aktiv": true, "von": "06-01", "bis": "08-31" },
+      "herbst": { "aktiv": true, "von": "09-01", "bis": "10-14" },
+      "kuerbis": { "aktiv": true, "von": "10-15", "bis": "11-02" },
+      "advent": { "aktiv": true, "automatisch": true, "bis": "01-06" }
+    }
   }
 }

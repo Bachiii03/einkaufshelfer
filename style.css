@@ -1786,3 +1786,68 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 
 /* Kinderecke: Inhalte untereinander, QR-Kasten nur so breit wie nötig */
 .kinder-buehne { display: flex; flex-direction: column; gap: 20px; }
+
+/* ===== Jahreszeiten-Look =====
+   Nur Zierde: liegt HINTER dem Inhalt (z-index 0), fängt keine Tipps ab, ändert keine Farben. */
+.deko { display: none; position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 0; pointer-events: none; }
+html[data-thema] .deko { display: block; }
+.deko-ecke { position: absolute; top: 0; width: 210px; height: 143px; background: no-repeat left top / contain; }
+.deko-links { left: 0; }
+.deko-rechts { right: 0; transform: scaleX(-1); }
+.deko-rand { position: absolute; left: 0; right: 0; bottom: 0; height: 52px; background: repeat-x left bottom / auto 52px; }
+html[data-thema="winter"] .deko-ecke { background-image: url("bilder/jahreszeiten/winter-ecke.svg"); }
+html[data-thema="winter"] .deko-rand { background-image: url("bilder/jahreszeiten/winter-rand.svg"); }
+html[data-thema="fruehling"] .deko-ecke { background-image: url("bilder/jahreszeiten/fruehling-ecke.svg"); }
+html[data-thema="fruehling"] .deko-rand { background-image: url("bilder/jahreszeiten/fruehling-rand.svg"); }
+html[data-thema="ostern"] .deko-ecke { background-image: url("bilder/jahreszeiten/ostern-ecke.svg"); }
+html[data-thema="ostern"] .deko-rand { background-image: url("bilder/jahreszeiten/ostern-rand.svg"); }
+html[data-thema="sommer"] .deko-ecke { background-image: url("bilder/jahreszeiten/sommer-ecke.svg"); }
+html[data-thema="sommer"] .deko-rand { background-image: url("bilder/jahreszeiten/sommer-rand.svg"); }
+html[data-thema="herbst"] .deko-ecke { background-image: url("bilder/jahreszeiten/herbst-ecke.svg"); }
+html[data-thema="herbst"] .deko-rand { background-image: url("bilder/jahreszeiten/herbst-rand.svg"); }
+html[data-thema="kuerbis"] .deko-ecke { background-image: url("bilder/jahreszeiten/kuerbis-ecke.svg"); }
+html[data-thema="kuerbis"] .deko-rand { background-image: url("bilder/jahreszeiten/kuerbis-rand.svg"); }
+html[data-thema="advent"] .deko-ecke { background-image: url("bilder/jahreszeiten/advent-ecke.svg"); }
+html[data-thema="advent"] .deko-rand { background-image: url("bilder/jahreszeiten/advent-rand.svg"); }
+
+/* Startseite: Inhalt liegt über der Dekoration */
+.start-inhalt { position: relative; z-index: 1; }
+.start-gruss[hidden] { display: none; }
+.start-gruss { margin: 4px 0 0; font-family: var(--schrift-titel); font-weight: 700; font-size: 21px; color: var(--gruen); }
+
+/* Danke-Karte: kleine Zweige in zwei Ecken (oben links, unten rechts) */
+.danke-karte { position: relative; }
+.deko-danke { z-index: 2; }
+.deko-danke .deko-ecke { width: 104px; height: 71px; }
+.deko-danke .deko-links { top: -16px; left: -16px; }
+.deko-danke .deko-rechts { top: auto; right: -16px; bottom: -16px; transform: rotate(180deg); }
+
+/* Bildschirmschoner: Ecken hinter den Folien, Schnee darüber, Nacht-Abdunkelung ganz oben */
+.schoner-buehne, .schoner-fuss { position: relative; z-index: 1; }
+.deko-schoner .deko-ecke { width: 280px; height: 190px; }
+.schnee { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 2; overflow: hidden; pointer-events: none; }
+.flocke {
+  position: absolute;
+  top: -12px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 1px rgba(51, 38, 26, .25);
+  opacity: .85;
+  animation: schnee-fallen 30s linear infinite;
+}
+@keyframes schnee-fallen {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(18px, 52vh); }
+  100% { transform: translate(-6px, 104vh); }
+}
+@media (prefers-reduced-motion: reduce) { .flocke { display: none; } }
+.schoner-dimmer { z-index: 3; }
+.folie-gruss { margin: 0; font-family: var(--schrift-titel); font-weight: 700; font-size: clamp(24px, 4.5vh, 40px); color: var(--gruen); }
+
+/* Handy: kleinere Ecken, kein Rand (die Startseite scrollt dort) */
+@media (max-width: 700px) {
+  .deko-ecke { width: 130px; height: 88px; }
+  .deko-rand { display: none; }
+  .deko-schoner .deko-ecke { width: 150px; height: 102px; }
+  .start-gruss { font-size: 19px; }
+}

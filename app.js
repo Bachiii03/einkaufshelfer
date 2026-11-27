@@ -228,6 +228,15 @@ const ENGLISCH = {
   "frisch geerntet": "freshly harvested",
   "Je nach Wetter und Ernte kann es sich verschieben.": "Depending on weather and harvest, this may shift.",
   "Im {monat}": "In {monat}",
+  // Jahreszeiten-Grüße
+  "Der Frühling ist da!": "Spring is here!",
+  "Frohe Ostern!": "Happy Easter!",
+  "Frisch vom Feld!": "Fresh from the field!",
+  "Erntezeit!": "Harvest time!",
+  "Kürbiszeit!": "Pumpkin time!",
+  "Schöne Adventzeit!": "Happy Advent!",
+  "Frohe Weihnachten!": "Merry Christmas!",
+  "Prosit Neujahr!": "Happy New Year!",
   // Google-Bewertung
   "Gefällt Ihnen unser Hofladen? Erzählen Sie es weiter – mit einer Bewertung auf Google.": "Do you like our farm shop? Tell others – with a review on Google.",
   "Mit dem Handy scannen": "Scan with your phone",
@@ -1630,11 +1639,14 @@ async function ladeInhalte() {
     einsatzAuszahlen = inhalte.einsatz_auszahlen === true;
     kinderEinstellen(inhalte.kinderecke);
     googleEinst = inhalte.google_bewertung && typeof inhalte.google_bewertung === "object" ? inhalte.google_bewertung : null;
+    jahreszeitenEinst = inhalte.jahreszeiten && typeof inhalte.jahreszeiten === "object" ? inhalte.jahreszeiten : null;
+    wendeJahreszeitAn();
     zeichneWarenkorb();   // Summe nach der Einsatz-Regel neu
     schonerEinst = inhalte.bildschirmschoner && typeof inhalte.bildschirmschoner === "object" ? inhalte.bildschirmschoner : null;
   } catch (fehler) {
     console.warn("inhalte.json konnte nicht geladen werden:", fehler); // Kästchen bleiben dann einfach weg
     kinderEinstellen(kinderEinst);
+    wendeJahreszeitAn();
   }
 }
 
@@ -1770,6 +1782,7 @@ function folieWillkommen() {
     neu("h2", "folie-titel", t("Willkommen bei Bachl's Feldgemüse")),
     neu("p", "folie-text", t("Selbstbedienung rund um die Uhr"))
   );
+  if (aktuellerGruss) inhalt.append(neu("p", "folie-gruss", t(aktuellerGruss)));
   return inhalt;
 }
 
@@ -1926,6 +1939,7 @@ function schonerEin() {
   schoner.classList.add("an");
   clearInterval(folienTimer);
   folienTimer = setInterval(naechsteFolie, folieMs());
+  aktualisiereSchnee();
 }
 
 function schonerAus() {
@@ -1938,6 +1952,7 @@ function schonerAus() {
   schonerAusTimer = setTimeout(() => {
     schoner.hidden = true;
     schonerBuehne.replaceChildren();
+    aktualisiereSchnee();
   }, 1000);
 }
 
@@ -1954,6 +1969,7 @@ setInterval(() => {
   }
   if (schonerAn) {
     aktualisiereDimmer();            // z. B. um 22:00 abdunkeln, um 06:00 wieder hell
+    aktualisiereSchnee();            // nachts kein Schnee
     return;
   }
   if (ruheSeit === null) ruheSeit = Date.now();
@@ -1976,6 +1992,140 @@ async function holeWachSperre() {
 document.addEventListener("visibilitychange", holeWachSperre);   // nach dem Zurückkommen neu anfordern
 window.addEventListener("pointerdown", holeWachSperre, { passive: true }); // manche Browser wollen erst einen Tipp
 holeWachSperre();
+
+// ===== Jahreszeiten-Look =====
+// Dekoration nach Datum (Einstellungen in inhalte.json → "jahreszeiten"). Nur Zierde in Ecken und am Rand,
+// immer HINTER dem Inhalt (verdeckt nie Text oder Knöpfe). Ostern und der 1. Advent werden jedes Jahr berechnet.
+// Testen: ?thema=ostern (oder ein anderer Name), ?thema=keins, ?datum=2026-12-24
+const THEMEN = ["winter", "fruehling", "ostern", "sommer", "herbst", "kuerbis", "advent"];
+const THEMEN_STANDARD = {
+  winter: { aktiv: true, von: "01-07", bis: "02-28" },
+  fruehling: { aktiv: true, von: "03-01", bis: "05-31" },
+  ostern: { aktiv: true, automatisch: true },
+  sommer: { aktiv: true, von: "06-01", bis: "08-31" },
+  herbst: { aktiv: true, von: "09-01", bis: "10-14" },
+  kuerbis: { aktiv: true, von: "10-15", bis: "11-02" },
+  advent: { aktiv: true, automatisch: true, bis: "01-06" },
+};
+const SCHNEE_THEMEN = ["winter", "advent"];
+const TEST_THEMA = TEST_PARAMETER.get("thema");
+const TEST_DATUM = (() => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(TEST_PARAMETER.get("datum") || "");
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 12) : null;
+})();
+let jahreszeitenEinst = null;   // aus inhalte.json
+let aktuellesThema = "";
+let aktuellerGruss = "";
+
+const heute = () => (TEST_DATUM ? new Date(TEST_DATUM.getTime()) : new Date());
+const mmtt = (d) => (d.getMonth() + 1) * 100 + d.getDate();          // 24. Dezember → 1224
+const plusTage = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+
+// "12-24" → 1224; ungültig → null
+function mmttAus(text) {
+  const m = /^(\d{2})-(\d{2})$/.exec(typeof text === "string" ? text.trim() : "");
+  if (!m) return null;
+  const monat = Number(m[1]), tag = Number(m[2]);
+  return monat >= 1 && monat <= 12 && tag >= 1 && tag <= 31 ? monat * 100 + tag : null;
+}
+// Liegt der Tag im Bereich? Darf über Neujahr gehen ("12-01" bis "01-06").
+function imJahresbereich(wert, von, bis) {
+  if (von === null || bis === null) return false;
+  return von <= bis ? wert >= von && wert <= bis : wert >= von || wert <= bis;
+}
+
+// Ostersonntag (gregorianischer Kalender, Gauß/Meeus)
+function osterSonntag(jahr) {
+  const a = jahr % 19, b = Math.floor(jahr / 100), c = jahr % 100;
+  const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const monat = Math.floor((h + l - 7 * m + 114) / 31), tag = ((h + l - 7 * m + 114) % 31) + 1;
+  return new Date(jahr, monat - 1, tag);
+}
+// 1. Advent = 4. Sonntag vor Weihnachten
+function ersterAdvent(jahr) {
+  const heiligabend = new Date(jahr, 11, 24);
+  return new Date(jahr, 11, 24 - heiligabend.getDay() - 21);
+}
+
+// Welches Thema gilt an diesem Tag? Besondere gehen vor: Ostern > Frühling, Advent > Winter, Kürbis > Herbst.
+function themaFuer(datum, einst) {
+  const e = einst && typeof einst === "object" ? einst : { aktiv: true };
+  if (e.aktiv === false) return "";
+  const vorgaben = e.themen && typeof e.themen === "object" ? e.themen : THEMEN_STANDARD;
+  const tag = new Date(datum.getFullYear(), datum.getMonth(), datum.getDate());
+  const wert = mmtt(tag);
+  const an = (n) => !!vorgaben[n] && typeof vorgaben[n] === "object" && vorgaben[n].aktiv !== false;
+  const bereich = (n) => imJahresbereich(wert, mmttAus(vorgaben[n].von), mmttAus(vorgaben[n].bis));
+
+  if (an("ostern")) {
+    if (vorgaben.ostern.automatisch === true) {
+      const ostern = osterSonntag(tag.getFullYear());
+      if (tag >= plusTage(ostern, -7) && tag <= plusTage(ostern, 1)) return "ostern";   // Palmsonntag bis Ostermontag
+    } else if (bereich("ostern")) return "ostern";
+  }
+  if (an("advent")) {
+    const a = vorgaben.advent;
+    if (a.automatisch === true) {
+      const bis = mmttAus(a.bis) || 106;
+      const start = ersterAdvent(tag.getFullYear());
+      if (bis < 700 ? tag >= start || wert <= bis : tag >= start && wert <= bis) return "advent";
+    } else if (bereich("advent")) return "advent";
+  }
+  for (const n of ["kuerbis", "winter", "fruehling", "sommer", "herbst"]) {
+    if (an(n) && bereich(n)) return n;
+  }
+  return "";
+}
+
+function grussFuer(thema, datum) {
+  if (thema === "advent") {
+    const wert = mmtt(datum);
+    if (wert >= 1231 || wert < 700) return "Prosit Neujahr!";
+    if (wert >= 1224) return "Frohe Weihnachten!";
+    return "Schöne Adventzeit!";
+  }
+  return { fruehling: "Der Frühling ist da!", ostern: "Frohe Ostern!", sommer: "Frisch vom Feld!",
+    herbst: "Erntezeit!", kuerbis: "Kürbiszeit!" }[thema] || "";
+}
+
+function wendeJahreszeitAn() {
+  const datum = heute();
+  let thema = themaFuer(datum, jahreszeitenEinst);
+  if (TEST_THEMA === "keins") thema = "";
+  else if (THEMEN.includes(TEST_THEMA)) thema = TEST_THEMA;
+  aktuellesThema = thema;
+  aktuellerGruss = thema ? grussFuer(thema, datum) : "";
+  if (thema) document.documentElement.setAttribute("data-thema", thema);
+  else document.documentElement.removeAttribute("data-thema");
+  const gruss = $("start-gruss");
+  gruss.textContent = aktuellerGruss ? t(aktuellerGruss) : "";
+  gruss.hidden = !aktuellerGruss;
+  aktualisiereSchnee();
+}
+setInterval(wendeJahreszeitAn, 30 * 60 * 1000);   // um Mitternacht wechselt das Thema von selbst
+
+// Sehr langsamer, spärlicher Schnee – nur im Bildschirmschoner, nur Winter/Advent, nicht nachts,
+// nicht bei "Bewegung reduzieren"
+function aktualisiereSchnee() {
+  const box = $("schnee");
+  const ruhig = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const soll = schonerAn && SCHNEE_THEMEN.includes(aktuellesThema) && !istNachtzeit() && !ruhig;
+  if (soll && !box.childElementCount) {
+    for (let i = 0; i < 16; i++) {
+      const flocke = neu("span", "flocke");
+      const groesse = 5 + Math.random() * 6;
+      flocke.style.left = (Math.random() * 100).toFixed(1) + "%";
+      flocke.style.width = flocke.style.height = groesse.toFixed(1) + "px";
+      flocke.style.animationDuration = (24 + Math.random() * 16).toFixed(1) + "s";
+      flocke.style.animationDelay = (-Math.random() * 40).toFixed(1) + "s";
+      box.append(flocke);
+    }
+  } else if (!soll && box.childElementCount) {
+    box.replaceChildren();
+  }
+}
 
 // ===== Kinderecke =====
 // Zwei einfache Spiele mit den Produkt-Icons aus bilder/icons.svg. Einstellungen in inhalte.json:
@@ -2451,6 +2601,7 @@ function setzeSprache(neueSprache) {
   zeichneSaisonLeiste();
   if (!saisonSeite.hidden) zeichneSaisonkalender();
   if (!kinderSeite.hidden && kinderAnsicht === "auswahl") zeigeKinderAuswahl();
+  wendeJahreszeitAn();
   aktivitaet();
 }
 document.querySelectorAll("[data-sprache-knopf]").forEach((b) =>

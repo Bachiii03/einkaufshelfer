@@ -2,7 +2,7 @@
 // Strategie: zuerst aus dem Internet laden (max. 3 Sekunden warten),
 // sonst die gespeicherte Kopie verwenden. Jede erfolgreiche Antwort wird gespeichert.
 
-const CACHE = "einkaufshelfer-v25";
+const CACHE = "einkaufshelfer-v26";
 const DATEIEN = [
   "./",
   "index.html",
@@ -21,6 +21,20 @@ const DATEIEN = [
   "bilder/icons.svg",
   "bilder/apple-touch-icon.png",
   "bilder/icon-512.png",
+  "bilder/jahreszeiten/winter-ecke.svg",
+  "bilder/jahreszeiten/winter-rand.svg",
+  "bilder/jahreszeiten/fruehling-ecke.svg",
+  "bilder/jahreszeiten/fruehling-rand.svg",
+  "bilder/jahreszeiten/ostern-ecke.svg",
+  "bilder/jahreszeiten/ostern-rand.svg",
+  "bilder/jahreszeiten/sommer-ecke.svg",
+  "bilder/jahreszeiten/sommer-rand.svg",
+  "bilder/jahreszeiten/herbst-ecke.svg",
+  "bilder/jahreszeiten/herbst-rand.svg",
+  "bilder/jahreszeiten/kuerbis-ecke.svg",
+  "bilder/jahreszeiten/kuerbis-rand.svg",
+  "bilder/jahreszeiten/advent-ecke.svg",
+  "bilder/jahreszeiten/advent-rand.svg",
   "fonts/SourceSans3-Variable.woff2",
   "fonts/ZillaSlab-SemiBold.woff2",
   "fonts/ZillaSlab-Bold.woff2",

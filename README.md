@@ -214,6 +214,43 @@ Einstellung in **`inhalte.json`**:
 
 Die automatische Prüfung kontrolliert auch diese Einstellung.
 
+## Jahreszeiten-Look
+
+Je nach Datum bekommt die Seite eine kleine Dekoration (Zeichnungen in den Ecken der Startseite,
+am unteren Rand, an der Danke-Karte und im Bildschirmschoner) und einen Gruß unter dem
+Startseiten-Titel. Die Zierde liegt immer **hinter** dem Inhalt – Kacheln, Preise, Knöpfe,
+Warenkorb und Ziffernfeld bleiben genau wie sie sind.
+
+| Thema | Zeitraum | Gruß |
+|---|---|---|
+| `winter` | 7. Jänner – 28. Februar | – |
+| `fruehling` | 1. März – 31. Mai | „Der Frühling ist da!“ |
+| `ostern` | Palmsonntag – Ostermontag (wird jedes Jahr berechnet) | „Frohe Ostern!“ |
+| `sommer` | 1. Juni – 31. August | „Frisch vom Feld!“ |
+| `herbst` | 1. September – 14. Oktober | „Erntezeit!“ |
+| `kuerbis` | 15. Oktober – 2. November | „Kürbiszeit!“ |
+| `advent` | 1. Adventsonntag (berechnet) – 6. Jänner | „Schöne Adventzeit!“, ab 24.12. „Frohe Weihnachten!“, ab 31.12. „Prosit Neujahr!“ |
+
+Zwischen 3. November und dem 1. Advent gibt es kein Thema. Überschneiden sich zwei, gewinnt das
+besondere (Ostern vor Frühling, Kürbis vor Herbst, Advent vor Winter). Im Winter und Advent fällt
+im Bildschirmschoner tagsüber ganz langsam ein wenig Schnee (nicht nachts und nicht, wenn am
+Gerät „Bewegung reduzieren“ eingeschaltet ist).
+
+Einstellungen in **`inhalte.json`** unter `"jahreszeiten"`:
+
+- `"aktiv": false` schaltet die ganze Dekoration aus; bei einem einzelnen Thema `"aktiv": false`
+  nur dieses.
+- `"von"` / `"bis"` als **Monat-Tag**: `"03-01"` = 1. März. Ein Zeitraum darf über Neujahr gehen.
+- `"automatisch": true` (nur bei `ostern` und `advent`): Beginn wird jedes Jahr berechnet.
+  Beim Advent bestimmt `"bis"` das Ende (Standard `"01-06"`).
+- Ein 29. Februar fällt mit `"bis": "02-28"` aus dem Winter – wer möchte, schreibt `"02-29"`.
+
+**Testen:** `…/einkaufshelfer/?thema=ostern` (oder `winter`, `fruehling`, `sommer`, `herbst`,
+`kuerbis`, `advent`) zeigt ein Thema sofort, `?thema=keins` gar keines,
+`?datum=2026-12-24` tut so, als wäre dieser Tag. Die Zeichnungen liegen in `bilder/jahreszeiten/`.
+
+Die automatische Prüfung kontrolliert die Themen-Namen und Datumsangaben.
+
 ## Meldungen und Wochenbericht per E-Mail
 
 - **„Etwas gefehlt? Hier melden“** (auf der Danke-Seite): Kunden tippen an, was leer
