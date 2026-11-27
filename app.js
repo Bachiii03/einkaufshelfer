@@ -122,6 +122,7 @@ const ENGLISCH = {
   "Abbrechen": "Cancel",
   // Leergut
   "Flasche oder Glas": "Bottle or jar",
+  "{betrag} je {art}": "{betrag} per {art}",
   "Flasche": "Bottle",
   "Glas": "Jar",
   "Leergut zurückgeben": "Return empties",
@@ -561,7 +562,21 @@ function leergutUebernehmen() {
   el.liste.scrollTop = el.liste.scrollHeight;   // Leergut-Zeilen stehen unten → dorthin scrollen
 }
 
-$("leergut-knopf").addEventListener("click", oeffneLeergut);
+// Eine Flasche/ein Glas direkt in den Warenkorb (wie ein Produkt antippen)
+function leergutEinsDazu(a) {
+  const zeile = warenkorb.find((z) => z.schluessel === a.schluessel);
+  if (zeile) zeile.menge = Math.min(99, zeile.menge + 1);
+  else warenkorb.push({ schluessel: a.schluessel, produkt: "", detail: "", leergut: a, cent: -a.cent, menge: 1, anders: false });
+  zeichneWarenkorb();
+  el.liste.scrollTop = el.liste.scrollHeight;   // Leergut-Zeilen stehen unten → dorthin scrollen
+}
+
+// Nur ein Einsatz-Betrag (z. B. alles 0,50 €) → jeder Tipp = eine Flasche/ein Glas.
+// Mehrere Beträge → Dialog zum Auswählen.
+$("leergut-knopf").addEventListener("click", () => {
+  if (leergutArten.length === 1) leergutEinsDazu(leergutArten[0]);
+  else oeffneLeergut();
+});
 $("leergut-abbrechen").addEventListener("click", schliesseLeergut);
 $("leergut-fertig").addEventListener("click", leergutUebernehmen);
 
@@ -604,6 +619,12 @@ function zeichneWarenkorb() {
   // Summe im Warenkorb; "Fertig" nur, wenn etwas drin ist (auch nur Leergut ist erlaubt)
   const zahl = zahlBetrag();
   $("leergut-knopf").hidden = leergutArten.length === 0;
+  // Erklärzeile unter dem Knopf, bei nur einem Betrag: "−0,50 € je Flasche oder Glas"
+  const einzige = leergutArten.length === 1 ? leergutArten[0] : null;
+  const art = einzige ? leergutName(einzige).kurz : "";
+  $("leergut-info").textContent = einzige
+    ? t("{betrag} je {art}", { betrag: euro(-einzige.cent), art: sprache === "en" ? art.toLowerCase() : art })
+    : "";
   $("einsatz-hinweis").hidden = !zahl.verrechnet;
   if (warenkorb.length) {
     el.summeBetrag.textContent = euro(zahl.cent);

@@ -50,9 +50,9 @@ Handy-Browser: Datei öffnen → Stift-Symbol ✏️.
 
 ## Leergut und Einsatz
 
-Im Warenkorb gibt es den Knopf **„Leergut zurückgeben“**. Kunden tippen an, welche leeren
-Flaschen und Gläser sie zurückbringen; der Einsatz wird von der Summe abgezogen
-(eigene grüne Zeile mit Minus-Betrag).
+Im Warenkorb gibt es den Knopf **„Leergut zurückgeben“**. Jedes Antippen = eine leere
+Flasche bzw. ein Glas; der Einsatz wird von der Summe abgezogen (eigene grüne Zeile mit
+Minus-Betrag, Anzahl mit −/+ änderbar).
 
 In **`products.json`** bei jedem Produkt mit Einsatz:
 
@@ -62,10 +62,10 @@ In **`products.json`** bei jedem Produkt mit Einsatz:
 
 - `einsatz`: Betrag in Euro mit **Punkt**, zwischen 0.05 und 5.
 - `einsatz_art`: `"Flasche"` oder `"Glas"` – Pflicht, sobald `einsatz` dasteht.
-- Alle Produkte mit **gleichem Betrag** sind im Dialog **eine Zeile**, z. B.
-  „Flasche oder Glas – 0,50 €“ (darunter klein: Apfelsaft, Traubensaft, Vollmilch oder Honig).
-  Kunden tippen einfach an, wie viele Flaschen/Gläser sie zurückbringen. Hat ein Produkt einen
-  anderen Einsatz (z. B. 1.00), kommt dafür automatisch eine eigene Zeile dazu.
+- Alle Produkte mit **gleichem Betrag** zählen gleich – unter dem Knopf steht klein
+  „−0,50 € je Flasche oder Glas“.
+- Hat ein Produkt einmal einen **anderen** Einsatz (z. B. 1.00), öffnet der Knopf automatisch
+  einen Dialog „Was bringen Sie zurück?“ mit einer Zeile pro Betrag.
 - Der Text bei `"info"` (z. B. „inkl. 0,50 € Einsatz“) bleibt, wie er ist – den bitte selbst
   mitändern, wenn sich der Einsatz ändert.
 - Auch ausverkaufte Produkte (`"verfuegbar": false`) bleiben im Leergut-Dialog, damit man ihre

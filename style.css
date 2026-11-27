@@ -1536,3 +1536,10 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   .btn-neu { margin-top: 8px; min-height: 48px; }
   .kasse .hinweis { margin-top: 8px; padding: 4px 8px; font-size: .88rem; }
 }
+
+/* Leergut-Knopf: Text links (mit kleiner Erklärzeile), Betrag rechts */
+.btn-leergut { justify-content: flex-start; text-align: left; }
+.btn-leergut .lg-text { flex: 1 1 auto; min-width: 0; }
+.btn-leergut .lg-text strong { display: block; font-size: 1.15rem; line-height: 1.2; }
+.btn-leergut .lg-text small { display: block; margin-top: 1px; font-size: .95rem; font-weight: 700; line-height: 1.2; color: var(--gruen); }
+.btn-leergut .lg-text small:empty { display: none; }
