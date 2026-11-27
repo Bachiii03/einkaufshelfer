@@ -27,7 +27,7 @@
     { "name": "Traubensaft weiß oder rot", "name_en": "Grape juice, white or red", "icon": "traubensaft", "kategorie": "Obst & Getränke", "beliebt": false, "verfuegbar": true,
       "info": "inkl. 0,50 € Einsatz", "info_en": "incl. €0.50 bottle deposit",
       "groessen": [ { "einheit": "1 Liter", "preis": 3.50 } ] },
-    { "name": "Gespritzter Apfel oder Marille", "name_en": "Apple or apricot spritzer", "icon": "gespritzter", "kategorie": "Obst & Getränke", "beliebt": false, "verfuegbar": true,
+    { "name": "G'spritzt Apfel/Birne/Marille", "name_en": "Apple/pear/apricot spritzer", "icon": "gespritzter", "kategorie": "Obst & Getränke", "beliebt": false, "verfuegbar": true,
       "groessen": [ { "einheit": "0,33 l", "preis": 2.50 } ] },
 
     { "name": "Kürbiskernöl", "name_en": "Pumpkin seed oil", "icon": "kuerbiskernoel", "kategorie": "Öle", "beliebt": false, "verfuegbar": true,
@@ -39,7 +39,7 @@
 
     { "name": "Vollmilch", "name_en": "Whole milk", "icon": "milch", "kategorie": "Milch & Eier", "beliebt": true, "verfuegbar": true,
       "info": "inkl. 0,50 € Einsatz", "info_en": "incl. €0.50 bottle deposit",
-      "groessen": [ { "einheit": "1 Liter", "preis": 2.40 } ] },
+      "groessen": [ { "einheit": "1 Liter", "preis": 2.20 } ] },
     { "name": "Naturjoghurt", "name_en": "Natural yoghurt", "icon": "naturjoghurt", "kategorie": "Milch & Eier", "beliebt": false, "verfuegbar": true,
       "groessen": [ { "einheit": "250 ml", "preis": 1.20 } ] },
     { "name": "Fruchtjoghurt", "name_en": "Fruit yoghurt", "icon": "fruchtjoghurt", "kategorie": "Milch & Eier", "beliebt": false, "verfuegbar": true,
