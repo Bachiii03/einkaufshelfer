@@ -1278,3 +1278,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   .rezept-spalten { grid-template-columns: 1fr; gap: 22px; }
   .zitat blockquote { font-size: 1.3rem; }
 }
+
+/* Mittelgroße Tablets im Querformat (z. B. iPad 7: 1080 × 810) – etwas kompakter,
+   damit die Startseite ohne Scrollen passt und der Saisonkalender alle 12 Monate zeigt */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .start-logo { height: 100px; }
+  .start-kopf h1 { font-size: 42px; }
+  .start-untertitel { font-size: 20px; }
+  .start-kachel { padding: 20px; }
+  .start-kachel svg { width: 52px; height: 52px; }
+  .start-titel { font-size: 29px; }
+  .start-text { font-size: 1.05rem; }
+  .saison-raster { grid-template-columns: minmax(0, 1fr) 270px; gap: 20px; }
+  .saison-tabelle { grid-template-columns: minmax(140px, 1.3fr) repeat(12, minmax(36px, 1fr)); min-width: 0; }
+}

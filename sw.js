@@ -2,7 +2,7 @@
 // Strategie: zuerst aus dem Internet laden (max. 3 Sekunden warten),
 // sonst die gespeicherte Kopie verwenden. Jede erfolgreiche Antwort wird gespeichert.
 
-const CACHE = "einkaufshelfer-v16";
+const CACHE = "einkaufshelfer-v17";
 const DATEIEN = [
   "./",
   "index.html",
@@ -14,10 +14,13 @@ const DATEIEN = [
   "geschichten.json",
   "saison.json",
   "manifest.json",
+  "manifest-laden.json",
   "icon.svg",
   "bilder/logo-400.webp",
   "bilder/logo-400.png",
   "bilder/icons.svg",
+  "bilder/apple-touch-icon.png",
+  "bilder/icon-512.png",
   "fonts/SourceSans3-Variable.woff2",
   "fonts/ZillaSlab-SemiBold.woff2",
   "fonts/ZillaSlab-Bold.woff2",

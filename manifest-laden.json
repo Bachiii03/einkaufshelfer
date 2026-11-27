@@ -1,0 +1,31 @@
+{
+  "name": "Einkaufshelfer – Bachl's Feldgemüse",
+  "short_name": "Einkaufshelfer",
+  "lang": "de",
+  "start_url": "./?laden",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#E6D5B4",
+  "theme_color": "#0A6B2D",
+  "icons": [
+    {
+      "src": "bilder/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "bilder/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

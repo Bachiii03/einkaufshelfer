@@ -875,6 +875,14 @@ const IST_LADEN = (() => {
   try { return localStorage.getItem(LADEN_MERKER) === "1"; } catch { return false; }
 })();
 
+// iPad: "Zum Home-Bildschirm" nimmt die Start-Adresse aus dem Manifest. Auf dem Laden-Tablet
+// eine Variante mit "?laden" verwenden – sonst wüsste die Home-Bildschirm-App nicht,
+// dass sie das Laden-Tablet ist (sie hat einen eigenen Speicher, getrennt von Safari).
+if (IST_LADEN || new URLSearchParams(location.search).has("laden")) {
+  const manifest = document.querySelector('link[rel="manifest"]');
+  if (manifest) manifest.href = "manifest-laden.json";
+}
+
 function leseBewertungen() {
   try {
     const b = JSON.parse(localStorage.getItem(BEWERTUNGEN) || "null");
