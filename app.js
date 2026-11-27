@@ -930,7 +930,10 @@ function googleUrl() {
 }
 
 function zeigeNachBewertung(bewertung) {
-  const url = googleUrl();
+  // "nur_bei_gut": true → Google-Einladung nur nach "Gut" (Achtung: verstößt gegen Googles Richtlinien,
+  // siehe README). false → nach jedem Smiley.
+  const nurBeiGut = !!googleEinst && googleEinst.nur_bei_gut === true;
+  const url = nurBeiGut && bewertung !== "gut" ? "" : googleUrl();
   const google = $("google-box");
   $("besser-box").hidden = bewertung !== "schlecht";
   google.hidden = !url;

@@ -202,6 +202,9 @@ function pruefeBildschirmschoner() {
       else if (g.url.trim() !== "" && !/^https:\/\/\S+$/.test(g.url.trim())) {
         fehler.push('inhalte.json, "google_bewertung": "url" muss mit https:// beginnen und darf keine Leerzeichen enthalten.');
       }
+      if (g.nur_bei_gut !== undefined && typeof g.nur_bei_gut !== "boolean") {
+        fehler.push('inhalte.json, "google_bewertung": "nur_bei_gut" muss true oder false sein (ohne Anführungszeichen).');
+      }
     }
   }
   pruefeJahreszeiten(d.jahreszeiten);

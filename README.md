@@ -188,20 +188,25 @@ Die automatische Prüfung kontrolliert auch diese Einstellungen.
 
 ## Google-Bewertung auf der Danke-Seite
 
-Nach dem Antippen eines Smileys (egal ob Gut, Okay oder Schlecht – Google erlaubt nicht, nur
-zufriedene Kunden zu fragen) erscheint eine ruhige Einladung: „Gefällt Ihnen unser Hofladen?
+Nach dem Antippen eines Smileys erscheint eine ruhige Einladung: „Gefällt Ihnen unser Hofladen?
 Erzählen Sie es weiter – mit einer Bewertung auf Google.“
+
+- **Derzeit eingestellt: nur nach „Gut“** (`"nur_bei_gut": true`). Nach „Okay“ kommt nichts,
+  nach „Schlecht“ nur „Was können wir besser machen?“.
+- **Achtung:** Nur zufriedene Kunden um eine Bewertung zu bitten („Review Gating“) verstößt gegen
+  Googles Richtlinien. Google kann so entstandene Bewertungen löschen oder das Unternehmensprofil
+  einschränken. Mit `"nur_bei_gut": false` kommt die Einladung wieder nach jedem Smiley.
 
 - **Laden-Tablet:** QR-Code zum Scannen mit dem Handy („Mit dem Handy scannen“).
 - **Handy:** Knopf „Auf Google bewerten“.
-- Bei „Schlecht“ steht zusätzlich zuerst „Was können wir besser machen?“ mit einem Knopf zu
-  „Wünsche & Feedback“.
+- Bei „Schlecht“ steht „Was können wir besser machen?“ mit einem Knopf zu „Wünsche & Feedback“
+  (bei `"nur_bei_gut": false` zusätzlich darunter die Google-Einladung).
 - Solange die Einladung zu sehen ist, bleibt die Danke-Seite 45 statt 20 Sekunden offen.
 
 Einstellung in **`inhalte.json`**:
 
 ```json
-"google_bewertung": { "aktiv": true, "url": "https://g.page/r/…/review" }
+"google_bewertung": { "aktiv": true, "url": "https://g.page/r/…/review", "nur_bei_gut": true }
 ```
 
 - `url` leer (`""`) oder `"aktiv": false` → die Einladung wird gar nicht gezeigt.
