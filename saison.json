@@ -1,7 +1,7 @@
 {
   "produkte": [
     { "name": "Erdäpfel",      "frisch": [6,7,8,9,10], "lager": [11,12,1,2,3,4,5] },
-    { "name": "Zwiebel",       "frisch": [6,7,8,9,10], "lager": [11,12,1,2,3,4] },
+    { "name": "Zwiebel",       "frisch": [6,7,8,9,10], "lager": [11,12,1,2,3,4,5] },
     { "name": "Jungzwiebel",   "frisch": [4,5,6],     "lager": [] },
     { "name": "Knoblauch",     "frisch": [7,8],       "lager": [9,10,11,12,1,2,3] },
     { "name": "Chinakohl",     "frisch": [10,11,12],  "lager": [1,2] },
