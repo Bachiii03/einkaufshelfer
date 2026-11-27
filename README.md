@@ -160,6 +160,32 @@ Gut zu wissen:
 
 Die automatische Prüfung kontrolliert auch diese Einstellungen (Zahlen, Uhrzeit-Format).
 
+## Kinderecke
+
+Auf der Startseite gibt es unten den Knopf **„Für Kinder“** mit zwei Spielen:
+**Gemüse-Memory** (6 Paare, ohne Lesen) und **„Was ist das?“** (Icon erkennen, drei Antworten,
+Vorlese-Knopf). Kein Zeitdruck, kein Verlieren, nichts wird gespeichert oder verschickt.
+
+Einstellungen in **`inhalte.json`**:
+
+```json
+"kinderecke": { "aktiv": true, "kinder_minuten": 3 }
+```
+
+- `aktiv`: `false` = Knopf „Für Kinder“ ausblenden.
+- `kinder_minuten`: so lange darf pro Besuch am **Laden-Tablet** gespielt werden (1 bis 30).
+  Danach: „Super gespielt! Jetzt ist Pause.“ und zurück zur Startseite. Am Handy gibt es kein Limit.
+- Ist schon etwas im Warenkorb, bleibt es erhalten; oben rechts führt „Zum Einkauf (X Artikel)“
+  direkt zurück.
+- **Am Handy weiterspielen:** Auf der Kinderecke steht ein QR-Code zu
+  `https://bachiii03.github.io/einkaufshelfer/#kinder`. Das Bild (`bilder/kinder-qr.svg`) erzeugt
+  GitHub beim Veröffentlichen automatisch mit `scripts/make-qr.js` – lokal fehlt es, dann wird der
+  Kasten einfach ausgeblendet.
+- Die Spiele verwenden die Icons aus `bilder/icons.svg`; „Was ist das?“ zeigt nur gut erkennbare
+  (Erdäpfel, Zwiebel, Knoblauch, Kürbis, Chinakohl, Pak Choi, Süßkartoffel, Apfel, Milch, Eier, Honig).
+
+Die automatische Prüfung kontrolliert auch diese Einstellungen.
+
 ## Meldungen und Wochenbericht per E-Mail
 
 - **„Etwas gefehlt? Hier melden“** (auf der Danke-Seite): Kunden tippen an, was leer

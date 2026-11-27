@@ -1543,3 +1543,213 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .btn-leergut .lg-text strong { display: block; font-size: 1.15rem; line-height: 1.2; }
 .btn-leergut .lg-text small { display: block; margin-top: 1px; font-size: .95rem; font-weight: 700; line-height: 1.2; color: var(--gruen); }
 .btn-leergut .lg-text small:empty { display: none; }
+
+/* ===== Kinderecke ===== */
+.start-kinder { display: inline-flex; align-items: center; gap: 10px; }
+.start-kinder[hidden] { display: none; }
+.start-kinder-icon { width: 34px; height: 34px; flex: none; }
+
+.kinder {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 28;                /* wie Startseite und Saisonkalender */
+  overflow-y: auto;
+  padding: 16px 28px 28px;
+  background: var(--kraft);
+}
+.kinder[hidden] { display: none; }
+.kinder-inhalt { max-width: 1220px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.kinder-kopf { display: flex; align-items: center; gap: 18px; }
+.kinder-kopf .btn-startseite { margin-left: 0; }
+.kinder-kopf h1 { flex: 1 1 auto; font-size: 40px; line-height: 1.05; }
+.kinder-einkauf { background: var(--orange); }
+.kinder-einkauf[hidden] { display: none; }
+
+/* Auswahl: zwei große Spielkarten */
+.kinder-spiele { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; padding: 0 6px 6px 0; }
+.kinder-spiel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 300px;
+  padding: 28px 20px;
+  border: var(--rand);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 var(--tinte);
+  background: var(--papier);
+  color: var(--tinte);
+}
+.kinder-spiel:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--tinte); }
+.kinder-spiel-icons { display: flex; gap: 12px; }
+.kinder-spiel-icon { width: 110px; height: 110px; }
+.kinder-spiel-titel { font-family: var(--schrift-titel); font-weight: 700; font-size: 40px; line-height: 1.1; }
+.kinder-spiel-text { font-size: 1.3rem; font-weight: 600; color: var(--tinte-mild); }
+
+.kinder-qr {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  align-self: flex-start;
+  padding: 12px 18px 12px 12px;
+  border: 2px solid var(--braun);
+  border-radius: 12px;
+  background: var(--papier);
+}
+.kinder-qr img { display: block; width: 120px; height: 120px; }
+.kinder-qr-text { display: flex; flex-direction: column; gap: 4px; max-width: 320px; }
+.kinder-qr-text strong { font-size: 1.25rem; }
+.kinder-qr-text span { color: var(--tinte-mild); font-weight: 600; }
+
+.kinder-anleitung { margin: 0; text-align: center; font-family: var(--schrift-titel); font-weight: 700; font-size: 28px; }
+
+/* Memory: 4 × 3 Karten, mindestens 140 px */
+.memory {
+  --karte: clamp(140px, calc((var(--bildschirm-h) - 190px) / 3), 190px);
+  display: grid;
+  grid-template-columns: repeat(4, var(--karte));
+  grid-auto-rows: var(--karte);
+  gap: 16px;
+  justify-content: center;
+  padding: 0 4px 4px 0;
+}
+.memory-karte { padding: 0; border: 0; background: none; perspective: 900px; }
+.mk-innen {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform .45s ease;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+.memory-karte.offen .mk-innen { transform: rotateY(180deg); }
+.mk-hinten, .mk-vorne {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--rand);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--tinte);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.mk-hinten {
+  background:
+    radial-gradient(circle at 50% 50%, var(--papier-hell) 0 34%, transparent 35%),
+    repeating-linear-gradient(135deg, var(--kraft) 0 14px, #DCC79F 14px 28px);
+}
+.mk-logo { width: 58%; height: auto; }
+.mk-vorne { transform: rotateY(180deg); background: var(--papier); }
+.mk-icon { width: 70%; height: 70%; }
+.memory-karte.gefunden .mk-vorne { border-color: var(--gruen); box-shadow: 4px 4px 0 var(--gruen); background: #EEF5EC; }
+
+/* Was ist das? */
+.quiz { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.quiz-bild {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 220px;
+  height: 220px;
+  border: var(--rand);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--tinte);
+  background: var(--papier);
+}
+.quiz-icon { width: 170px; height: 170px; }
+.quiz-antworten { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 28px; }
+.quiz-zeile { display: flex; align-items: center; gap: 10px; }
+.quiz-antwort {
+  min-width: 220px;
+  min-height: 72px;
+  padding: 8px 24px;
+  border: var(--rand);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--tinte);
+  background: var(--papier);
+  color: var(--tinte);
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 30px;
+}
+.quiz-antwort:disabled { cursor: default; }
+.quiz-antwort.richtig { background: var(--gruen); color: var(--weiss); }
+.quiz-antwort.fast { background: #F6D9A8; border-color: var(--orange); animation: kinder-wackeln .45s ease; }
+.quiz-vorlesen {
+  width: 64px;
+  height: 64px;
+  flex: none;
+  border: var(--rand);
+  border-radius: 50%;
+  background: var(--papier-hell);
+  color: var(--tinte);
+}
+.quiz-vorlesen svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.quiz-rueckmeldung { min-height: 1.4em; margin: 0; font-family: var(--schrift-titel); font-weight: 700; font-size: 30px; color: #9A5A00; }
+.quiz-rueckmeldung.gut { color: var(--gruen); }
+@keyframes kinder-wackeln {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(7px); }
+  75% { transform: translateX(-4px); }
+}
+
+/* Ende eines Spiels und Pause */
+.kinder-fertig {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 640px;
+  margin: 30px auto 0;
+  padding: 34px 28px;
+  border: var(--rand);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 var(--tinte);
+  background: var(--papier);
+  text-align: center;
+  animation: kinder-auftauchen .7s ease both;
+}
+.kinder-fertig h2 { font-size: 44px; line-height: 1.1; }
+.kinder-fertig-icons { display: flex; gap: 16px; }
+.kinder-fertig-icon { width: 90px; height: 90px; animation: kinder-schweben 2.4s ease-in-out infinite; }
+.kinder-fertig-icon:nth-child(2) { animation-delay: .4s; }
+.kinder-fertig-icon:nth-child(3) { animation-delay: .8s; }
+.kinder-fertig-knoepfe { display: flex; gap: 16px; }
+.kinder-fertig-knoepfe button, .kinder-pause .btn-haupt { min-width: 200px; min-height: 64px; font-size: 1.35rem; }
+.kinder-gesicht svg { width: 160px; height: 160px; animation: kinder-schweben 2.4s ease-in-out infinite; }
+@keyframes kinder-auftauchen { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+@keyframes kinder-schweben { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) {
+  .mk-innen, .kinder-fertig, .kinder-fertig-icon, .kinder-gesicht svg, .quiz-antwort.fast { transition: none; animation: none; }
+}
+
+/* Handy */
+@media (max-width: 700px) {
+  .kinder { padding: 10px 12px 24px; }
+  .kinder-kopf { flex-wrap: wrap; gap: 10px; }
+  .kinder-kopf h1 { font-size: 30px; order: 3; flex-basis: 100%; }
+  .kinder-spiele { grid-template-columns: 1fr; gap: 16px; }
+  .kinder-spiel { min-height: 0; padding: 18px 14px; }
+  .kinder-spiel-icon { width: 80px; height: 80px; }
+  .kinder-spiel-titel { font-size: 30px; }
+  .kinder-qr { display: none; }   /* am Handy spielt man schon am Handy */
+  .memory { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: auto; gap: 10px; }
+  .memory-karte { aspect-ratio: 1 / 1; }
+  .kinder-anleitung { font-size: 22px; }
+  .quiz-bild { width: 170px; height: 170px; }
+  .quiz-icon { width: 130px; height: 130px; }
+  .quiz-antworten { flex-direction: column; align-items: stretch; width: 100%; }
+  .quiz-antwort { flex: 1 1 auto; min-width: 0; font-size: 26px; }
+  .kinder-fertig h2 { font-size: 32px; }
+  .kinder-fertig-knoepfe { flex-direction: column; width: 100%; }
+}
+
+/* Mittelgroße Tablets (z. B. iPad 1080 × 810): untere Knopfreihe der Startseite in eine Zeile */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .start-unten { gap: 14px; }
+  .start-klein { padding: 0 20px; }
+}

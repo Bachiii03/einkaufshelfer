@@ -14,3 +14,6 @@ Claude outputs/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Werden beim Veröffentlichen von scripts/make-qr.js erzeugt
+bilder/*-qr.svg

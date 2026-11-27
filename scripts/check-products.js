@@ -161,6 +161,17 @@ function pruefeBildschirmschoner() {
   if (d.einsatz_auszahlen !== undefined && typeof d.einsatz_auszahlen !== "boolean") {
     fehler.push('inhalte.json: "einsatz_auszahlen" muss true oder false sein (ohne Anführungszeichen).');
   }
+  const k = d.kinderecke;
+  if (k !== undefined) {
+    if (!k || typeof k !== "object" || Array.isArray(k)) {
+      fehler.push('inhalte.json, "kinderecke": muss so aussehen: { "aktiv": true, "kinder_minuten": 3 }');
+    } else {
+      if (typeof k.aktiv !== "boolean") fehler.push('inhalte.json, "kinderecke": "aktiv" muss true oder false sein (ohne Anführungszeichen).');
+      if (typeof k.kinder_minuten !== "number" || !Number.isInteger(k.kinder_minuten) || k.kinder_minuten < 1 || k.kinder_minuten > 30) {
+        fehler.push('inhalte.json, "kinderecke": "kinder_minuten" muss eine ganze Zahl zwischen 1 und 30 sein (ohne Anführungszeichen).');
+      }
+    }
+  }
   const b = d.bildschirmschoner;
   if (b === undefined) return "kein Bildschirmschoner eingestellt";
   const wer = 'inhalte.json, "bildschirmschoner"';

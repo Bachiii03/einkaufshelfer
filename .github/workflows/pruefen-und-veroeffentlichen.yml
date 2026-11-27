@@ -32,6 +32,8 @@ jobs:
       pages: write
     steps:
       - uses: actions/checkout@v5
+      - name: QR-Codes erzeugen (bilder/*-qr.svg)
+        run: node scripts/make-qr.js
       - name: Nur die Website-Dateien zusammenstellen
         run: |
           mkdir _site

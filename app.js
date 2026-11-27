@@ -228,6 +228,28 @@ const ENGLISCH = {
   "frisch geerntet": "freshly harvested",
   "Je nach Wetter und Ernte kann es sich verschieben.": "Depending on weather and harvest, this may shift.",
   "Im {monat}": "In {monat}",
+  // Kinderecke
+  "Für Kinder": "For kids",
+  "Kinderecke": "Kids' corner",
+  "← Zurück": "← Back",
+  "Zurück": "Back",
+  "Zum Einkauf ({anzahl} Artikel)": "Back to shopping ({anzahl} items)",
+  "Gemüse-Memory": "Veggie memory",
+  "Finde die Paare!": "Find the pairs!",
+  "Was ist das?": "What is it?",
+  "Erkennst du es?": "Can you name it?",
+  "Auf dem Handy weiterspielen": "Keep playing on your phone",
+  "QR-Code mit dem Handy scannen – dann ist das Tablet frei zum Einkaufen.": "Scan the QR code with a phone – then the tablet is free for shopping.",
+  "Karte umdrehen": "Turn card over",
+  "Super! Alle gefunden!": "Great! You found them all!",
+  "Nochmal": "Play again",
+  "Frage {nr} von {gesamt}": "Question {nr} of {gesamt}",
+  "Vorlesen: {wort}": "Read aloud: {wort}",
+  "Richtig!": "Correct!",
+  "Fast! Probier's nochmal.": "Almost! Try again.",
+  "Toll gemacht!": "Well done!",
+  "Super gespielt! Jetzt ist Pause.": "Great playing! Time for a break.",
+  "Zur Startseite": "To the start screen",
   // Bildschirmschoner
   "Zum Einkaufen bitte antippen": "Tap to start shopping",
   "Willkommen bei Bachl's Feldgemüse": "Welcome to Bachl's Feldgemüse",
@@ -1166,6 +1188,7 @@ function zeigeStartseite() {
   bald.hidden = true;
   seite.hidden = true;
   saisonSeite.hidden = true;
+  verlasseKinder();
   startseite.hidden = false;
   startseite.scrollTop = 0;
   zeichneSaisonLeiste();   // immer der aktuelle Monat
@@ -1176,6 +1199,7 @@ function zeigeRechner() {
   bald.hidden = true;
   seite.hidden = true;
   saisonSeite.hidden = true;
+  verlasseKinder();
   waehleTab(START_TAB);
   aktivitaet();
 }
@@ -1187,6 +1211,7 @@ function zeigeBald(titel) {
   startseite.hidden = true;
   seite.hidden = true;
   saisonSeite.hidden = true;
+  verlasseKinder();
   bald.hidden = false;
 }
 
@@ -1242,6 +1267,7 @@ function zeigeSeite(art) {
   startseite.hidden = true;
   bald.hidden = true;
   saisonSeite.hidden = true;
+  verlasseKinder();
   seite.hidden = false;
   if (art === "ueber") zeigeUeberUns();
   else if (art === "impressum") zeigeImpressum();
@@ -1544,10 +1570,12 @@ async function ladeInhalte() {
     setzeTeaser("teaser-neu", inhalte.neu_im_laden);
     neuImLaden = typeof inhalte.neu_im_laden === "string" ? inhalte.neu_im_laden : "";
     einsatzAuszahlen = inhalte.einsatz_auszahlen === true;
+    kinderEinstellen(inhalte.kinderecke);
     zeichneWarenkorb();   // Summe nach der Einsatz-Regel neu
     schonerEinst = inhalte.bildschirmschoner && typeof inhalte.bildschirmschoner === "object" ? inhalte.bildschirmschoner : null;
   } catch (fehler) {
     console.warn("inhalte.json konnte nicht geladen werden:", fehler); // Kästchen bleiben dann einfach weg
+    kinderEinstellen(kinderEinst);
   }
 }
 
@@ -1890,6 +1918,326 @@ document.addEventListener("visibilitychange", holeWachSperre);   // nach dem Zur
 window.addEventListener("pointerdown", holeWachSperre, { passive: true }); // manche Browser wollen erst einen Tipp
 holeWachSperre();
 
+// ===== Kinderecke =====
+// Zwei einfache Spiele mit den Produkt-Icons aus bilder/icons.svg. Einstellungen in inhalte.json:
+// "kinderecke": { "aktiv": true, "kinder_minuten": 3 }.
+// - Der Warenkorb bleibt erhalten, während ein Kind spielt ("Zum Einkauf (X Artikel)").
+// - Am Laden-Tablet (?laden) ist die Spielzeit pro Besuch begrenzt, am Handy nicht.
+// - Nichts wird gespeichert oder verschickt. Direkt-Link: …/einkaufshelfer/#kinder
+const kinderSeite = $("kinder");
+const kinderBuehne = $("kinder-buehne");
+const KINDER_FRAGEN = 6;
+let kinderEinst = null;          // aus inhalte.json
+let kinderAnsicht = "auswahl";   // auswahl | memory | quiz | pause
+let kinderTimer = null;
+let kinderPausenTimer = null;
+let kinderLinkGeprueft = false;
+
+// Kindgerechte Wörter für "Was ist das?" (nur Icons, die eindeutig erkennbar sind).
+// Erscheint nur, wenn es das Produkt mit diesem Icon in products.json gibt.
+const KINDER_WOERTER = {
+  "erdaepfel": { de: "Erdäpfel", en: "Potatoes" },
+  "zwiebel-gelb": { de: "Zwiebel", en: "Onion" },
+  "knoblauch": { de: "Knoblauch", en: "Garlic" },
+  "kuerbis": { de: "Kürbis", en: "Pumpkin" },
+  "chinakohl-gruen": { de: "Chinakohl", en: "Cabbage" },
+  "pak-choi": { de: "Pak Choi", en: "Pak choi" },
+  "suesskartoffel": { de: "Süßkartoffel", en: "Sweet potato" },
+  "apfel": { de: "Apfel", en: "Apple" },
+  "milch": { de: "Milch", en: "Milk" },
+  "eier": { de: "Eier", en: "Eggs" },
+  "honig": { de: "Honig", en: "Honey" },
+};
+// Für das Memory: gut unterscheidbare Icons
+const MEMORY_ICONS = ["erdaepfel", "zwiebel-gelb", "zwiebel-rot", "knoblauch", "kuerbis", "chinakohl-gruen", "pak-choi",
+  "suesskartoffel", "apfel", "apfelsaft", "traubensaft", "milch", "eier", "honig", "muesli", "eingelegtes"];
+
+const kinderAktiv = () => !kinderEinst || kinderEinst.aktiv !== false;
+function kinderMinuten() {
+  const m = Number(kinderEinst && kinderEinst.kinder_minuten);
+  return Number.isFinite(m) && m >= 1 && m <= 30 ? m : 3;
+}
+// Icons, die es in products.json wirklich gibt (auch ausverkaufte)
+const vorhandeneIcons = () => new Set(Object.values(produktIcons).filter(Boolean));
+
+function mische(liste) {
+  const a = liste.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function kinderKnopf(text, klasse, aktion) {
+  const b = neu("button", klasse, text);
+  b.type = "button";
+  b.addEventListener("click", aktion);
+  return b;
+}
+
+// Kopfzeile: "Zum Einkauf (X Artikel)" nur, wenn etwas im Warenkorb ist
+function zeichneKinderKopf() {
+  const anzahl = warenkorb.reduce((s, z) => s + z.menge, 0);
+  const knopf = $("kinder-einkauf");
+  knopf.hidden = warenkorb.length === 0;
+  knopf.textContent = t("Zum Einkauf ({anzahl} Artikel)", { anzahl });
+}
+
+function zeigeKinder() {
+  if (!kinderAktiv()) return;
+  startseite.hidden = true;
+  bald.hidden = true;
+  seite.hidden = true;
+  saisonSeite.hidden = true;
+  kinderSeite.hidden = false;
+  kinderSeite.scrollTop = 0;
+  zeigeKinderAuswahl();
+  clearTimeout(kinderTimer);
+  kinderTimer = IST_LADEN ? setTimeout(zeigeKinderPause, kinderMinuten() * 60 * 1000) : null;
+  aktivitaet();
+}
+
+function verlasseKinder() {
+  clearTimeout(kinderTimer);
+  clearTimeout(kinderPausenTimer);
+  kinderTimer = null;
+  kinderSeite.hidden = true;
+  kinderAnsicht = "auswahl";
+  if (KANN_VORLESEN) speechSynthesis.cancel();
+}
+
+// --- Auswahl der Spiele ---
+function spielKarte(titel, text, icons, aktion) {
+  const karte = kinderKnopf("", "kinder-spiel", aktion);
+  const bilder = neu("span", "kinder-spiel-icons");
+  icons.forEach((icon) => bilder.append(iconSvg(icon, "kinder-spiel-icon")));
+  karte.append(bilder, neu("span", "kinder-spiel-titel", titel), neu("span", "kinder-spiel-text", text));
+  return karte;
+}
+
+function zeigeKinderAuswahl() {
+  kinderAnsicht = "auswahl";
+  zeichneKinderKopf();
+  const spiele = neu("div", "kinder-spiele");
+  spiele.append(
+    spielKarte(t("Gemüse-Memory"), t("Finde die Paare!"), ["kuerbis", "kuerbis", "apfel"], starteMemory),
+    spielKarte(t("Was ist das?"), t("Erkennst du es?"), ["erdaepfel"], starteQuiz)
+  );
+  // QR-Code zum Weiterspielen am Handy (Datei entsteht beim Veröffentlichen; fehlt sie, Kasten weg)
+  const qr = neu("div", "kinder-qr");
+  const bild = neu("img");
+  bild.src = "bilder/kinder-qr.svg";
+  bild.alt = "";
+  bild.width = 120;
+  bild.height = 120;
+  bild.addEventListener("error", () => qr.remove());
+  const text = neu("div", "kinder-qr-text");
+  text.append(neu("strong", "", t("Auf dem Handy weiterspielen")), neu("span", "", t("QR-Code mit dem Handy scannen – dann ist das Tablet frei zum Einkaufen.")));
+  qr.append(bild, text);
+  kinderBuehne.replaceChildren(spiele, qr);
+}
+
+// "Super!"-Kasten am Ende eines Spiels
+function kinderFertig(titel, nochmal) {
+  const box = neu("div", "kinder-fertig");
+  const icons = neu("div", "kinder-fertig-icons");
+  mische(Array.from(vorhandeneIcons()).filter((i) => MEMORY_ICONS.includes(i))).slice(0, 3)
+    .forEach((icon) => icons.append(iconSvg(icon, "kinder-fertig-icon")));
+  const knoepfe = neu("div", "kinder-fertig-knoepfe");
+  knoepfe.append(kinderKnopf(t("Nochmal"), "btn-haupt", nochmal), kinderKnopf(t("Zurück"), "btn-zweit", zeigeKinderAuswahl));
+  box.append(icons, neu("h2", "", titel), knoepfe);
+  return box;
+}
+
+// --- Spiel 1: Gemüse-Memory (6 Paare, kein Zeitdruck, kein Verlieren) ---
+let memoryOffen = [];
+let memoryGesperrt = false;
+
+function starteMemory() {
+  kinderAnsicht = "memory";
+  memoryOffen = [];
+  memoryGesperrt = false;
+  const icons = mische(MEMORY_ICONS.filter((i) => vorhandeneIcons().has(i))).slice(0, 6);
+  const raster = neu("div", "memory");
+  mische(icons.concat(icons)).forEach((icon) => {
+    const karte = kinderKnopf("", "memory-karte", () => memoryTipp(karte));
+    karte.dataset.icon = icon;
+    karte.setAttribute("aria-label", t("Karte umdrehen"));
+    const innen = neu("span", "mk-innen");
+    const rueckseite = neu("span", "mk-hinten");
+    rueckseite.append(folienLogo("mk-logo"));
+    const vorderseite = neu("span", "mk-vorne");
+    vorderseite.append(iconSvg(icon, "mk-icon"));
+    innen.append(rueckseite, vorderseite);
+    karte.append(innen);
+    raster.append(karte);
+  });
+  kinderBuehne.replaceChildren(neu("p", "kinder-anleitung", t("Finde die Paare!")), raster);
+  aktivitaet();
+}
+
+function memoryTipp(karte) {
+  if (memoryGesperrt || karte.classList.contains("offen")) return;
+  karte.classList.add("offen");
+  memoryOffen.push(karte);
+  if (memoryOffen.length < 2) return;
+  const [a, b] = memoryOffen;
+  memoryOffen = [];
+  if (a.dataset.icon === b.dataset.icon) {
+    a.classList.add("gefunden");
+    b.classList.add("gefunden");
+    const raster = a.parentNode;
+    if (raster && !raster.querySelector(".memory-karte:not(.gefunden)")) {
+      setTimeout(() => {
+        if (kinderAnsicht === "memory" && raster.isConnected) {
+          kinderBuehne.replaceChildren(kinderFertig(t("Super! Alle gefunden!"), starteMemory));
+        }
+      }, 800);
+    }
+  } else {
+    memoryGesperrt = true;
+    setTimeout(() => {
+      a.classList.remove("offen");
+      b.classList.remove("offen");
+      memoryGesperrt = false;
+    }, 1000);
+  }
+}
+
+// --- Spiel 2: Was ist das? (ein Icon, drei Antworten, Vorlesen) ---
+const KANN_VORLESEN = "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
+let quiz = null;
+
+function vorlesen(wort) {
+  if (!KANN_VORLESEN) return;
+  try {
+    speechSynthesis.cancel();
+    const satz = new SpeechSynthesisUtterance(wort);
+    satz.lang = sprache === "en" ? "en-GB" : "de-AT";
+    const stimme = speechSynthesis.getVoices().find((v) => (v.lang || "").toLowerCase().indexOf(sprache === "en" ? "en" : "de") === 0);
+    if (stimme) satz.voice = stimme;
+    satz.rate = 0.85;
+    speechSynthesis.speak(satz);
+  } catch (fehler) {
+    console.info("Vorlesen nicht möglich:", fehler && fehler.message);
+  }
+}
+
+function quizWort(eintrag) {
+  return KINDER_WOERTER[eintrag][sprache === "en" ? "en" : "de"];
+}
+
+function starteQuiz() {
+  const pool = Object.keys(KINDER_WOERTER).filter((i) => vorhandeneIcons().has(i));
+  if (pool.length < 3) return;
+  const reihenfolge = mische(pool);
+  const fragen = [];
+  for (let i = 0; i < KINDER_FRAGEN; i++) {
+    const richtig = reihenfolge[i % reihenfolge.length];
+    const andere = mische(pool.filter((x) => x !== richtig)).slice(0, 2);
+    fragen.push({ richtig, optionen: mische([richtig].concat(andere)) });
+  }
+  quiz = { fragen, nr: 0 };
+  kinderAnsicht = "quiz";
+  zeigeFrage();
+}
+
+function zeigeFrage() {
+  const frage = quiz.fragen[quiz.nr];
+  const box = neu("div", "quiz");
+  box.append(neu("p", "kinder-anleitung", t("Frage {nr} von {gesamt}", { nr: quiz.nr + 1, gesamt: quiz.fragen.length })));
+  const bild = neu("div", "quiz-bild");
+  bild.append(iconSvg(frage.richtig, "quiz-icon"));
+  const antworten = neu("div", "quiz-antworten");
+  const rueckmeldung = neu("p", "quiz-rueckmeldung");
+  rueckmeldung.setAttribute("aria-live", "polite");
+  frage.optionen.forEach((icon) => {
+    const zeile = neu("div", "quiz-zeile");
+    const knopf = kinderKnopf(quizWort(icon), "quiz-antwort", () => quizAntwort(knopf, icon, antworten, rueckmeldung));
+    zeile.append(knopf);
+    if (KANN_VORLESEN) {
+      const vor = kinderKnopf("", "quiz-vorlesen", () => vorlesen(quizWort(icon)));
+      vor.setAttribute("aria-label", t("Vorlesen: {wort}", { wort: quizWort(icon) }));
+      vor.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12h5l7-6v20l-7-6H5z"/><path d="M21 11q4 5 0 10M24 7q8 9 0 18"/></svg>';
+      zeile.append(vor);
+    }
+    antworten.append(zeile);
+  });
+  box.append(bild, antworten, rueckmeldung);
+  kinderBuehne.replaceChildren(box);
+  aktivitaet();
+}
+
+function quizAntwort(knopf, icon, antworten, rueckmeldung) {
+  const frage = quiz.fragen[quiz.nr];
+  if (icon === frage.richtig) {
+    knopf.classList.add("richtig");
+    rueckmeldung.textContent = t("Richtig!");
+    rueckmeldung.className = "quiz-rueckmeldung gut";
+    antworten.querySelectorAll(".quiz-antwort").forEach((b) => { b.disabled = true; });
+    setTimeout(() => {
+      if (kinderAnsicht !== "quiz" || !antworten.isConnected) return;
+      quiz.nr++;
+      if (quiz.nr < quiz.fragen.length) zeigeFrage();
+      else kinderBuehne.replaceChildren(kinderFertig(t("Toll gemacht!"), starteQuiz));
+    }, 1300);
+  } else {
+    // Sanft: kurzes Wackeln in Orange, kein Rot, kein Ton
+    knopf.classList.remove("fast");
+    void knopf.offsetWidth;
+    knopf.classList.add("fast");
+    knopf.disabled = true;
+    rueckmeldung.textContent = t("Fast! Probier's nochmal.");
+    rueckmeldung.className = "quiz-rueckmeldung";
+  }
+}
+
+// --- Zeitlimit am Laden-Tablet ---
+function zeigeKinderPause() {
+  if (kinderSeite.hidden) return;
+  kinderAnsicht = "pause";
+  if (KANN_VORLESEN) speechSynthesis.cancel();
+  $("kinder-einkauf").hidden = true;
+  const box = neu("div", "kinder-fertig kinder-pause");
+  const gesicht = neu("div", "kinder-gesicht");
+  gesicht.innerHTML = '<svg viewBox="0 0 120 120" aria-hidden="true">' +
+    '<path d="M60 14c-6 0-9 6-6 11-3-5-11-5-12 1 6 0 10 2 12 5" fill="#4E8B3A" stroke="#33261A" stroke-width="3" stroke-linejoin="round"/>' +
+    '<ellipse cx="60" cy="70" rx="40" ry="38" fill="#D3A35F" stroke="#33261A" stroke-width="4"/>' +
+    '<circle cx="45" cy="64" r="5" fill="#33261A"/><circle cx="75" cy="64" r="5" fill="#33261A"/>' +
+    '<circle cx="36" cy="80" r="6" fill="#E8961E" opacity=".45"/><circle cx="84" cy="80" r="6" fill="#E8961E" opacity=".45"/>' +
+    '<path d="M44 82q16 16 32 0" fill="none" stroke="#33261A" stroke-width="4" stroke-linecap="round"/></svg>';
+  const zurStart = () => { verlasseKinder(); zeigeStartseite(); };
+  box.append(gesicht, neu("h2", "", t("Super gespielt! Jetzt ist Pause.")), kinderKnopf(t("Zur Startseite"), "btn-haupt", zurStart));
+  kinderBuehne.replaceChildren(box);
+  clearTimeout(kinderPausenTimer);
+  kinderPausenTimer = setTimeout(() => { if (kinderAnsicht === "pause" && !kinderSeite.hidden) zurStart(); }, 8000);
+}
+
+// "Zurück": aus einem Spiel zur Auswahl, sonst zur Startseite (Warenkorb bleibt)
+$("kinder-zurueck").addEventListener("click", () => {
+  if (kinderAnsicht === "memory" || kinderAnsicht === "quiz") return zeigeKinderAuswahl();
+  verlasseKinder();
+  zeigeStartseite();
+});
+$("kinder-einkauf").addEventListener("click", () => {
+  verlasseKinder();
+  zeigeRechner();
+});
+$("start-kinder").addEventListener("click", zeigeKinder);
+
+// Einstellungen übernehmen (aus ladeInhalte) und Direkt-Link …/#kinder öffnen
+function kinderEinstellen(einst) {
+  kinderEinst = einst && typeof einst === "object" ? einst : null;
+  $("start-kinder").hidden = !kinderAktiv();
+  if (!kinderAktiv() && !kinderSeite.hidden) { verlasseKinder(); zeigeStartseite(); }
+  if (!kinderLinkGeprueft) {
+    kinderLinkGeprueft = true;
+    if (location.hash === "#kinder") zeigeKinder();
+  }
+}
+window.addEventListener("hashchange", () => { if (location.hash === "#kinder") zeigeKinder(); });
+
 // ===== Saisonkalender (Daten aus saison.json) =====
 // Monate: 1 = Jänner … 12 = Dezember. "frisch" = grün, "vom Lager" = orange.
 const MONATE = {
@@ -1957,6 +2305,7 @@ function zeigeSaison() {
   startseite.hidden = true;
   bald.hidden = true;
   seite.hidden = true;
+  verlasseKinder();
   saisonMonat = aktuellerMonat();
   zeichneSaisonkalender();
   saisonSeite.hidden = false;
@@ -2042,6 +2391,7 @@ function setzeSprache(neueSprache) {
   if (!seite.hidden && aktuelleSeite) zeigeSeite(aktuelleSeite);   // offene Seite neu aufbauen
   zeichneSaisonLeiste();
   if (!saisonSeite.hidden) zeichneSaisonkalender();
+  if (!kinderSeite.hidden && kinderAnsicht === "auswahl") zeigeKinderAuswahl();
   aktivitaet();
 }
 document.querySelectorAll("[data-sprache-knopf]").forEach((b) =>

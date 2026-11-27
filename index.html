@@ -276,6 +276,10 @@
       </button>
 
       <div class="start-unten">
+        <button id="start-kinder" type="button" class="btn-zweit start-klein start-kinder" hidden>
+          <svg class="start-kinder-icon" aria-hidden="true"><use href="bilder/icons.svg#apfel"/></svg>
+          <span data-i18n>Für Kinder</span>
+        </button>
         <button type="button" class="btn-zweit start-klein" data-seite="ueber" data-i18n>Über uns</button>
         <button type="button" class="btn-zweit start-klein" data-seite="wuensche" data-i18n>Wünsche &amp; Feedback</button>
         <button type="button" class="btn-zweit start-klein" data-seite="impressum" data-i18n>Impressum &amp; Datenschutz</button>
@@ -345,6 +349,18 @@
           <button id="saison-einkauf" type="button" class="btn-haupt saison-einkauf" data-i18n>Zum Einkauf</button>
         </aside>
       </div>
+    </div>
+  </div>
+
+  <!-- Kinderecke: Gemüse-Memory und "Was ist das?" (Einstellungen in inhalte.json → "kinderecke") -->
+  <div id="kinder" class="kinder" role="region" aria-labelledby="kinder-titel" hidden>
+    <div class="kinder-inhalt">
+      <header class="kinder-kopf">
+        <button id="kinder-zurueck" type="button" class="btn-startseite" data-i18n>← Zurück</button>
+        <h1 id="kinder-titel" data-i18n>Kinderecke</h1>
+        <button id="kinder-einkauf" type="button" class="btn-startseite kinder-einkauf" hidden></button>
+      </header>
+      <div id="kinder-buehne" class="kinder-buehne"></div>
     </div>
   </div>
 
