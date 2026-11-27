@@ -1753,3 +1753,33 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   .start-unten { gap: 14px; }
   .start-klein { padding: 0 20px; }
 }
+
+/* ===== Nach der Bewertung: "Was können wir besser machen?" und Google-Einladung ===== */
+.nach-bewertung { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.nach-bewertung[hidden], .besser-box[hidden], .google-box[hidden], .google-qr[hidden], .google-link[hidden] { display: none; }
+.besser-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 12px 14px;
+  border-left: 6px solid var(--orange);
+  background: var(--papier);
+}
+.besser-box p { margin: 0; font-weight: 700; font-size: 1.15rem; }
+.besser-box .btn-zweit { min-height: 52px; padding: 0 18px; font-size: 1.05rem; }
+.google-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 2px solid var(--braun);
+  border-radius: 12px;
+  background: var(--papier);
+}
+.google-text { margin: 0; font-weight: 600; font-size: 1.1rem; line-height: 1.35; }
+.google-qr { display: flex; align-items: center; gap: 16px; }
+.google-qr img { display: block; width: 180px; height: 180px; flex: none; background: var(--weiss); }
+.google-qr span { font-weight: 700; font-size: 1.2rem; }
+.google-link { display: flex; align-items: center; justify-content: center; text-decoration: none; }

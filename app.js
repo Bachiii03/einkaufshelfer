@@ -228,6 +228,11 @@ const ENGLISCH = {
   "frisch geerntet": "freshly harvested",
   "Je nach Wetter und Ernte kann es sich verschieben.": "Depending on weather and harvest, this may shift.",
   "Im {monat}": "In {monat}",
+  // Google-Bewertung
+  "Gefällt Ihnen unser Hofladen? Erzählen Sie es weiter – mit einer Bewertung auf Google.": "Do you like our farm shop? Tell others – with a review on Google.",
+  "Mit dem Handy scannen": "Scan with your phone",
+  "Auf Google bewerten": "Review us on Google",
+  "Was können wir besser machen?": "What can we do better?",
   // Kinderecke
   "Für Kinder": "For kids",
   "Kinderecke": "Kids' corner",
@@ -813,6 +818,7 @@ function zeigeDanke() {
   el.dankeBetrag.classList.toggle("danke-auszahlen", zahl.auszahlen);
   $("danke-hinweis").hidden = !zahl.verrechnet;
   el.feedback.hidden = !FEEDBACK_AKTIV;
+  dankeSekunden = DANKE_SEKUNDEN;
   bewertungZuruecksetzen();
   meldenZuruecksetzen();
   zeichneWechsel(zahl.cent);
@@ -850,8 +856,9 @@ function zeichneWechsel(summe) {
 }
 
 // Countdown bis zum automatischen Neustart (startet immer wieder bei 20 Sekunden)
+let dankeSekunden = DANKE_SEKUNDEN;   // 20 s, solange der Google-Kasten zu sehen ist 45 s
 function starteDankeCountdown() {
-  dankeEnde = Date.now() + DANKE_SEKUNDEN * 1000;
+  dankeEnde = Date.now() + dankeSekunden * 1000;
   clearInterval(dankeTimer);
   dankeTick();
   dankeTimer = setInterval(dankeTick, 250);
@@ -888,7 +895,57 @@ function bewertungZuruecksetzen() {
   smileys.forEach((s) => s.setAttribute("aria-pressed", "false"));
   feedbackTitel.textContent = t("Wie war Ihr Einkauf?");
   gezaehlteBewertung = null;
+  $("nach-bewertung").hidden = true;
+  $("besser-box").hidden = true;
+  $("google-box").hidden = true;
 }
+
+// ===== Google-Bewertung (Einstellung in inhalte.json → "google_bewertung") =====
+// Nach JEDEM Smiley dieselbe ruhige Einladung – keine Belohnung, kein Druck, kein "5 Sterne".
+// Laden-Tablet: QR-Code zum Scannen (bilder/google-bewertung-qr.svg, entsteht beim Veröffentlichen).
+// Handy: Knopf, der den Link öffnet. Bei "Schlecht" zusätzlich zuerst "Was können wir besser machen?".
+const DANKE_SEKUNDEN_GOOGLE = 45;    // Zeit zum Scannen
+let googleEinst = null;
+
+function googleUrl() {
+  const g = googleEinst;
+  const url = g && g.aktiv === true && typeof g.url === "string" ? g.url.trim() : "";
+  return /^https:\/\/\S+$/.test(url) ? url : "";
+}
+
+function zeigeNachBewertung(bewertung) {
+  const url = googleUrl();
+  const google = $("google-box");
+  $("besser-box").hidden = bewertung !== "schlecht";
+  google.hidden = !url;
+  if (url) {
+    const qr = $("google-qr"), bild = $("google-qr-bild"), link = $("google-link");
+    qr.hidden = !IST_LADEN;
+    link.hidden = IST_LADEN;          // am Laden-Tablet keine Links, die die Seite verlassen
+    link.href = url;
+    if (IST_LADEN) {
+      bild.onerror = () => { google.hidden = true; aktualisiereNachBewertung(); };   // QR fehlt → Kasten weg
+      bild.src = "bilder/google-bewertung-qr.svg";
+    }
+    dankeSekunden = DANKE_SEKUNDEN_GOOGLE;
+    starteDankeCountdown();
+  }
+  aktualisiereNachBewertung();
+  // ganz sichtbar machen (bei "Schlecht" sind es zwei Kästen – sonst läge der QR-Code unter dem Rand)
+  const box = $("nach-bewertung");
+  if (!box.hidden && box.scrollIntoView) box.scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+function aktualisiereNachBewertung() {
+  $("nach-bewertung").hidden = $("besser-box").hidden && $("google-box").hidden;
+}
+
+// "Wünsche & Feedback" aus der Danke-Seite: Einkauf abschließen, Sprache behalten
+$("besser-knopf").addEventListener("click", () => {
+  const bisher = sprache;
+  zuruecksetzen();
+  if (bisher !== "de") setzeSprache(bisher);
+  zeigeSeite("wuensche");
+});
 
 smileys.forEach((s) =>
   s.addEventListener("click", () => {
@@ -896,6 +953,7 @@ smileys.forEach((s) =>
     smileys.forEach((andere) => andere.setAttribute("aria-pressed", String(andere === s)));
     feedbackTitel.textContent = t("Danke für Ihre Bewertung!");
     zaehleBewertung(s.dataset.bewertung);
+    zeigeNachBewertung(s.dataset.bewertung);
   })
 );
 
@@ -1571,6 +1629,7 @@ async function ladeInhalte() {
     neuImLaden = typeof inhalte.neu_im_laden === "string" ? inhalte.neu_im_laden : "";
     einsatzAuszahlen = inhalte.einsatz_auszahlen === true;
     kinderEinstellen(inhalte.kinderecke);
+    googleEinst = inhalte.google_bewertung && typeof inhalte.google_bewertung === "object" ? inhalte.google_bewertung : null;
     zeichneWarenkorb();   // Summe nach der Einsatz-Regel neu
     schonerEinst = inhalte.bildschirmschoner && typeof inhalte.bildschirmschoner === "object" ? inhalte.bildschirmschoner : null;
   } catch (fehler) {

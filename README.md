@@ -186,6 +186,34 @@ Einstellungen in **`inhalte.json`**:
 
 Die automatische Prüfung kontrolliert auch diese Einstellungen.
 
+## Google-Bewertung auf der Danke-Seite
+
+Nach dem Antippen eines Smileys (egal ob Gut, Okay oder Schlecht – Google erlaubt nicht, nur
+zufriedene Kunden zu fragen) erscheint eine ruhige Einladung: „Gefällt Ihnen unser Hofladen?
+Erzählen Sie es weiter – mit einer Bewertung auf Google.“
+
+- **Laden-Tablet:** QR-Code zum Scannen mit dem Handy („Mit dem Handy scannen“).
+- **Handy:** Knopf „Auf Google bewerten“.
+- Bei „Schlecht“ steht zusätzlich zuerst „Was können wir besser machen?“ mit einem Knopf zu
+  „Wünsche & Feedback“.
+- Solange die Einladung zu sehen ist, bleibt die Danke-Seite 45 statt 20 Sekunden offen.
+
+Einstellung in **`inhalte.json`**:
+
+```json
+"google_bewertung": { "aktiv": true, "url": "https://g.page/r/…/review" }
+```
+
+- `url` leer (`""`) oder `"aktiv": false` → die Einladung wird gar nicht gezeigt.
+- Die Adresse muss mit `https://` beginnen.
+- **Wo finde ich den Link?** Im Google-Unternehmensprofil (business.google.com oder in Google
+  Maps/Suche beim eigenen Profil) auf **„Bewertungen erhalten“** (englisch: *„Ask for reviews“*)
+  tippen und den angezeigten Link kopieren.
+- Den QR-Code (`bilder/google-bewertung-qr.svg`) erzeugt GitHub beim Veröffentlichen automatisch
+  mit `scripts/make-qr.js` – er passt also immer zur Adresse in `inhalte.json`.
+
+Die automatische Prüfung kontrolliert auch diese Einstellung.
+
 ## Meldungen und Wochenbericht per E-Mail
 
 - **„Etwas gefehlt? Hier melden“** (auf der Danke-Seite): Kunden tippen an, was leer

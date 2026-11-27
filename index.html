@@ -196,6 +196,23 @@
           </div>
           <button type="button" id="melden" class="link-knopf" hidden data-i18n>Etwas gefehlt? Hier melden</button>
           <p id="melden-danke" class="melden-danke" role="status" hidden data-i18n>✓ Danke für Ihre Meldung! Wir kümmern uns darum.</p>
+
+          <!-- Nach JEDER Bewertung (Gut, Okay, Schlecht) dieselbe Einladung zu Google
+               (Google erlaubt nicht, nur zufriedene Kunden zu fragen). Link in inhalte.json → "google_bewertung". -->
+          <div id="nach-bewertung" class="nach-bewertung" hidden>
+            <div id="besser-box" class="besser-box" hidden>
+              <p data-i18n>Was können wir besser machen?</p>
+              <button id="besser-knopf" type="button" class="btn-zweit" data-i18n>Wünsche &amp; Feedback</button>
+            </div>
+            <div id="google-box" class="google-box" hidden>
+              <p class="google-text" data-i18n>Gefällt Ihnen unser Hofladen? Erzählen Sie es weiter – mit einer Bewertung auf Google.</p>
+              <div id="google-qr" class="google-qr" hidden>
+                <img id="google-qr-bild" width="180" height="180" alt="QR-Code: Google-Bewertung">
+                <span data-i18n>Mit dem Handy scannen</span>
+              </div>
+              <a id="google-link" class="btn-haupt google-link" href="#" target="_blank" rel="noopener noreferrer" hidden data-i18n>Auf Google bewerten</a>
+            </div>
+          </div>
         </section>
       </div>
     </div>

@@ -161,6 +161,18 @@ function pruefeBildschirmschoner() {
   if (d.einsatz_auszahlen !== undefined && typeof d.einsatz_auszahlen !== "boolean") {
     fehler.push('inhalte.json: "einsatz_auszahlen" muss true oder false sein (ohne Anführungszeichen).');
   }
+  const g = d.google_bewertung;
+  if (g !== undefined) {
+    if (!g || typeof g !== "object" || Array.isArray(g)) {
+      fehler.push('inhalte.json, "google_bewertung": muss so aussehen: { "aktiv": true, "url": "https://…" }');
+    } else {
+      if (typeof g.aktiv !== "boolean") fehler.push('inhalte.json, "google_bewertung": "aktiv" muss true oder false sein (ohne Anführungszeichen).');
+      if (typeof g.url !== "string") fehler.push('inhalte.json, "google_bewertung": "url" muss ein Text in Anführungszeichen sein (leer lassen: "").');
+      else if (g.url.trim() !== "" && !/^https:\/\/\S+$/.test(g.url.trim())) {
+        fehler.push('inhalte.json, "google_bewertung": "url" muss mit https:// beginnen und darf keine Leerzeichen enthalten.');
+      }
+    }
+  }
   const k = d.kinderecke;
   if (k !== undefined) {
     if (!k || typeof k !== "object" || Array.isArray(k)) {

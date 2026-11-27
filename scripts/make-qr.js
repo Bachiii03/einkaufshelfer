@@ -3,6 +3,8 @@
 // Läuft automatisch beim Veröffentlichen (GitHub Action), lokal: node scripts/make-qr.js
 //
 // - bilder/kinder-qr.svg: Kinderecke am Handy weiterspielen (…/einkaufshelfer/#kinder)
+// - bilder/google-bewertung-qr.svg: Link aus inhalte.json → "google_bewertung" → "url"
+//   (nur wenn "aktiv": true und eine https://-Adresse eingetragen ist, sonst wird die Datei entfernt)
 
 const fs = require("fs");
 const path = require("path");
@@ -36,3 +38,20 @@ function schreibe(datei, inhalt) {
 }
 
 schreibe("bilder/kinder-qr.svg", qrSvg(SEITE + "#kinder", "QR-Code: Kinderecke am Handy"));
+
+// Google-Bewertung: QR passt immer zur Adresse in inhalte.json
+const GOOGLE_DATEI = "bilder/google-bewertung-qr.svg";
+let google = null;
+try {
+  google = JSON.parse(fs.readFileSync(path.join(ORDNER, "inhalte.json"), "utf8").replace(/^\uFEFF/, "")).google_bewertung;
+} catch (fehler) {
+  console.log("inhalte.json konnte nicht gelesen werden – kein Google-QR: " + fehler.message);
+}
+const googleUrl = google && google.aktiv === true && typeof google.url === "string" ? google.url.trim() : "";
+if (/^https:\/\/\S+$/.test(googleUrl)) {
+  schreibe(GOOGLE_DATEI, qrSvg(googleUrl, "QR-Code: Google-Bewertung"));
+} else {
+  const alt = path.join(ORDNER, GOOGLE_DATEI);
+  if (fs.existsSync(alt)) fs.unlinkSync(alt);
+  console.log("– kein Google-QR (in inhalte.json ist keine https://-Adresse eingetragen oder aktiv ist false)");
+}

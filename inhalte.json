@@ -3,6 +3,7 @@
   "neu_im_laden": "Pak Choi aus eigenem Anbau",
   "einsatz_auszahlen": false,
   "kinderecke": { "aktiv": true, "kinder_minuten": 3 },
+  "google_bewertung": { "aktiv": true, "url": "" },
   "bildschirmschoner": {
     "aktiv": true,
     "start_nach_sekunden": 90,
