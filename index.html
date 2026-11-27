@@ -324,9 +324,15 @@
     </div>
   </div>
 
-  <!-- Nachtmodus (nur Laden-Tablet): schwarzer Bildschirm in der Nacht, erstes Antippen weckt nur auf -->
-  <div id="nacht" class="nacht" hidden>
-    <p id="nacht-text" class="nacht-text">Zum Einkaufen bitte antippen</p>
+  <!-- Bildschirmschoner (nur Laden-Tablet): wechselnde Folien, wenn niemand einkauft.
+       Nachts zusätzlich abgedunkelt. Erstes Antippen beendet ihn nur (löst nichts darunter aus). -->
+  <div id="schoner" class="schoner" hidden>
+    <div id="schoner-buehne" class="schoner-buehne"></div>
+    <div id="schoner-fuss" class="schoner-fuss">
+      <img src="bilder/logo-400.png" width="400" height="325" alt="">
+      <p data-i18n>Zum Einkaufen bitte antippen</p>
+    </div>
+    <div id="schoner-dimmer" class="schoner-dimmer"></div>
   </div>
 
   <script src="app.js"></script>

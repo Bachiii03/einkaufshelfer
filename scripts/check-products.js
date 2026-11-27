@@ -118,7 +118,7 @@ function main() {
   const produktNamen = daten.produkte.filter((p) => p && typeof p.name === "string").map((p) => p.name);
   const anzahl = pruefeTexte(produktNamen);
   anzahl.saison = pruefeSaison();
-  const nachtmodus = pruefeNachtmodus();
+  const schonerInfo = pruefeBildschirmschoner();
 
   if (fehler.length) {
     console.error(`✗ ${fehler.length} Fehler gefunden:`);
@@ -129,35 +129,43 @@ function main() {
   console.log(`✓ products.json ist in Ordnung (${daten.produkte.length} Produkte geprüft).`);
   console.log(`✓ rezepte.json und geschichten.json sind in Ordnung (${anzahl.rezepte} Rezepte, ${anzahl.geschichten} Geschichten).`);
   console.log(`✓ saison.json ist in Ordnung (${anzahl.saison} Produkte im Saisonkalender).`);
-  console.log(`✓ inhalte.json ist in Ordnung (${nachtmodus}).`);
+  console.log(`✓ inhalte.json ist in Ordnung (${schonerInfo}).`);
 }
 
-// ===== inhalte.json: Nachtmodus-Einstellungen =====
-function pruefeNachtmodus() {
+// ===== inhalte.json: Bildschirmschoner-Einstellungen =====
+function pruefeBildschirmschoner() {
   const d = leseJson("inhalte.json");
   if (!d) return "nicht geprüft";
-  const n = d.nachtmodus;
-  if (n === undefined) return "kein Nachtmodus eingestellt";
-  const wer = 'inhalte.json, "nachtmodus"';
-  if (!n || typeof n !== "object" || Array.isArray(n)) {
-    fehler.push(`${wer}: muss so aussehen: { "aktiv": true, "von": "22:00", "bis": "06:00", "dunkel_nach_sekunden": 60 }`);
+  const b = d.bildschirmschoner;
+  if (b === undefined) return "kein Bildschirmschoner eingestellt";
+  const wer = 'inhalte.json, "bildschirmschoner"';
+  if (!b || typeof b !== "object" || Array.isArray(b)) {
+    fehler.push(`${wer}: muss so aussehen: { "aktiv": true, "start_nach_sekunden": 90, "folie_sekunden": 12, "nacht_von": "22:00", "nacht_bis": "06:00", "nacht_helligkeit": 0.45 }`);
     return "";
   }
-  if (typeof n.aktiv !== "boolean") fehler.push(`${wer}: "aktiv" muss true oder false sein (ohne Anführungszeichen).`);
+  if (typeof b.aktiv !== "boolean") fehler.push(`${wer}: "aktiv" muss true oder false sein (ohne Anführungszeichen).`);
+  const ganzeZahl = (feld, min, max) => {
+    const w = b[feld];
+    if (typeof w !== "number" || !Number.isInteger(w) || w < min || w > max) {
+      fehler.push(`${wer}: "${feld}" muss eine ganze Zahl zwischen ${min} und ${max} sein (ohne Anführungszeichen).`);
+    }
+  };
+  ganzeZahl("start_nach_sekunden", 10, 3600);
+  ganzeZahl("folie_sekunden", 5, 120);
   const zeit = /^([01]?\d|2[0-3]):[0-5]\d$/;
-  for (const feld of ["von", "bis"]) {
-    if (typeof n[feld] !== "string" || !zeit.test(n[feld].trim())) {
+  for (const feld of ["nacht_von", "nacht_bis"]) {
+    if (typeof b[feld] !== "string" || !zeit.test(b[feld].trim())) {
       fehler.push(`${wer}: "${feld}" bitte als Uhrzeit mit Doppelpunkt schreiben, z. B. "22:00".`);
     }
   }
-  if (typeof n.von === "string" && typeof n.bis === "string" && n.von.trim() === n.bis.trim()) {
-    fehler.push(`${wer}: "von" und "bis" sind gleich – dann wäre nie Nacht.`);
+  if (typeof b.nacht_von === "string" && typeof b.nacht_bis === "string" && b.nacht_von.trim() === b.nacht_bis.trim()) {
+    fehler.push(`${wer}: "nacht_von" und "nacht_bis" sind gleich – dann wäre nie Nacht. Nicht abdunkeln? Dann "nacht_helligkeit": 1.`);
   }
-  const s = n.dunkel_nach_sekunden;
-  if (typeof s !== "number" || !Number.isInteger(s) || s < 10 || s > 3600) {
-    fehler.push(`${wer}: "dunkel_nach_sekunden" muss eine ganze Zahl zwischen 10 und 3600 sein (ohne Anführungszeichen).`);
+  const h = b.nacht_helligkeit;
+  if (typeof h !== "number" || h < 0.1 || h > 1) {
+    fehler.push(`${wer}: "nacht_helligkeit" muss eine Zahl zwischen 0.1 (sehr dunkel) und 1 (gar nicht abgedunkelt) sein, mit Punkt: 0.45`);
   }
-  return n.aktiv ? `Nachtmodus ${n.von}–${n.bis}` : "Nachtmodus ausgeschaltet";
+  return b.aktiv ? `Bildschirmschoner an, Nacht ${b.nacht_von}–${b.nacht_bis}` : "Bildschirmschoner ausgeschaltet";
 }
 
 // ===== saison.json (Saisonkalender) =====

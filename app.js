@@ -199,6 +199,15 @@ const ENGLISCH = {
   "frisch geerntet": "freshly harvested",
   "Je nach Wetter und Ernte kann es sich verschieben.": "Depending on weather and harvest, this may shift.",
   "Im {monat}": "In {monat}",
+  // Bildschirmschoner
+  "Zum Einkaufen bitte antippen": "Tap to start shopping",
+  "Willkommen bei Bachl's Feldgemüse": "Welcome to Bachl's Feldgemüse",
+  "Selbstbedienung rund um die Uhr": "Self-service around the clock",
+  "Jetzt frisch": "Fresh now",
+  "Vom Lager": "From storage",
+  "Saison im {monat}": "In season in {monat}",
+  "Neu im Laden": "New in the shop",
+  "Beliebt bei uns": "Customer favourites",
   "Das ganze Jahr": "All year round",
   "Zum Einkauf": "Go shopping",
   "In diesem Monat gibt es nichts aus der Saison-Liste.": "Nothing from the seasonal list this month.",
@@ -1377,7 +1386,8 @@ async function ladeInhalte() {
     rezeptDerWoche = typeof inhalte.rezept_der_woche === "string" ? inhalte.rezept_der_woche : "";
     setzeTeaser("teaser-rezept", inhalte.rezept_der_woche);
     setzeTeaser("teaser-neu", inhalte.neu_im_laden);
-    nachtEinst = inhalte.nachtmodus && typeof inhalte.nachtmodus === "object" ? inhalte.nachtmodus : null;
+    neuImLaden = typeof inhalte.neu_im_laden === "string" ? inhalte.neu_im_laden : "";
+    schonerEinst = inhalte.bildschirmschoner && typeof inhalte.bildschirmschoner === "object" ? inhalte.bildschirmschoner : null;
   } catch (fehler) {
     console.warn("inhalte.json konnte nicht geladen werden:", fehler); // Kästchen bleiben dann einfach weg
   }
@@ -1433,24 +1443,37 @@ setInterval(() => {
   }
 }, 500);
 
-// ===== Nachtmodus (nur Laden-Tablet) =====
-// Einstellungen in inhalte.json: "nachtmodus": { "aktiv", "von", "bis", "dunkel_nach_sekunden" }.
-// Nachts wird der Bildschirm schwarz, wenn die Startseite unberührt dasteht (leerer Warenkorb,
-// kein Ziffernfeld, keine Danke-Seite). Das erste Antippen weckt nur auf – der Knopf darunter
-// wird NICHT gedrückt, weil das schwarze Bild während des Ausblendens noch darüber liegt.
-// Test am Tag: Seite mit "?nachttest" öffnen → tut so, als wäre Nacht, und wird nach 10 Sekunden dunkel.
-const NACHT_TEST = new URLSearchParams(location.search).has("nachttest");
-const NACHT_TEXT_WANDERN_MS = 3 * 60 * 1000;   // Text alle 3 Minuten verschieben (nichts brennt ein)
-const nacht = $("nacht");
-const nachtText = $("nacht-text");
-let nachtEinst = null;      // aus inhalte.json
-let nachtAn = false;
+// ===== Bildschirmschoner (nur Laden-Tablet) =====
+// Einstellungen in inhalte.json: "bildschirmschoner": { "aktiv", "start_nach_sekunden", "folie_sekunden",
+// "nacht_von", "nacht_bis", "nacht_helligkeit" }.
+// Startet, wenn die Startseite unberührt dasteht (leerer Warenkorb, kein Ziffernfeld, keine Danke-Seite) –
+// Tag und Nacht. Nachts liegt eine dunkle Schicht darüber. Das erste Antippen beendet ihn nur:
+// Der Schoner liegt beim Ausblenden noch über allem und fängt den Tipp ab, darunter passiert nichts.
+// Testen: "?schonertest" startet nach 5 Sekunden, "?nachttest" tut so, als wäre Nacht.
+const TEST_PARAMETER = new URLSearchParams(location.search);
+const SCHONER_TEST = TEST_PARAMETER.has("schonertest");
+const NACHT_TEST = TEST_PARAMETER.has("nachttest");
+const schoner = $("schoner");
+const schonerBuehne = $("schoner-buehne");
+const schonerFuss = $("schoner-fuss");
+const schonerDimmer = $("schoner-dimmer");
+let schonerEinst = null;    // aus inhalte.json
+let neuImLaden = "";        // aus inhalte.json
+let schonerAn = false;
 let ruheSeit = null;        // seit wann die Startseite unberührt dasteht
-let nachtWanderTimer = null;
-let nachtAusTimer = null;
+let folienNr = -1;          // welche Folie gerade zu sehen ist
+let produktSeite = 0;       // welche Gruppe beliebter Produkte als Nächstes kommt
+let folienTimer = null;
+let schonerAusTimer = null;
 
 if (window.fully) {
-  console.log("Fully Kiosk erkannt – der Nachtmodus verwendet vorerst das eigene schwarze Bild (keine Fully-Funktionen).");
+  console.log("Fully Kiosk erkannt – der Bildschirmschoner läuft vorerst in der Seite (keine Fully-Funktionen).");
+}
+
+// Zahl aus den Einstellungen – ungültig oder außerhalb des Bereichs → Standardwert
+function schonerZahl(name, standard, min, max) {
+  const w = Number(schonerEinst && schonerEinst[name]);
+  return Number.isFinite(w) && w >= min && w <= max ? w : standard;
 }
 
 // "22:00" → 1320 (Minuten seit Mitternacht); ungültig → null
@@ -1469,16 +1492,17 @@ function imZeitraum(jetzt, von, bis) {
 
 function istNachtzeit() {
   if (NACHT_TEST) return true;
-  if (!nachtEinst || nachtEinst.aktiv !== true) return false;
+  if (!schonerEinst) return false;
   const d = new Date();
-  return imZeitraum(d.getHours() * 60 + d.getMinutes(), minutenAus(nachtEinst.von), minutenAus(nachtEinst.bis));
+  return imZeitraum(d.getHours() * 60 + d.getMinutes(), minutenAus(schonerEinst.nacht_von), minutenAus(schonerEinst.nacht_bis));
 }
 
-function dunkelNachMs() {
-  if (NACHT_TEST) return 10 * 1000;
-  const s = Number(nachtEinst && nachtEinst.dunkel_nach_sekunden);
-  return (Number.isFinite(s) && s >= 5 ? s : 60) * 1000;
+function schonerErlaubt() {
+  if (SCHONER_TEST) return true;
+  return (IST_LADEN || NACHT_TEST) && !!schonerEinst && schonerEinst.aktiv === true;
 }
+const startNachMs = () => (SCHONER_TEST ? 5 : schonerZahl("start_nach_sekunden", 90, 10, 3600)) * 1000;
+const folieMs = () => schonerZahl("folie_sekunden", 12, 5, 120) * 1000;
 
 // Startseite steht unberührt da: nichts offen, nichts im Warenkorb
 function startseiteRuhig() {
@@ -1486,56 +1510,216 @@ function startseiteRuhig() {
     el.danke.hidden && melden.dialog.hidden && el.warnung.hidden;
 }
 
-function verschiebeNachtText() {
-  nachtText.style.left = (25 + Math.random() * 50).toFixed(1) + "%";
-  nachtText.style.top = (25 + Math.random() * 50).toFixed(1) + "%";
+// --- Die Folien (jede liefert ihren Inhalt oder null, wenn es nichts zu zeigen gibt) ---
+function folienLogo(klasse) {
+  const bild = neu("img", klasse);
+  bild.src = "bilder/logo-400.png";
+  bild.alt = "";
+  return bild;
 }
 
-function nachtEin() {
-  if (nachtAn) return;
-  nachtAn = true;
-  clearTimeout(nachtAusTimer);
-  verschiebeNachtText();
-  nacht.hidden = false;
-  void nacht.offsetWidth;          // erst unsichtbar zeichnen, dann einblenden
-  nacht.classList.add("an");
-  clearInterval(nachtWanderTimer);
-  nachtWanderTimer = setInterval(verschiebeNachtText, NACHT_TEXT_WANDERN_MS);
+function folieWillkommen() {
+  const inhalt = neu("div", "folie-inhalt");
+  inhalt.append(
+    folienLogo("folie-logo"),
+    neu("h2", "folie-titel", t("Willkommen bei Bachl's Feldgemüse")),
+    neu("p", "folie-text", t("Selbstbedienung rund um die Uhr"))
+  );
+  return inhalt;
 }
 
-function nachtAus() {
-  if (!nachtAn) return;
-  nachtAn = false;
-  ruheSeit = Date.now();           // Zeit bis zum nächsten Dunkelwerden beginnt neu
-  clearInterval(nachtWanderTimer);
-  nacht.classList.remove("an");
-  // Das schwarze Bild bleibt beim Ausblenden noch liegen und fängt so den Weck-Tipp ab
-  clearTimeout(nachtAusTimer);
-  nachtAusTimer = setTimeout(() => { nacht.hidden = true; }, 1000);
+function folieSaison() {
+  const m = aktuellerMonat();
+  const gruppen = [
+    ["frisch", "Jetzt frisch", "chip-frisch"],
+    ["lager", "Vom Lager", "chip-lager"],
+  ].map(([art, titel, klasse]) => {
+    const namen = saison.produkte.filter((p) => saisonArt(p, m) === art).map((p) => p.name);
+    if (!namen.length) return null;
+    const gruppe = neu("div", "folie-gruppe");
+    const chips = neu("div", "folie-chips");
+    namen.forEach((n) => chips.append(neu("span", `chip chip-gross ${klasse}`, saisonName(n))));
+    gruppe.append(neu("h3", "", t(titel)), chips);
+    return gruppe;
+  }).filter(Boolean);
+  if (!gruppen.length) return null;
+  const inhalt = neu("div", "folie-inhalt");
+  const saisonBox = neu("div", "folie-saison");
+  saisonBox.append(...gruppen);
+  inhalt.append(neu("span", "folie-label", t("Saison im {monat}", { monat: monatName(m) })), saisonBox);
+  return inhalt;
 }
 
-// Antippen (oder Taste) weckt nur auf – nichts darunter wird ausgelöst
-nacht.addEventListener("pointerdown", (e) => { e.preventDefault(); nachtAus(); });
-nacht.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); });
-window.addEventListener("keydown", () => nachtAus());
+function folieRezept() {
+  const titel = (rezeptDerWoche || "").trim();
+  if (!titel) return null;
+  const r = rezepte.find((x) => x.titel.trim() === titel);
+  const inhalt = neu("div", "folie-inhalt");
+  inhalt.append(neu("span", "folie-label", t("Rezept der Woche")));
+  if (r && r.foto) {
+    const bild = neu("img", "folie-foto");
+    bild.src = r.foto;
+    bild.alt = "";
+    bild.addEventListener("error", () => bild.remove());
+    inhalt.append(bild);
+  } else if (r) {
+    const icons = neu("div", "folie-icons");
+    (r.zutaten || [])
+      .map((z) => produktIcons[z.produkt])
+      .filter((icon, i, alle) => icon && alle.indexOf(icon) === i)
+      .slice(0, 5)
+      .forEach((icon) => icons.append(iconSvg(icon, "folie-icon")));
+    if (icons.children.length) inhalt.append(icons);
+  }
+  inhalt.append(neu("h2", "folie-titel", titel));
+  if (r && r.kurz) inhalt.append(neu("p", "folie-text", r.kurz));
+  const meta = r ? [r.dauer, r.portionen].filter(Boolean).join(" · ") : "";
+  if (meta) inhalt.append(neu("p", "folie-meta", meta));
+  return inhalt;
+}
+
+function folieNeu() {
+  const text = (neuImLaden || "").trim();
+  if (!text) return null;
+  const inhalt = neu("div", "folie-inhalt");
+  inhalt.append(neu("span", "folie-label", t("Neu im Laden")));
+  // Kommt ein Produktname im Text vor (z. B. "Pak Choi aus eigenem Anbau")? Dann dessen Icon zeigen.
+  const treffer = alleProduktNamen
+    .filter((n) => produktIcons[n] && text.toLowerCase().includes(n.toLowerCase()))
+    .sort((a, b) => b.length - a.length)[0];
+  if (treffer) {
+    const icons = neu("div", "folie-icons");
+    icons.append(iconSvg(produktIcons[treffer], "folie-icon"));
+    inhalt.append(icons);
+  }
+  inhalt.append(neu("h2", "folie-titel", text));
+  return inhalt;
+}
+
+function folieProdukte() {
+  const beliebt = produkte.filter((p) => p.beliebt);   // "produkte" enthält nur verfügbare
+  if (!beliebt.length) return null;
+  // In Gruppen zu 3–4 aufteilen (5 → 3 + 2, 7 → 4 + 3, 8 → 4 + 4)
+  const seiten = Math.ceil(beliebt.length / 4);
+  const groesse = Math.ceil(beliebt.length / seiten);
+  const nr = produktSeite % seiten;
+  produktSeite++;
+  const auswahl = beliebt.slice(nr * groesse, nr * groesse + groesse);
+
+  const inhalt = neu("div", "folie-inhalt");
+  const raster = neu("div", "folie-produkte");
+  raster.style.gridTemplateColumns = `repeat(${auswahl.length}, minmax(0, 1fr))`;
+  auswahl.forEach((p) => {
+    const karte = neu("div", "folie-karte");
+    const bildBox = neu("div", "folie-bild");
+    const alsIcon = () => bildBox.replaceChildren(...(p.icon ? [iconSvg(p.icon, "")] : []));
+    if (p.foto) {
+      const bild = neu("img");
+      bild.src = p.foto;
+      bild.alt = "";
+      bild.addEventListener("error", alsIcon);
+      bildBox.append(bild);
+    } else {
+      alsIcon();
+    }
+    karte.append(bildBox, neu("h3", "", pName(p.name)));
+    if (p.variabel) karte.append(neu("p", "folie-preis", t("Preis steht am Produkt")));
+    p.groessen.slice(0, 2).forEach((g) => {
+      const zeile = neu("p", "folie-preis");
+      zeile.append(neu("span", "", einheitText(g.einheit) + " · "), document.createTextNode(euro(g.cent)));
+      karte.append(zeile);
+    });
+    raster.append(karte);
+  });
+  inhalt.append(neu("span", "folie-label", t("Beliebt bei uns")), raster);
+  return inhalt;
+}
+
+const FOLIEN = [folieWillkommen, folieSaison, folieRezept, folieNeu, folieProdukte];
+
+const zufall = (min, max) => (min + Math.random() * (max - min)).toFixed(1);
+
+// Nächste Folie mit Inhalt zeigen (leere werden übersprungen) und sanft überblenden
+function naechsteFolie() {
+  let inhalt = null;
+  for (let i = 1; i <= FOLIEN.length && !inhalt; i++) {
+    const nr = (folienNr + i) % FOLIEN.length;
+    inhalt = FOLIEN[nr]();
+    if (inhalt) folienNr = nr;
+  }
+  if (!inhalt) return;
+  // Inhalt und Fußzeile jedes Mal ein Stück verschieben, damit nichts einbrennt
+  inhalt.style.transform = `translate(${zufall(-3, 3)}vw, ${zufall(-2.5, 2.5)}vh)`;
+  schonerFuss.style.transform = `translate(${zufall(-2, 2)}vw, ${zufall(-0.8, 0.8)}vh)`;
+
+  const folie = neu("div", "folie");
+  folie.append(inhalt);
+  const alte = Array.from(schonerBuehne.children);
+  schonerBuehne.append(folie);
+  void folie.offsetWidth;            // erst unsichtbar zeichnen, dann einblenden
+  folie.classList.add("sichtbar");
+  alte.forEach((a) => {
+    a.classList.remove("sichtbar");
+    setTimeout(() => a.remove(), 1600);
+  });
+}
+
+function aktualisiereDimmer() {
+  schonerDimmer.style.opacity = istNachtzeit() ? String(1 - schonerZahl("nacht_helligkeit", 0.45, 0.1, 1)) : "0";
+}
+
+function schonerEin() {
+  if (schonerAn) return;
+  schonerAn = true;
+  clearTimeout(schonerAusTimer);
+  schonerBuehne.replaceChildren();
+  folienNr = -1;
+  aktualisiereDimmer();
+  naechsteFolie();
+  schoner.hidden = false;
+  void schoner.offsetWidth;
+  schoner.classList.add("an");
+  clearInterval(folienTimer);
+  folienTimer = setInterval(naechsteFolie, folieMs());
+}
+
+function schonerAus() {
+  if (!schonerAn) return;
+  schonerAn = false;
+  ruheSeit = Date.now();             // Zeit bis zum nächsten Start beginnt neu
+  clearInterval(folienTimer);
+  schoner.classList.remove("an");
+  clearTimeout(schonerAusTimer);
+  schonerAusTimer = setTimeout(() => {
+    schoner.hidden = true;
+    schonerBuehne.replaceChildren();
+  }, 1000);
+}
+
+// Antippen (oder Taste) beendet nur den Schoner – nichts darunter wird ausgelöst
+schoner.addEventListener("pointerdown", (e) => { e.preventDefault(); schonerAus(); });
+schoner.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); });
+window.addEventListener("keydown", () => schonerAus());
 
 setInterval(() => {
-  if (!IST_LADEN && !NACHT_TEST) return;
-  if (!istNachtzeit() || !startseiteRuhig()) {
-    nachtAus();
+  if (!schonerErlaubt() || !startseiteRuhig()) {
+    schonerAus();
     ruheSeit = null;
     return;
   }
-  if (nachtAn) return;
+  if (schonerAn) {
+    aktualisiereDimmer();            // z. B. um 22:00 abdunkeln, um 06:00 wieder hell
+    return;
+  }
   if (ruheSeit === null) ruheSeit = Date.now();
-  if (Date.now() - Math.max(ruheSeit, letzteAktivitaet) >= dunkelNachMs()) nachtEin();
+  if (Date.now() - Math.max(ruheSeit, letzteAktivitaet) >= startNachMs()) schonerEin();
 }, 1000);
 
 // Bildschirm wachhalten (Screen Wake Lock), damit das Gerät nicht selbst sperrt.
-// Nur am Laden-Tablet. Ältere Browser (z. B. älteres Safari) kennen das nicht → einfach ignorieren.
+// Nur am Laden-Tablet (und beim Testen). Ältere Browser kennen das nicht → einfach ignorieren.
 let wachSperre = null;
 async function holeWachSperre() {
-  if ((!IST_LADEN && !NACHT_TEST) || wachSperre || !("wakeLock" in navigator)) return;
+  if ((!IST_LADEN && !SCHONER_TEST && !NACHT_TEST) || wachSperre || !("wakeLock" in navigator)) return;
   if (document.visibilityState !== "visible") return;
   try {
     wachSperre = await navigator.wakeLock.request("screen");

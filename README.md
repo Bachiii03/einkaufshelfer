@@ -81,30 +81,52 @@ Der Saisonkalender (Leiste auf der Startseite und eigene Seite) kommt aus **`sai
 
 Die automatische Prüfung kontrolliert auch diese Datei (Monate 1–12, nichts doppelt).
 
-## Nachtmodus (Laden-Tablet)
+## Bildschirmschoner (Laden-Tablet)
 
-Nachts wird der Bildschirm des Laden-Tablets schwarz, wenn niemand einkauft. Ein Antippen
-weckt ihn wieder auf (das erste Antippen drückt dabei keinen Knopf). Einstellungen in
-**`inhalte.json`**:
+Wenn niemand einkauft, zeigt das Laden-Tablet wechselnde Folien im Packpapier-Stil – unten
+immer groß „Zum Einkaufen bitte antippen“. Das erste Antippen beendet den Bildschirmschoner
+nur (es wird dabei kein Knopf gedrückt). Einstellungen in **`inhalte.json`**:
 
 ```json
-"nachtmodus": { "aktiv": true, "von": "22:00", "bis": "06:00", "dunkel_nach_sekunden": 60 }
+"bildschirmschoner": {
+  "aktiv": true,
+  "start_nach_sekunden": 90,
+  "folie_sekunden": 12,
+  "nacht_von": "22:00",
+  "nacht_bis": "06:00",
+  "nacht_helligkeit": 0.45
+}
 ```
 
 - `aktiv`: `true` = eingeschaltet, `false` = aus (ohne Anführungszeichen).
-- `von` / `bis`: Uhrzeit des Tablets mit Doppelpunkt, darf über Mitternacht gehen.
-- `dunkel_nach_sekunden`: so lange ohne Antippen, bis es dunkel wird (10 bis 3600).
-- Dunkel wird es nur, wenn die Startseite unberührt dasteht – nie mit vollem Warenkorb,
-  offenem Ziffernfeld oder auf der Danke-Seite. Untertags ändert sich nichts.
-- Auf dem schwarzen Bild steht ganz schwach „Zum Einkaufen bitte antippen“; der Text
-  wandert alle paar Minuten ein Stück, damit nichts einbrennt.
+- `start_nach_sekunden`: so lange ohne Antippen, bis er startet (10 bis 3600) – Tag und Nacht.
+- `folie_sekunden`: so lange bleibt jede Folie stehen (5 bis 120), dann langsame Überblendung.
+- `nacht_von` / `nacht_bis`: in dieser Zeit wird er abgedunkelt (Uhrzeit des Tablets, darf über
+  Mitternacht gehen).
+- `nacht_helligkeit`: wie hell er nachts bleibt – `1` = gar nicht abgedunkelt, `0.45` = 45 %,
+  `0.1` = sehr dunkel. Zahl mit **Punkt**.
+
+Die Folien (leere werden übersprungen):
+
+1. Logo und „Willkommen bei Bachl's Feldgemüse – Selbstbedienung rund um die Uhr“
+2. „Jetzt frisch“ / „Vom Lager“ im aktuellen Monat (aus `saison.json`)
+3. „Rezept der Woche“ (Titel aus `inhalte.json`, Text und Dauer aus `rezepte.json`;
+   ein Foto erscheint, wenn beim Rezept `"foto": "bilder/…jpg"` steht)
+4. „Neu im Laden“ (aus `inhalte.json`)
+5. Beliebte Produkte mit Bild und Preis, 3–4 auf einmal (`"beliebt": true` und
+   `"verfuegbar": true` in `products.json`)
+
+Gut zu wissen:
+
+- Er startet nur, wenn die Startseite unberührt dasteht – nie mit vollem Warenkorb, offenem
+  Ziffernfeld oder auf der Danke-Seite.
+- Die Inhalte verschieben sich mit jeder Folie ein Stück, damit nichts einbrennt.
 - Gilt nur für das Laden-Tablet (Start-Adresse mit `?laden`). Dort hält die Seite den
   Bildschirm außerdem wach, damit sich das Gerät nicht selbst sperrt (wo der Browser das kann).
-- **Am Tag testen:** Seite mit `?nachttest` öffnen
-  (`https://bachiii03.github.io/einkaufshelfer/?nachttest`) – sie tut so, als wäre Nacht,
-  und wird nach 10 Sekunden dunkel.
+- **Testen:** `https://bachiii03.github.io/einkaufshelfer/?schonertest` startet nach 5 Sekunden;
+  `?schonertest&nachttest` zeigt zusätzlich die abgedunkelte Nacht-Version.
 
-Die automatische Prüfung kontrolliert auch diese Einstellungen (Uhrzeit-Format, Zahl).
+Die automatische Prüfung kontrolliert auch diese Einstellungen (Zahlen, Uhrzeit-Format).
 
 ## Meldungen und Wochenbericht per E-Mail
 
