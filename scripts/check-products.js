@@ -13,6 +13,9 @@ const KATEGORIEN = ["Gemüse", "Obst & Getränke", "Öle", "Milch & Eier", "Vorr
 const PREIS_MIN = 0.1;
 const PREIS_MAX = 100;
 const NAME_MAX = 30;
+const EINSATZ_MIN = 0.05;
+const EINSATZ_MAX = 5;
+const EINSATZ_ARTEN = ["Flasche", "Glas"];
 
 const fehler = [];
 
@@ -72,6 +75,31 @@ function pruefeProdukt(p, nr) {
         }
       }
     });
+  }
+
+  // Einsatz (optional): Betrag 0.05–5 € mit höchstens 2 Nachkommastellen, dazu "einsatz_art"
+  if (p.einsatz !== undefined) {
+    if (typeof p.einsatz !== "number" || !Number.isFinite(p.einsatz)) {
+      melde('"einsatz" muss eine Zahl sein (mit Punkt, z. B. 0.50 – ohne Anführungszeichen und ohne €).');
+    } else {
+      if (p.einsatz < EINSATZ_MIN || p.einsatz > EINSATZ_MAX) {
+        melde(`Einsatz ${p.einsatz} liegt nicht zwischen ${EINSATZ_MIN.toFixed(2)} und ${EINSATZ_MAX.toFixed(2)} €.`);
+      }
+      if (Math.abs(p.einsatz * 100 - Math.round(p.einsatz * 100)) > 1e-6) {
+        melde(`Einsatz ${p.einsatz} hat mehr als 2 Nachkommastellen.`);
+      }
+    }
+    if (p.einsatz_art === undefined) melde(`hat "einsatz", aber kein "einsatz_art" – bitte ${EINSATZ_ARTEN.map((a) => `"${a}"`).join(" oder ")} dazuschreiben.`);
+  }
+  if (p.einsatz_art !== undefined) {
+    if (!EINSATZ_ARTEN.includes(p.einsatz_art)) melde(`"einsatz_art" "${p.einsatz_art}" gibt es nicht. Erlaubt: ${EINSATZ_ARTEN.map((a) => `"${a}"`).join(" oder ")}.`);
+    if (p.einsatz === undefined) melde('hat "einsatz_art", aber keinen Betrag "einsatz" (z. B. 0.50).');
+  }
+  for (const feld of ["einsatz_name", "einsatz_name_en"]) {
+    if (p[feld] === undefined) continue;
+    if (typeof p[feld] !== "string" || !p[feld].trim()) melde(`"${feld}" ist leer – entweder einen Namen eintragen oder die Zeile weglassen.`);
+    else if (p[feld].length > NAME_MAX) melde(`"${feld}" ist ${p[feld].length} Zeichen lang, erlaubt sind höchstens ${NAME_MAX}.`);
+    if (p.einsatz === undefined) melde(`hat "${feld}", aber keinen "einsatz".`);
   }
 
   // Icon (optional) – muss es in bilder/icons.svg geben
@@ -136,6 +164,9 @@ function main() {
 function pruefeBildschirmschoner() {
   const d = leseJson("inhalte.json");
   if (!d) return "nicht geprüft";
+  if (d.einsatz_auszahlen !== undefined && typeof d.einsatz_auszahlen !== "boolean") {
+    fehler.push('inhalte.json: "einsatz_auszahlen" muss true oder false sein (ohne Anführungszeichen).');
+  }
   const b = d.bildschirmschoner;
   if (b === undefined) return "kein Bildschirmschoner eingestellt";
   const wer = 'inhalte.json, "bildschirmschoner"';

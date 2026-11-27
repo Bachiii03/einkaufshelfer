@@ -23,9 +23,11 @@
       "groessen": [ { "einheit": "1 kg", "preis": 2.00 } ] },
     { "name": "Apfelsaft", "name_en": "Apple juice", "icon": "apfelsaft", "kategorie": "Obst & Getränke", "beliebt": true, "verfuegbar": true,
       "info": "inkl. 0,50 € Einsatz", "info_en": "incl. €0.50 bottle deposit",
+      "einsatz": 0.50, "einsatz_art": "Flasche",
       "groessen": [ { "einheit": "1 Liter", "preis": 3.00 } ] },
     { "name": "Traubensaft weiß oder rot", "name_en": "Grape juice, white or red", "icon": "traubensaft", "kategorie": "Obst & Getränke", "beliebt": false, "verfuegbar": true,
       "info": "inkl. 0,50 € Einsatz", "info_en": "incl. €0.50 bottle deposit",
+      "einsatz": 0.50, "einsatz_art": "Flasche",
       "groessen": [ { "einheit": "1 Liter", "preis": 3.50 } ] },
     { "name": "G'spritzt Apfel/Birne/Marille", "name_en": "Apple/pear/apricot spritzer", "icon": "gespritzter", "kategorie": "Obst & Getränke", "beliebt": false, "verfuegbar": true,
       "groessen": [ { "einheit": "0,33 l", "preis": 2.50 } ] },
@@ -39,6 +41,7 @@
 
     { "name": "Vollmilch", "name_en": "Whole milk", "icon": "milch", "kategorie": "Milch & Eier", "beliebt": true, "verfuegbar": true,
       "info": "inkl. 0,50 € Einsatz", "info_en": "incl. €0.50 bottle deposit",
+      "einsatz": 0.50, "einsatz_art": "Flasche", "einsatz_name": "Milchflasche", "einsatz_name_en": "Milk bottle",
       "groessen": [ { "einheit": "1 Liter", "preis": 2.20 } ] },
     { "name": "Naturjoghurt", "name_en": "Natural yoghurt", "icon": "naturjoghurt", "kategorie": "Milch & Eier", "beliebt": false, "verfuegbar": true,
       "groessen": [ { "einheit": "250 ml", "preis": 1.20 } ] },
@@ -51,6 +54,7 @@
 
     { "name": "Honig", "name_en": "Honey", "icon": "honig", "kategorie": "Vorrat & Gläser", "beliebt": false, "verfuegbar": true,
       "info": "inkl. 0,50 € Einsatz", "info_en": "incl. €0.50 jar deposit",
+      "einsatz": 0.50, "einsatz_art": "Glas",
       "groessen": [ { "einheit": "500 g", "preis": 6.50 } ] },
     { "name": "Eingelegtes", "name_en": "Pickles", "icon": "eingelegtes", "kategorie": "Vorrat & Gläser", "beliebt": false, "verfuegbar": true,
       "info": "Pfefferoni, Essiggurkerl, Rote Rüben, Puszta-Salat", "info_en": "Hot peppers, gherkins, beetroot, Puszta salad",

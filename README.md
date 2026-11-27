@@ -48,6 +48,38 @@ müssen als Datei vorhanden sein; Icons (`"icon"`) müssen in `bilder/icons.svg`
 *Kein „Edit file“ in der App?* Dann dieselben Schritte auf **github.com** im
 Handy-Browser: Datei öffnen → Stift-Symbol ✏️.
 
+## Leergut und Einsatz
+
+Im Warenkorb gibt es den Knopf **„Leergut zurückgeben“**. Kunden tippen an, welche leeren
+Flaschen und Gläser sie zurückbringen; der Einsatz wird von der Summe abgezogen
+(eigene grüne Zeile mit Minus-Betrag).
+
+In **`products.json`** bei jedem Produkt mit Einsatz:
+
+```json
+"einsatz": 0.50, "einsatz_art": "Flasche"
+```
+
+- `einsatz`: Betrag in Euro mit **Punkt**, zwischen 0.05 und 5.
+- `einsatz_art`: `"Flasche"` oder `"Glas"` – Pflicht, sobald `einsatz` dasteht.
+- Produkte mit gleicher Art, gleichem Betrag und gleicher Kategorie werden im Dialog zu einer
+  Zeile zusammengefasst, z. B. Apfel- und Traubensaft → „Saftflasche (Apfel- oder Traubensaft)“.
+  Der Name entsteht automatisch („Honig“ + „Glas“ = „Honigglas“).
+- Optional eigener Name: `"einsatz_name": "Milchflasche"` und `"einsatz_name_en": "Milk bottle"`.
+- Der Text bei `"info"` (z. B. „inkl. 0,50 € Einsatz“) bleibt, wie er ist – den bitte selbst
+  mitändern, wenn sich der Einsatz ändert.
+- Auch ausverkaufte Produkte (`"verfuegbar": false`) bleiben im Leergut-Dialog, damit man ihre
+  Flaschen trotzdem zurückgeben kann.
+
+In **`inhalte.json`**: `"einsatz_auszahlen": false`
+
+- `false` (Standard): Ist das Leergut mehr wert als der Einkauf, steht die Summe auf 0,00 € und
+  der Hinweis „Der Einsatz wird mit Ihrem Einkauf verrechnet. Bitte nehmen Sie kein Geld aus der
+  Kassa.“ erscheint.
+- `true`: Dann zeigt die Danke-Seite „Bitte nehmen Sie X € aus der Kassa.“ (ohne Wechselgeld-Hilfe).
+
+Die automatische Prüfung kontrolliert `einsatz`, `einsatz_art` und `einsatz_auszahlen`.
+
 ## Rezepte, Neuigkeiten und „Über uns“ ändern
 
 Die Texte der Startseiten-Bereiche stehen in zwei Dateien – genauso änderbar wie

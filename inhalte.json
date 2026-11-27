@@ -1,6 +1,7 @@
 {
   "rezept_der_woche": "Kürbiscremesuppe mit Kürbiskernöl",
   "neu_im_laden": "Pak Choi aus eigenem Anbau",
+  "einsatz_auszahlen": false,
   "bildschirmschoner": {
     "aktiv": true,
     "start_nach_sekunden": 90,

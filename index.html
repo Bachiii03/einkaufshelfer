@@ -60,10 +60,16 @@
 
       <!-- Unterer Teil des Warenkorbs: Summe und Kassa -->
       <div class="kasse">
+        <!-- Leergut: nur sichtbar, wenn in products.json Produkte mit "einsatz" stehen -->
+        <button id="leergut-knopf" class="btn-leergut" type="button" hidden>
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M15 5h6v7l3 5v24a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2V17l3-5z"/><path d="M12 24h12"/><rect x="28" y="21" width="14" height="22" rx="3"/><rect x="27" y="16" width="16" height="5" rx="1.5"/></svg>
+          <span data-i18n>Leergut zurückgeben</span>
+        </button>
         <div class="summe-zeile" aria-live="polite">
           <span class="summe-label" data-i18n>Summe</span>
           <span id="summe-betrag" class="summe-betrag">Tippen Sie auf ein Produkt</span>
         </div>
+        <p id="einsatz-hinweis" class="einsatz-hinweis" hidden data-i18n>Der Einsatz wird mit Ihrem Einkauf verrechnet. Bitte nehmen Sie kein Geld aus der Kassa.</p>
         <button id="fertig" class="btn-fertig" type="button" hidden data-i18n>Fertig – zur Kassa</button>
         <button id="neu" class="btn-neu" type="button">Neuer Einkauf</button>
         <p class="hinweis" data-i18n>Bei Abweichungen gelten die Preise, die direkt bei den Produkten angeschrieben sind.</p>
@@ -108,6 +114,19 @@
     </div>
   </div>
 
+  <!-- Leergut zurückgeben: eine Zeile pro Einsatz-Art (aus products.json) -->
+  <div id="leergut" class="overlay" hidden>
+    <div class="dialog leergut-box" role="dialog" aria-modal="true" aria-labelledby="leergut-titel">
+      <h2 id="leergut-titel" data-i18n>Was bringen Sie zurück?</h2>
+      <p class="dialog-text" data-i18n>Der Einsatz wird von Ihrer Summe abgezogen.</p>
+      <ul id="leergut-liste" class="leergut-liste"></ul>
+      <div class="dialog-knoepfe">
+        <button id="leergut-abbrechen" type="button" class="btn-zweit" data-i18n>Abbrechen</button>
+        <button id="leergut-fertig" type="button" class="btn-haupt" data-i18n>Fertig</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Warnung vor dem automatischen Zurücksetzen -->
   <div id="warnung" class="overlay" hidden>
     <div class="dialog dialog-klein" role="alertdialog" aria-modal="true">
@@ -126,9 +145,10 @@
           <img class="danke-logo" src="bilder/logo-400.png" width="400" height="325" alt="Logo Bachl's Feldgemüse">
         </picture>
         <h2 id="danke-titel" data-i18n>Danke für Ihren Einkauf!</h2>
-        <p class="danke-text" data-i18n>Bitte legen Sie</p>
+        <p id="danke-vor" class="danke-text">Bitte legen Sie</p>
         <p id="danke-betrag" class="danke-betrag">0,00 €</p>
-        <p class="danke-text" data-i18n>in die Kassa.</p>
+        <p id="danke-nach" class="danke-text">in die Kassa.</p>
+        <p id="danke-hinweis" class="einsatz-hinweis danke-hinweis" hidden data-i18n>Der Einsatz wird mit Ihrem Einkauf verrechnet. Bitte nehmen Sie kein Geld aus der Kassa.</p>
 
         <!-- Wechselgeld-Hilfe: Schein antippen → Wechselgeld wird angezeigt -->
         <div id="wechsel" class="wechsel">

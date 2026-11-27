@@ -23,6 +23,8 @@ let aktiverTab = START_TAB;
 let andersZaehler = 0;
 let eingabe = "";       // Text im Ziffernfeld, z. B. "3,7"
 let letzteAktivitaet = Date.now();
+let leergutArten = [];       // Rückgabe-Arten aus products.json ("einsatz"), z. B. Saftflasche, Honigglas
+let einsatzAuszahlen = false; // aus inhalte.json: darf bei mehr Leergut als Einkauf Geld aus der Kassa genommen werden?
 let neuTimer = null;
 let dankeTimer = null;
 let dankeEnde = 0;
@@ -44,11 +46,22 @@ const el = {
 
 // ===== Hilfsfunktionen =====
 function euro(cent) {
-  return (cent / 100).toFixed(2).replace(".", ",") + " €";
+  const text = (Math.abs(cent) / 100).toFixed(2).replace(".", ",") + " €";
+  return cent < 0 ? "−" + text : text;
 }
 
+// Einkauf minus Leergut (Leergut-Zeilen haben einen negativen Betrag)
 function summeCent() {
   return warenkorb.reduce((s, z) => s + z.cent * z.menge, 0);
+}
+
+// Was in die Kassa kommt. Mehr Leergut als Einkauf → 0,00 € ("verrechnet"),
+// außer "einsatz_auszahlen" ist in inhalte.json eingeschaltet → Geld aus der Kassa nehmen ("auszahlen").
+function zahlBetrag() {
+  const netto = summeCent();
+  if (netto >= 0) return { cent: netto, auszahlen: false, verrechnet: false };
+  if (einsatzAuszahlen) return { cent: netto, auszahlen: true, verrechnet: false };
+  return { cent: 0, auszahlen: false, verrechnet: true };
 }
 
 // Kleines Element mit Klasse und Text erzeugen
@@ -107,6 +120,18 @@ const ENGLISCH = {
   "Name (optional)": "Name (optional)",
   "z. B. Paprika": "e.g. peppers",
   "Abbrechen": "Cancel",
+  // Leergut
+  "Leergut zurückgeben": "Return empties",
+  "Was bringen Sie zurück?": "What are you returning?",
+  "Der Einsatz wird von Ihrer Summe abgezogen.": "The deposit is deducted from your total.",
+  "Fertig": "Done",
+  "Leergut: {anzahl} × {name}": "Empties: {anzahl} × {name}",
+  "je {betrag} Einsatz": "{betrag} deposit each",
+  "{name}: eins weniger": "{name}: one less",
+  "{name}: eins mehr": "{name}: one more",
+  "Der Einsatz wird mit Ihrem Einkauf verrechnet. Bitte nehmen Sie kein Geld aus der Kassa.": "The deposit is deducted from your purchase. Please do not take any money from the cash box.",
+  "Bitte nehmen Sie": "Please take",
+  "aus der Kassa.": "from the cash box.",
   "Hinzufügen": "Add",
   "Höchstens 2 Stellen nach dem Komma.": "At most 2 decimal places.",
   "Höchstens {betrag} pro Eintrag.": "At most {betrag} per entry.",
@@ -270,6 +295,7 @@ async function ladeProdukte() {
     const daten = await antwort.json();
     alleProduktNamen = (daten.produkte || []).filter((p) => p && p.name).map((p) => p.name);
     produktIcons = Object.fromEntries((daten.produkte || []).filter((p) => p && p.name).map((p) => [p.name, p.icon || ""]));
+    leergutArten = baueLeergutArten(daten.produkte || []);
     produktNamenEn = Object.fromEntries((daten.produkte || []).filter((p) => p && p.name && p.name_en).map((p) => [p.name, p.name_en]));
     produkte = (daten.produkte || [])
       .filter((p) => p && p.name && p.verfuegbar !== false)   // ausverkaufte ausblenden
@@ -432,25 +458,154 @@ function mengeAendern(schluessel, aenderung) {
 
 // Name und Detail einer Warenkorb-Zeile – immer in der aktuellen Sprache
 function zeileName(z) {
+  if (z.leergut) return t("Leergut: {anzahl} × {name}", { anzahl: z.menge, name: leergutName(z.leergut).kurz });
   if (!z.anders) return pName(z.produkt);
   if (z.eigenerName) return z.eigenerName;                 // selbst eingetippter Name
   return z.produkt ? pName(z.produkt) : t("Anderer Preis");
 }
 function zeileDetail(z) {
+  if (z.leergut) return t("je {betrag} Einsatz", { betrag: euro(-z.cent) });
   if (!z.anders) return einheitText(z.detail);
   if (z.produkt) return `${t("Preis am Produkt")} · ${euro(z.cent)}`;
   if (z.eigenerName) return `${t("Anderer Preis")} · ${euro(z.cent)}`;
   return "";
 }
 
+// ===== Leergut zurückgeben (Einsatz) =====
+// Produkte mit "einsatz" in products.json bilden Rückgabe-Arten: gleiche Art ("Flasche"/"Glas"),
+// gleicher Betrag und gleiche Kategorie → eine Zeile (Apfel- + Traubensaft = "Saftflasche").
+// Im Warenkorb wird Leergut eine eigene Zeile mit negativem Betrag.
+const EINSATZ_ART_EN = { Flasche: "bottle", Glas: "jar" };
+const leergutDialog = $("leergut");
+const leergutListe = $("leergut-liste");
+let leergutEntwurf = {};   // im Dialog: Schlüssel → Anzahl (erst mit "Fertig" übernommen)
+
+function baueLeergutArten(alle) {
+  const arten = [];
+  alle.forEach((p) => {
+    if (!p || !p.name || typeof p.einsatz !== "number" || !(p.einsatz > 0)) return;
+    const art = p.einsatz_art === "Glas" ? "Glas" : "Flasche";
+    const cent = Math.round(p.einsatz * 100);
+    const schluessel = `leergut|${art}|${cent}|${p.kategorie || ""}`;
+    let a = arten.find((x) => x.schluessel === schluessel);
+    if (!a) {
+      a = { schluessel, art, cent, produkte: [], name: "", nameEn: "" };
+      arten.push(a);
+    }
+    a.produkte.push({ de: p.name, en: p.name_en || "" });
+    const eigen = (f) => (typeof p[f] === "string" ? p[f].trim() : "");
+    if (!a.name) a.name = eigen("einsatz_name");
+    if (!a.nameEn) a.nameEn = eigen("einsatz_name_en");
+  });
+  return arten;
+}
+
+// Gemeinsame Endung, z. B. "Apfelsaft" + "Traubensaft" → "saft" (mindestens 3 Buchstaben)
+function gemeinsameEndung(woerter) {
+  let ende = "";
+  const kuerzestes = Math.min(...woerter.map((w) => w.length));
+  for (let i = 1; i < kuerzestes; i++) {
+    const teil = woerter[0].slice(-i).toLowerCase();
+    if (!woerter.every((w) => w.slice(-i).toLowerCase() === teil)) break;
+    ende = woerter[0].slice(-i);
+  }
+  return ende.length >= 3 ? ende : "";
+}
+// ["Apfel-", "Birnen-", "Traubensaft"] → "Apfel-, Birnen- oder Traubensaft"
+function aufzaehlen(teile, oder) {
+  return teile.length < 2 ? teile.join("") : `${teile.slice(0, -1).join(", ")} ${oder} ${teile[teile.length - 1]}`;
+}
+const gross = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+
+// Name einer Rückgabe-Art in der aktuellen Sprache, z. B. { kurz: "Saftflasche", zusatz: "Apfel- oder Traubensaft" }
+function leergutName(a) {
+  const eigener = sprache === "en" ? a.nameEn : a.name;
+  if (eigener) return { kurz: eigener, zusatz: "" };
+  if (sprache === "en") {
+    const namen = a.produkte.map((p) => p.en.split(",")[0].trim());
+    if (namen.every(Boolean)) {
+      const artEn = EINSATZ_ART_EN[a.art];
+      if (namen.length === 1) return { kurz: `${namen[0]} ${artEn}`, zusatz: "" };
+      const letzte = namen.map((n) => n.split(" ").pop().toLowerCase());
+      if (letzte.every((w) => w === letzte[0])) {
+        const vorne = namen.map((n) => n.split(" ").slice(0, -1).join(" ").toLowerCase());
+        return { kurz: `${gross(letzte[0])} ${artEn}`, zusatz: `${aufzaehlen(vorne, "or")} ${letzte[0]}` };
+      }
+      return { kurz: gross(artEn), zusatz: aufzaehlen(namen, "or") };
+    }
+    // ohne englische Produktnamen: deutsch weiter
+  }
+  const woerter = a.produkte.map((p) => p.de.split(" ")[0]);
+  const artKlein = a.art.toLowerCase();
+  if (woerter.length === 1) return { kurz: woerter[0] + artKlein, zusatz: "" };   // "Honigglas"
+  const ende = gemeinsameEndung(woerter);
+  if (ende) {
+    const vorne = woerter.map((w, i) => (i < woerter.length - 1 ? w.slice(0, -ende.length) + "-" : w));
+    return { kurz: gross(ende) + artKlein, zusatz: aufzaehlen(vorne, "oder") };
+  }
+  return { kurz: a.art, zusatz: aufzaehlen(woerter, "oder") };
+}
+
+function oeffneLeergut() {
+  leergutEntwurf = {};
+  warenkorb.filter((z) => z.leergut).forEach((z) => { leergutEntwurf[z.schluessel] = z.menge; });
+  zeichneLeergutListe();
+  leergutDialog.hidden = false;
+  aktivitaet();
+}
+
+function zeichneLeergutListe() {
+  leergutListe.replaceChildren(...leergutArten.map((a) => {
+    const n = leergutName(a);
+    const anzahl = leergutEntwurf[a.schluessel] || 0;
+    const li = neu("li", "leergut-zeile");
+    const text = neu("div", "leergut-name");
+    text.append(neu("strong", "", `${n.kurz} – ${euro(a.cent)}`));
+    if (n.zusatz) text.append(neu("small", "", n.zusatz));
+    const minus = rundKnopf("−", t("{name}: eins weniger", { name: n.kurz }), () => leergutZaehlen(a, -1));
+    minus.disabled = anzahl === 0;
+    const steuerung = neu("div", "leergut-steuerung");
+    steuerung.append(minus, neu("span", "menge", String(anzahl)),
+      rundKnopf("+", t("{name}: eins mehr", { name: n.kurz }), () => leergutZaehlen(a, +1)));
+    li.append(text, steuerung);
+    return li;
+  }));
+}
+
+function leergutZaehlen(a, aenderung) {
+  leergutEntwurf[a.schluessel] = Math.max(0, Math.min(99, (leergutEntwurf[a.schluessel] || 0) + aenderung));
+  zeichneLeergutListe();
+}
+
+function schliesseLeergut() {
+  leergutDialog.hidden = true;
+}
+
+// "Fertig": Leergut-Zeilen im Warenkorb durch die neue Auswahl ersetzen
+function leergutUebernehmen() {
+  const einkauf = warenkorb.filter((z) => !z.leergut);
+  const rueckgabe = leergutArten
+    .filter((a) => (leergutEntwurf[a.schluessel] || 0) > 0)
+    .map((a) => ({ schluessel: a.schluessel, produkt: "", detail: "", leergut: a, cent: -a.cent, menge: leergutEntwurf[a.schluessel], anders: false }));
+  warenkorb = einkauf.concat(rueckgabe);
+  schliesseLeergut();
+  zeichneWarenkorb();
+  el.liste.scrollTop = el.liste.scrollHeight;   // Leergut-Zeilen stehen unten → dorthin scrollen
+}
+
+$("leergut-knopf").addEventListener("click", oeffneLeergut);
+$("leergut-abbrechen").addEventListener("click", schliesseLeergut);
+$("leergut-fertig").addEventListener("click", leergutUebernehmen);
+
 function zeichneWarenkorb() {
   el.liste.innerHTML = "";
 
   warenkorb.forEach((z) => {
-    const li = neu("li", "zeile");
+    const li = neu("li", z.leergut ? "zeile zeile-leergut" : "zeile");
 
     const name = neu("div", "zeile-name", zeileName(z));
-    const detail = z.anders ? (zeileDetail(z) || euro(z.cent)) : `${zeileDetail(z)} · ${euro(z.cent)}`;
+    const detail = z.leergut ? zeileDetail(z)
+      : z.anders ? (zeileDetail(z) || euro(z.cent)) : `${zeileDetail(z)} · ${euro(z.cent)}`;
     name.append(neu("small", "", detail));
 
     const werte = { name: zeileName(z), detail: zeileDetail(z) };
@@ -478,9 +633,12 @@ function zeichneWarenkorb() {
     k.classList.toggle("gewaehlt", stueck > 0);
   });
 
-  // Summe im Warenkorb; "Fertig" nur, wenn etwas drin ist
+  // Summe im Warenkorb; "Fertig" nur, wenn etwas drin ist (auch nur Leergut ist erlaubt)
+  const zahl = zahlBetrag();
+  $("leergut-knopf").hidden = leergutArten.length === 0;
+  $("einsatz-hinweis").hidden = !zahl.verrechnet;
   if (warenkorb.length) {
-    el.summeBetrag.textContent = euro(summeCent());
+    el.summeBetrag.textContent = euro(zahl.cent);
     el.summeBetrag.classList.remove("summe-leer");
   } else {
     el.summeBetrag.textContent = t("Tippen Sie auf ein Produkt");
@@ -489,8 +647,10 @@ function zeichneWarenkorb() {
   el.fertig.hidden = warenkorb.length === 0;
 
   // Leiste unten (Handy) – Betrag in eigenem <span>, damit er in der Preis-Schrift erscheint
-  if (warenkorb.length) {
-    el.summentext.replaceChildren(t("Bitte") + " ", neu("span", "betrag", euro(summeCent())), " " + t("in die Kassa legen"));
+  if (warenkorb.length && zahl.auszahlen) {
+    el.summentext.replaceChildren(t("Bitte nehmen Sie") + " ", neu("span", "betrag", euro(-zahl.cent)), " " + t("aus der Kassa."));
+  } else if (warenkorb.length) {
+    el.summentext.replaceChildren(t("Bitte") + " ", neu("span", "betrag", euro(zahl.cent)), " " + t("in die Kassa legen"));
   } else {
     el.summentext.textContent = t("Tippen Sie auf einen Preis, um zu beginnen");
   }
@@ -623,22 +783,28 @@ function zeigeDanke() {
   // Beleg: "2 × Erdäpfel 2 kg ........ 6,00 €"
   el.belegListe.innerHTML = "";
   warenkorb.forEach((z) => {
-    const li = neu("li");
-    const text = z.anders ? zeileName(z) : `${zeileName(z)} ${zeileDetail(z)}`;
+    const li = neu("li", z.leergut ? "beleg-leergut" : "");
+    const text = z.leergut ? zeileName(z)
+      : `${z.menge} × ${z.anders ? zeileName(z) : `${zeileName(z)} ${zeileDetail(z)}`}`;
     li.append(
-      neu("span", "beleg-name", `${z.menge} × ${text}`),
+      neu("span", "beleg-name", text),
       neu("span", "beleg-punkte"),
       neu("span", "beleg-preis", euro(z.cent * z.menge))
     );
     el.belegListe.append(li);
   });
-  const summe = euro(summeCent());
-  el.belegSumme.textContent = summe;
-  el.dankeBetrag.textContent = summe;
+  // "Bitte legen Sie X in die Kassa." – oder bei Auszahlung "Bitte nehmen Sie X aus der Kassa."
+  const zahl = zahlBetrag();
+  el.belegSumme.textContent = euro(zahl.cent);
+  $("danke-vor").textContent = t(zahl.auszahlen ? "Bitte nehmen Sie" : "Bitte legen Sie");
+  el.dankeBetrag.textContent = euro(Math.abs(zahl.cent));
+  $("danke-nach").textContent = t(zahl.auszahlen ? "aus der Kassa." : "in die Kassa.");
+  el.dankeBetrag.classList.toggle("danke-auszahlen", zahl.auszahlen);
+  $("danke-hinweis").hidden = !zahl.verrechnet;
   el.feedback.hidden = !FEEDBACK_AKTIV;
   bewertungZuruecksetzen();
   meldenZuruecksetzen();
-  zeichneWechsel();
+  zeichneWechsel(zahl.cent);
 
   el.danke.hidden = false;
   el.danke.scrollTop = 0;
@@ -649,9 +815,9 @@ function zeigeDanke() {
 // Zeigt die nächsten 3 Scheine, die größer als die Summe sind. Antippen → Wechselgeld.
 const SCHEINE_CENT = [500, 1000, 2000, 5000, 10000];
 
-function zeichneWechsel() {
-  const summe = summeCent();
-  const passend = SCHEINE_CENT.filter((s) => s > summe).slice(0, 3);
+function zeichneWechsel(summe) {
+  // Nichts zu zahlen (0,00 € oder Geld aus der Kassa) → keine Wechselgeld-Hilfe
+  const passend = summe > 0 ? SCHEINE_CENT.filter((s) => s > summe).slice(0, 3) : [];
   const box = $("wechsel-scheine");
   const ergebnis = $("wechsel-ergebnis");
   $("wechsel").hidden = passend.length === 0;   // über 100 € → keine Wechselgeld-Hilfe
@@ -988,6 +1154,7 @@ function zuruecksetzen() {
     uebersetzeSeite();
   }
   schliesseTastatur();
+  schliesseLeergut();
   schliesseMelden();
   schliesseDanke();
   el.warnung.hidden = true;
@@ -1387,6 +1554,8 @@ async function ladeInhalte() {
     setzeTeaser("teaser-rezept", inhalte.rezept_der_woche);
     setzeTeaser("teaser-neu", inhalte.neu_im_laden);
     neuImLaden = typeof inhalte.neu_im_laden === "string" ? inhalte.neu_im_laden : "";
+    einsatzAuszahlen = inhalte.einsatz_auszahlen === true;
+    zeichneWarenkorb();   // Summe nach der Einsatz-Regel neu
     schonerEinst = inhalte.bildschirmschoner && typeof inhalte.bildschirmschoner === "object" ? inhalte.bildschirmschoner : null;
   } catch (fehler) {
     console.warn("inhalte.json konnte nicht geladen werden:", fehler); // Kästchen bleiben dann einfach weg
@@ -1424,7 +1593,7 @@ setInterval(() => {
     el.warnung.hidden = true;
     return;
   }
-  const gibtEtwas = warenkorb.length > 0 || !el.tastatur.hidden;
+  const gibtEtwas = warenkorb.length > 0 || !el.tastatur.hidden || !leergutDialog.hidden;
   const inaktiv = Date.now() - letzteAktivitaet;
 
   // Nichts im Warenkorb: nach 2 Minuten still zurück zur Startseite (falls nicht schon dort)
@@ -1506,7 +1675,7 @@ const folieMs = () => schonerZahl("folie_sekunden", 12, 5, 120) * 1000;
 
 // Startseite steht unberührt da: nichts offen, nichts im Warenkorb
 function startseiteRuhig() {
-  return !startseite.hidden && warenkorb.length === 0 && el.tastatur.hidden &&
+  return !startseite.hidden && warenkorb.length === 0 && el.tastatur.hidden && leergutDialog.hidden &&
     el.danke.hidden && melden.dialog.hidden && el.warnung.hidden;
 }
 
