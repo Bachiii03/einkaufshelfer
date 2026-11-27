@@ -118,6 +118,7 @@ function main() {
   const produktNamen = daten.produkte.filter((p) => p && typeof p.name === "string").map((p) => p.name);
   const anzahl = pruefeTexte(produktNamen);
   anzahl.saison = pruefeSaison();
+  const nachtmodus = pruefeNachtmodus();
 
   if (fehler.length) {
     console.error(`✗ ${fehler.length} Fehler gefunden:`);
@@ -128,6 +129,35 @@ function main() {
   console.log(`✓ products.json ist in Ordnung (${daten.produkte.length} Produkte geprüft).`);
   console.log(`✓ rezepte.json und geschichten.json sind in Ordnung (${anzahl.rezepte} Rezepte, ${anzahl.geschichten} Geschichten).`);
   console.log(`✓ saison.json ist in Ordnung (${anzahl.saison} Produkte im Saisonkalender).`);
+  console.log(`✓ inhalte.json ist in Ordnung (${nachtmodus}).`);
+}
+
+// ===== inhalte.json: Nachtmodus-Einstellungen =====
+function pruefeNachtmodus() {
+  const d = leseJson("inhalte.json");
+  if (!d) return "nicht geprüft";
+  const n = d.nachtmodus;
+  if (n === undefined) return "kein Nachtmodus eingestellt";
+  const wer = 'inhalte.json, "nachtmodus"';
+  if (!n || typeof n !== "object" || Array.isArray(n)) {
+    fehler.push(`${wer}: muss so aussehen: { "aktiv": true, "von": "22:00", "bis": "06:00", "dunkel_nach_sekunden": 60 }`);
+    return "";
+  }
+  if (typeof n.aktiv !== "boolean") fehler.push(`${wer}: "aktiv" muss true oder false sein (ohne Anführungszeichen).`);
+  const zeit = /^([01]?\d|2[0-3]):[0-5]\d$/;
+  for (const feld of ["von", "bis"]) {
+    if (typeof n[feld] !== "string" || !zeit.test(n[feld].trim())) {
+      fehler.push(`${wer}: "${feld}" bitte als Uhrzeit mit Doppelpunkt schreiben, z. B. "22:00".`);
+    }
+  }
+  if (typeof n.von === "string" && typeof n.bis === "string" && n.von.trim() === n.bis.trim()) {
+    fehler.push(`${wer}: "von" und "bis" sind gleich – dann wäre nie Nacht.`);
+  }
+  const s = n.dunkel_nach_sekunden;
+  if (typeof s !== "number" || !Number.isInteger(s) || s < 10 || s > 3600) {
+    fehler.push(`${wer}: "dunkel_nach_sekunden" muss eine ganze Zahl zwischen 10 und 3600 sein (ohne Anführungszeichen).`);
+  }
+  return n.aktiv ? `Nachtmodus ${n.von}–${n.bis}` : "Nachtmodus ausgeschaltet";
 }
 
 // ===== saison.json (Saisonkalender) =====

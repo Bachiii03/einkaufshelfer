@@ -81,6 +81,31 @@ Der Saisonkalender (Leiste auf der Startseite und eigene Seite) kommt aus **`sai
 
 Die automatische Prüfung kontrolliert auch diese Datei (Monate 1–12, nichts doppelt).
 
+## Nachtmodus (Laden-Tablet)
+
+Nachts wird der Bildschirm des Laden-Tablets schwarz, wenn niemand einkauft. Ein Antippen
+weckt ihn wieder auf (das erste Antippen drückt dabei keinen Knopf). Einstellungen in
+**`inhalte.json`**:
+
+```json
+"nachtmodus": { "aktiv": true, "von": "22:00", "bis": "06:00", "dunkel_nach_sekunden": 60 }
+```
+
+- `aktiv`: `true` = eingeschaltet, `false` = aus (ohne Anführungszeichen).
+- `von` / `bis`: Uhrzeit des Tablets mit Doppelpunkt, darf über Mitternacht gehen.
+- `dunkel_nach_sekunden`: so lange ohne Antippen, bis es dunkel wird (10 bis 3600).
+- Dunkel wird es nur, wenn die Startseite unberührt dasteht – nie mit vollem Warenkorb,
+  offenem Ziffernfeld oder auf der Danke-Seite. Untertags ändert sich nichts.
+- Auf dem schwarzen Bild steht ganz schwach „Zum Einkaufen bitte antippen“; der Text
+  wandert alle paar Minuten ein Stück, damit nichts einbrennt.
+- Gilt nur für das Laden-Tablet (Start-Adresse mit `?laden`). Dort hält die Seite den
+  Bildschirm außerdem wach, damit sich das Gerät nicht selbst sperrt (wo der Browser das kann).
+- **Am Tag testen:** Seite mit `?nachttest` öffnen
+  (`https://bachiii03.github.io/einkaufshelfer/?nachttest`) – sie tut so, als wäre Nacht,
+  und wird nach 10 Sekunden dunkel.
+
+Die automatische Prüfung kontrolliert auch diese Einstellungen (Uhrzeit-Format, Zahl).
+
 ## Meldungen und Wochenbericht per E-Mail
 
 - **„Etwas gefehlt? Hier melden“** (auf der Danke-Seite): Kunden tippen an, was leer

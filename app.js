@@ -1377,6 +1377,7 @@ async function ladeInhalte() {
     rezeptDerWoche = typeof inhalte.rezept_der_woche === "string" ? inhalte.rezept_der_woche : "";
     setzeTeaser("teaser-rezept", inhalte.rezept_der_woche);
     setzeTeaser("teaser-neu", inhalte.neu_im_laden);
+    nachtEinst = inhalte.nachtmodus && typeof inhalte.nachtmodus === "object" ? inhalte.nachtmodus : null;
   } catch (fehler) {
     console.warn("inhalte.json konnte nicht geladen werden:", fehler); // Kästchen bleiben dann einfach weg
   }
@@ -1431,6 +1432,121 @@ setInterval(() => {
     el.warnung.hidden = true;
   }
 }, 500);
+
+// ===== Nachtmodus (nur Laden-Tablet) =====
+// Einstellungen in inhalte.json: "nachtmodus": { "aktiv", "von", "bis", "dunkel_nach_sekunden" }.
+// Nachts wird der Bildschirm schwarz, wenn die Startseite unberührt dasteht (leerer Warenkorb,
+// kein Ziffernfeld, keine Danke-Seite). Das erste Antippen weckt nur auf – der Knopf darunter
+// wird NICHT gedrückt, weil das schwarze Bild während des Ausblendens noch darüber liegt.
+// Test am Tag: Seite mit "?nachttest" öffnen → tut so, als wäre Nacht, und wird nach 10 Sekunden dunkel.
+const NACHT_TEST = new URLSearchParams(location.search).has("nachttest");
+const NACHT_TEXT_WANDERN_MS = 3 * 60 * 1000;   // Text alle 3 Minuten verschieben (nichts brennt ein)
+const nacht = $("nacht");
+const nachtText = $("nacht-text");
+let nachtEinst = null;      // aus inhalte.json
+let nachtAn = false;
+let ruheSeit = null;        // seit wann die Startseite unberührt dasteht
+let nachtWanderTimer = null;
+let nachtAusTimer = null;
+
+if (window.fully) {
+  console.log("Fully Kiosk erkannt – der Nachtmodus verwendet vorerst das eigene schwarze Bild (keine Fully-Funktionen).");
+}
+
+// "22:00" → 1320 (Minuten seit Mitternacht); ungültig → null
+function minutenAus(text) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(typeof text === "string" ? text.trim() : "");
+  if (!m) return null;
+  const h = Number(m[1]), min = Number(m[2]);
+  return h < 24 && min < 60 ? h * 60 + min : null;
+}
+
+// Liegt "jetzt" zwischen "von" und "bis"? Geht auch über Mitternacht (22:00 – 06:00).
+function imZeitraum(jetzt, von, bis) {
+  if (von === null || bis === null || von === bis) return false;
+  return von < bis ? jetzt >= von && jetzt < bis : jetzt >= von || jetzt < bis;
+}
+
+function istNachtzeit() {
+  if (NACHT_TEST) return true;
+  if (!nachtEinst || nachtEinst.aktiv !== true) return false;
+  const d = new Date();
+  return imZeitraum(d.getHours() * 60 + d.getMinutes(), minutenAus(nachtEinst.von), minutenAus(nachtEinst.bis));
+}
+
+function dunkelNachMs() {
+  if (NACHT_TEST) return 10 * 1000;
+  const s = Number(nachtEinst && nachtEinst.dunkel_nach_sekunden);
+  return (Number.isFinite(s) && s >= 5 ? s : 60) * 1000;
+}
+
+// Startseite steht unberührt da: nichts offen, nichts im Warenkorb
+function startseiteRuhig() {
+  return !startseite.hidden && warenkorb.length === 0 && el.tastatur.hidden &&
+    el.danke.hidden && melden.dialog.hidden && el.warnung.hidden;
+}
+
+function verschiebeNachtText() {
+  nachtText.style.left = (25 + Math.random() * 50).toFixed(1) + "%";
+  nachtText.style.top = (25 + Math.random() * 50).toFixed(1) + "%";
+}
+
+function nachtEin() {
+  if (nachtAn) return;
+  nachtAn = true;
+  clearTimeout(nachtAusTimer);
+  verschiebeNachtText();
+  nacht.hidden = false;
+  void nacht.offsetWidth;          // erst unsichtbar zeichnen, dann einblenden
+  nacht.classList.add("an");
+  clearInterval(nachtWanderTimer);
+  nachtWanderTimer = setInterval(verschiebeNachtText, NACHT_TEXT_WANDERN_MS);
+}
+
+function nachtAus() {
+  if (!nachtAn) return;
+  nachtAn = false;
+  ruheSeit = Date.now();           // Zeit bis zum nächsten Dunkelwerden beginnt neu
+  clearInterval(nachtWanderTimer);
+  nacht.classList.remove("an");
+  // Das schwarze Bild bleibt beim Ausblenden noch liegen und fängt so den Weck-Tipp ab
+  clearTimeout(nachtAusTimer);
+  nachtAusTimer = setTimeout(() => { nacht.hidden = true; }, 1000);
+}
+
+// Antippen (oder Taste) weckt nur auf – nichts darunter wird ausgelöst
+nacht.addEventListener("pointerdown", (e) => { e.preventDefault(); nachtAus(); });
+nacht.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); });
+window.addEventListener("keydown", () => nachtAus());
+
+setInterval(() => {
+  if (!IST_LADEN && !NACHT_TEST) return;
+  if (!istNachtzeit() || !startseiteRuhig()) {
+    nachtAus();
+    ruheSeit = null;
+    return;
+  }
+  if (nachtAn) return;
+  if (ruheSeit === null) ruheSeit = Date.now();
+  if (Date.now() - Math.max(ruheSeit, letzteAktivitaet) >= dunkelNachMs()) nachtEin();
+}, 1000);
+
+// Bildschirm wachhalten (Screen Wake Lock), damit das Gerät nicht selbst sperrt.
+// Nur am Laden-Tablet. Ältere Browser (z. B. älteres Safari) kennen das nicht → einfach ignorieren.
+let wachSperre = null;
+async function holeWachSperre() {
+  if ((!IST_LADEN && !NACHT_TEST) || wachSperre || !("wakeLock" in navigator)) return;
+  if (document.visibilityState !== "visible") return;
+  try {
+    wachSperre = await navigator.wakeLock.request("screen");
+    wachSperre.addEventListener("release", () => { wachSperre = null; });
+  } catch (fehler) {
+    console.info("Bildschirm wachhalten nicht möglich:", fehler && fehler.message);
+  }
+}
+document.addEventListener("visibilitychange", holeWachSperre);   // nach dem Zurückkommen neu anfordern
+window.addEventListener("pointerdown", holeWachSperre, { passive: true }); // manche Browser wollen erst einen Tipp
+holeWachSperre();
 
 // ===== Saisonkalender (Daten aus saison.json) =====
 // Monate: 1 = Jänner … 12 = Dezember. "frisch" = grün, "vom Lager" = orange.

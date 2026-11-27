@@ -1292,3 +1292,29 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   .saison-raster { grid-template-columns: minmax(0, 1fr) 270px; gap: 20px; }
   .saison-tabelle { grid-template-columns: minmax(140px, 1.3fr) repeat(12, minmax(36px, 1fr)); min-width: 0; }
 }
+
+/* Nachtmodus (nur Laden-Tablet): schwarz über allem, blendet in 1 Sekunde ein und aus */
+.nacht {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 100;
+  background: #000;
+  opacity: 0;
+  transition: opacity 1s ease;
+  touch-action: none;
+  cursor: pointer;
+}
+.nacht[hidden] { display: none; }
+.nacht.an { opacity: 1; }
+.nacht-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  color: #2b2b2b;            /* sehr dunkles Grau – kaum sichtbar, brennt nicht ein */
+  font-size: 22px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: left 3s ease, top 3s ease;
+}
