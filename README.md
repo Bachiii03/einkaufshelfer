@@ -238,8 +238,8 @@ Gerät „Bewegung reduzieren“ eingeschaltet ist).
 
 Einstellungen in **`inhalte.json`** unter `"jahreszeiten"`:
 
-- `"aktiv": false` schaltet die ganze Dekoration aus; bei einem einzelnen Thema `"aktiv": false`
-  nur dieses.
+- `"aktiv": false` schaltet die ganze Dekoration aus (**derzeit ausgeschaltet** – zum Einschalten
+  `true`); bei einem einzelnen Thema `"aktiv": false` nur dieses.
 - `"von"` / `"bis"` als **Monat-Tag**: `"03-01"` = 1. März. Ein Zeitraum darf über Neujahr gehen.
 - `"automatisch": true` (nur bei `ostern` und `advent`): Beginn wird jedes Jahr berechnet.
   Beim Advent bestimmt `"bis"` das Ende (Standard `"01-06"`).
@@ -260,16 +260,13 @@ Folie im Bildschirmschoner („Zum ersten Mal hier?“) und direkt erreichbar un
 Alle Texte stehen in **`geschichten.json`** unter `"so_gehts"` (Englisch: `"so_gehts_en"`):
 
 - `titel`, `schritte` (je `titel`, `text`, `icon` aus `bilder/icons.svg`: `schritt-ware`,
-  `schritt-tablet`, `schritt-kassa`, `schritt-leergut`, `schritt-danke`), `hinweise` (Liste),
-  `video_hinweis`.
+  `schritt-tablet`, `schritt-kassa`, `schritt-leergut`, `schritt-danke`), `video_hinweis`.
+  (`hinweise` wird derzeit nicht angezeigt.)
 - Ein Schritt mit `"nur_mit_leergut": true` erscheint nur, wenn es Produkte mit `"einsatz"` gibt –
   sonst steht dort „Danke für Ihren Einkauf!“.
-- **Kontakt** („Fragen? Telefon … · E-Mail“) kommt automatisch aus dem Impressum (Abschnitt
-  „Kontakt“). Fehlt dort etwas, bleibt die Zeile weg.
-- **Videoüberwachung:** Solange bei `video_hinweis` noch der Platzhalter
-  `[Text zur Videoüberwachung – bitte ausfüllen]` steht, wird der Kasten nicht angezeigt.
-  Bitte den Text selbst eintragen (am besten mit eurer Datenschutz-Beratung abstimmen); der
-  Kasten verlinkt auf „Impressum & Datenschutz“.
+- **Videoüberwachung:** steht als eine lange Zeile unter den 4 Schritten (mit Link zum
+  Datenschutz). Steht bei `video_hinweis` nur ein Platzhalter in eckigen Klammern `[…]`, wird
+  die Zeile nicht angezeigt.
 
 Die automatische Prüfung kontrolliert auch diesen Block (Titel, Schritte, Icons).
 

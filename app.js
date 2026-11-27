@@ -231,11 +231,9 @@ const ENGLISCH = {
   // So funktioniert's
   "So funktioniert's": "How it works",
   "So funktioniert unser Hofladen": "How our farm shop works",
-  "Jetzt einkaufen": "Start shopping",
-  "Fragen?": "Questions?",
-  "Telefon": "Phone",
-  "Videoüberwachung": "Video surveillance",
   "Zum ersten Mal hier?": "First time here?",
+  "Videoüberwachung:": "Video surveillance:",
+  "Datenschutz": "Privacy",
   "Tippen Sie auf „So funktioniert's“": "Tap “How it works”",
   // Jahreszeiten-Grüße
   "Der Frühling ist da!": "Spring is here!",
@@ -1534,18 +1532,6 @@ function soGehtsSchritte(d) {
       : s);
 }
 
-// Telefon und E-Mail aus dem Impressum (nichts erfinden – fehlt etwas, bleibt es weg)
-function kontaktAusImpressum() {
-  const zeilen = [];
-  ((geschichten.impressum && geschichten.impressum.abschnitte) || []).forEach((a) => (a.text || []).forEach((z) => zeilen.push(String(z))));
-  const tel = zeilen.map((z) => /^(?:Telefon|Tel\.?)\s*:?\s*(\+?[\d][\d\s\/-]{4,})$/i.exec(z.trim())).find(Boolean);
-  const mail = zeilen.map((z) => /([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/.exec(z)).find(Boolean);
-  const teile = [];
-  if (tel) teile.push(`${t("Telefon")} ${tel[1].trim()}`);
-  if (mail) teile.push(mail[1]);
-  return teile.join(" · ");
-}
-
 function zeigeSoGehts() {
   const d = soGehtsDaten();
   seiteAnfang(d && d.titel ? d.titel : "So funktioniert unser Hofladen", false, false);
@@ -1561,31 +1547,18 @@ function zeigeSoGehts() {
   });
   seiteKoerper.append(liste);
 
-  const hinweise = neu("div", "sg-hinweise");
-  (Array.isArray(d.hinweise) ? d.hinweise : []).filter((h) => !istPlatzhalter(h)).forEach((h) => hinweise.append(neu("p", "sg-hinweis", h)));
-  const kontakt = kontaktAusImpressum();
-  if (kontakt) hinweise.append(neu("p", "sg-hinweis", `${t("Fragen?")} ${kontakt}`));
-  // Videoüberwachung: nur zeigen, wenn der Text ausgefüllt ist (Englisch fehlt → deutscher Text)
+  // Darunter nur die Videoüberwachung – eine lange Zeile (nur wenn der Text ausgefüllt ist;
+  // fehlt der englische Text, steht der deutsche da)
   const video = [d.video_hinweis, geschichten.so_gehts && geschichten.so_gehts.video_hinweis].find((v) => !istPlatzhalter(v));
   if (video) {
-    const box = neu("div", "sg-hinweis sg-video");
-    const link = neu("button", "link-knopf", t("Impressum & Datenschutz"));
+    const zeile = neu("p", "sg-video");
+    zeile.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M21 14l7-4v12l-7-4z"/><circle cx="9" cy="16" r="2.5"/></svg>';
+    const link = neu("button", "link-knopf", t("Datenschutz"));
     link.type = "button";
     link.addEventListener("click", () => zeigeSeite("impressum"));
-    box.append(neu("strong", "", t("Videoüberwachung")), neu("span", "", video), link);
-    hinweise.append(box);
+    zeile.append(neu("strong", "", t("Videoüberwachung:")), neu("span", "", video), link);
+    seiteKoerper.append(zeile);
   }
-  if (hinweise.childElementCount) seiteKoerper.append(hinweise);
-
-  const aktionen = neu("div", "sg-aktionen");
-  const einkaufen = neu("button", "btn-haupt", t("Jetzt einkaufen"));
-  einkaufen.type = "button";
-  einkaufen.addEventListener("click", zeigeRechner);
-  const start = neu("button", "btn-zweit", t("← Startseite"));
-  start.type = "button";
-  start.addEventListener("click", zeigeStartseite);
-  aktionen.append(einkaufen, start);
-  seiteKoerper.append(aktionen);
 }
 
 // Direkt-Link …/einkaufshelfer/#so-gehts (z. B. für einen QR-Code an der Tür)

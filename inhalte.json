@@ -13,7 +13,7 @@
     "nacht_helligkeit": 0.45
   },
   "jahreszeiten": {
-    "aktiv": true,
+    "aktiv": false,
     "themen": {
       "winter": { "aktiv": true, "von": "01-07", "bis": "02-28" },
       "fruehling": { "aktiv": true, "von": "03-01", "bis": "05-31" },
