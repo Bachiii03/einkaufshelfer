@@ -337,6 +337,23 @@ function pruefeTexte(produktNamen) {
     if (g.ueber_uns !== undefined && (!g.ueber_uns || !istTextListe(g.ueber_uns.text))) {
       fehler.push('geschichten.json: "ueber_uns" braucht eine Liste "text" mit mindestens einem Absatz.');
     }
+    for (const teil of ["so_gehts", "so_gehts_en"]) {
+      const sg = g[teil];
+      if (sg === undefined) continue;
+      const wer = `geschichten.json, "${teil}"`;
+      if (!sg || typeof sg !== "object" || Array.isArray(sg)) { fehler.push(`${wer}: muss ein Block { ... } sein.`); continue; }
+      if (!istText(sg.titel)) fehler.push(`${wer}: "titel" fehlt.`);
+      if (!Array.isArray(sg.schritte) || sg.schritte.length === 0) fehler.push(`${wer}: braucht eine Liste "schritte".`);
+      else sg.schritte.forEach((s, i) => {
+        const w = `${wer}, Schritt ${i + 1}`;
+        if (!s || !istText(s.titel)) fehler.push(`${w}: "titel" fehlt.`);
+        if (s && s.text !== undefined && typeof s.text !== "string") fehler.push(`${w}: "text" muss ein Text in Anführungszeichen sein.`);
+        if (s && !ICONS.includes(s.icon)) fehler.push(`${w}: Icon "${s && s.icon}" gibt es nicht in bilder/icons.svg (z. B. "schritt-ware", "schritt-tablet", "schritt-kassa", "schritt-leergut").`);
+        if (s && s.nur_mit_leergut !== undefined && typeof s.nur_mit_leergut !== "boolean") fehler.push(`${w}: "nur_mit_leergut" muss true oder false sein.`);
+      });
+      if (sg.hinweise !== undefined && !(Array.isArray(sg.hinweise) && sg.hinweise.every((h) => typeof h === "string"))) fehler.push(`${wer}: "hinweise" muss eine Liste von Texten sein.`);
+      if (sg.video_hinweis !== undefined && typeof sg.video_hinweis !== "string") fehler.push(`${wer}: "video_hinweis" muss ein Text in Anführungszeichen sein.`);
+    }
     for (const teil of ["impressum", "datenschutz"]) {
       if (g[teil] === undefined) continue;
       const b = g[teil];

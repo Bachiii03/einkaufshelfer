@@ -228,6 +228,15 @@ const ENGLISCH = {
   "frisch geerntet": "freshly harvested",
   "Je nach Wetter und Ernte kann es sich verschieben.": "Depending on weather and harvest, this may shift.",
   "Im {monat}": "In {monat}",
+  // So funktioniert's
+  "So funktioniert's": "How it works",
+  "So funktioniert unser Hofladen": "How our farm shop works",
+  "Jetzt einkaufen": "Start shopping",
+  "Fragen?": "Questions?",
+  "Telefon": "Phone",
+  "Videoüberwachung": "Video surveillance",
+  "Zum ersten Mal hier?": "First time here?",
+  "Tippen Sie auf „So funktioniert's“": "Tap “How it works”",
   // Jahreszeiten-Grüße
   "Der Frühling ist da!": "Spring is here!",
   "Frohe Ostern!": "Happy Easter!",
@@ -1297,7 +1306,7 @@ const seiteKoerper = $("seite-koerper");
 const seiteZurueck = $("seite-zurueck");
 const SEITEN_TITEL = { rezepte: "Rezepte", neuigkeiten: "Neuigkeiten & Presse", ueber: "Über uns", impressum: "Impressum & Datenschutz", wuensche: "Wünsche & Feedback" };
 let rezepte = [];
-let geschichten = { sichtbar: false, neuigkeiten: [], ueber_uns: null, impressum: null, datenschutz: null };
+let geschichten = { sichtbar: false, neuigkeiten: [], ueber_uns: null, impressum: null, datenschutz: null, so_gehts: null, so_gehts_en: null };
 let rezeptDerWoche = "";   // aus inhalte.json – dieses Rezept bekommt ein Abzeichen
 let aktuelleSeite = "";
 
@@ -1319,7 +1328,13 @@ async function ladeSeiten() {
       ueber_uns: daten.ueber_uns || null,
       impressum: daten.impressum || null,
       datenschutz: daten.datenschutz || null,
+      so_gehts: daten.so_gehts || null,
+      so_gehts_en: daten.so_gehts_en || null,
     };
+    if (!soGehtsLinkGeprueft) {
+      soGehtsLinkGeprueft = true;
+      if (location.hash === "#so-gehts") zeigeSeite("so-gehts");
+    }
   } catch (fehler) {
     console.warn("geschichten.json konnte nicht geladen werden:", fehler);
   }
@@ -1339,6 +1354,7 @@ function zeigeSeite(art) {
   if (art === "ueber") zeigeUeberUns();
   else if (art === "impressum") zeigeImpressum();
   else if (art === "wuensche") zeigeWuensche();
+  else if (art === "so-gehts") zeigeSoGehts();
   else zeichneUebersicht();
   aktivitaet();
 }
@@ -1499,6 +1515,82 @@ function zeigeUeberUns() {
 }
 
 // --- Impressum & Datenschutz ---
+// --- So funktioniert unser Hofladen (Texte in geschichten.json → "so_gehts" / "so_gehts_en") ---
+let soGehtsLinkGeprueft = false;
+
+function soGehtsDaten() {
+  const de = geschichten.so_gehts;
+  const en = geschichten.so_gehts_en;
+  return sprache === "en" && en && Array.isArray(en.schritte) ? en : de;
+}
+// Platzhalter wie "[Text … – bitte ausfüllen]" gilt als leer
+const istPlatzhalter = (text) => typeof text !== "string" || text.trim() === "" || /^\[.*\]$/.test(text.trim());
+
+// Schritte für Seite und Bildschirmschoner – "Leergut zurück" nur, wenn es Produkte mit Einsatz gibt
+function soGehtsSchritte(d) {
+  return (d && Array.isArray(d.schritte) ? d.schritte : []).filter((s) => s && s.titel).map((s) =>
+    s.nur_mit_leergut && leergutArten.length === 0
+      ? { titel: t("Danke für Ihren Einkauf!"), text: "", icon: "schritt-danke" }
+      : s);
+}
+
+// Telefon und E-Mail aus dem Impressum (nichts erfinden – fehlt etwas, bleibt es weg)
+function kontaktAusImpressum() {
+  const zeilen = [];
+  ((geschichten.impressum && geschichten.impressum.abschnitte) || []).forEach((a) => (a.text || []).forEach((z) => zeilen.push(String(z))));
+  const tel = zeilen.map((z) => /^(?:Telefon|Tel\.?)\s*:?\s*(\+?[\d][\d\s\/-]{4,})$/i.exec(z.trim())).find(Boolean);
+  const mail = zeilen.map((z) => /([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/.exec(z)).find(Boolean);
+  const teile = [];
+  if (tel) teile.push(`${t("Telefon")} ${tel[1].trim()}`);
+  if (mail) teile.push(mail[1]);
+  return teile.join(" · ");
+}
+
+function zeigeSoGehts() {
+  const d = soGehtsDaten();
+  seiteAnfang(d && d.titel ? d.titel : "So funktioniert unser Hofladen", false, false);
+  const schritte = soGehtsSchritte(d);
+  if (!schritte.length) return leerHinweis();
+
+  const liste = neu("ol", "sg-schritte");
+  schritte.forEach((s, i) => {
+    const li = neu("li", "sg-schritt");
+    li.append(neu("span", "sg-nr", String(i + 1)), iconSvg(s.icon || "frage", "sg-icon"), neu("h2", "sg-titel", s.titel));
+    if (s.text) li.append(neu("p", "sg-text", s.text));
+    liste.append(li);
+  });
+  seiteKoerper.append(liste);
+
+  const hinweise = neu("div", "sg-hinweise");
+  (Array.isArray(d.hinweise) ? d.hinweise : []).filter((h) => !istPlatzhalter(h)).forEach((h) => hinweise.append(neu("p", "sg-hinweis", h)));
+  const kontakt = kontaktAusImpressum();
+  if (kontakt) hinweise.append(neu("p", "sg-hinweis", `${t("Fragen?")} ${kontakt}`));
+  // Videoüberwachung: nur zeigen, wenn der Text ausgefüllt ist (Englisch fehlt → deutscher Text)
+  const video = [d.video_hinweis, geschichten.so_gehts && geschichten.so_gehts.video_hinweis].find((v) => !istPlatzhalter(v));
+  if (video) {
+    const box = neu("div", "sg-hinweis sg-video");
+    const link = neu("button", "link-knopf", t("Impressum & Datenschutz"));
+    link.type = "button";
+    link.addEventListener("click", () => zeigeSeite("impressum"));
+    box.append(neu("strong", "", t("Videoüberwachung")), neu("span", "", video), link);
+    hinweise.append(box);
+  }
+  if (hinweise.childElementCount) seiteKoerper.append(hinweise);
+
+  const aktionen = neu("div", "sg-aktionen");
+  const einkaufen = neu("button", "btn-haupt", t("Jetzt einkaufen"));
+  einkaufen.type = "button";
+  einkaufen.addEventListener("click", zeigeRechner);
+  const start = neu("button", "btn-zweit", t("← Startseite"));
+  start.type = "button";
+  start.addEventListener("click", zeigeStartseite);
+  aktionen.append(einkaufen, start);
+  seiteKoerper.append(aktionen);
+}
+
+// Direkt-Link …/einkaufshelfer/#so-gehts (z. B. für einen QR-Code an der Tür)
+window.addEventListener("hashchange", () => { if (location.hash === "#so-gehts") zeigeSeite("so-gehts"); });
+
 function zeigeImpressum() {
   seiteAnfang(SEITEN_TITEL.impressum, false);
   const bloecke = [geschichten.impressum, geschichten.datenschutz].filter((b) => b && Array.isArray(b.abschnitte));
@@ -1893,7 +1985,18 @@ function folieProdukte() {
   return inhalt;
 }
 
-const FOLIEN = [folieWillkommen, folieSaison, folieRezept, folieNeu, folieProdukte];
+function folieSoGehts() {
+  const schritte = soGehtsSchritte(soGehtsDaten());
+  if (!schritte.length) return null;
+  const inhalt = neu("div", "folie-inhalt");
+  const icons = neu("div", "folie-icons");
+  schritte.slice(0, 4).forEach((s) => icons.append(iconSvg(s.icon || "frage", "folie-icon")));
+  inhalt.append(neu("span", "folie-label", t("Zum ersten Mal hier?")), icons,
+    neu("h2", "folie-titel", t("Tippen Sie auf „So funktioniert's“")));
+  return inhalt;
+}
+
+const FOLIEN = [folieWillkommen, folieSoGehts, folieSaison, folieRezept, folieNeu, folieProdukte];
 
 const zufall = (min, max) => (min + Math.random() * (max - min)).toFixed(1);
 

@@ -115,5 +115,33 @@
       ] },
       { "titel": "Stand", "text": ["November 2026"] }
     ]
+  },
+  "so_gehts": {
+    "titel": "So funktioniert unser Hofladen",
+    "schritte": [
+      { "titel": "Ware nehmen", "text": "Alles ist abgepackt und hat einen festen Preis.", "icon": "schritt-ware" },
+      { "titel": "Zusammenrechnen", "text": "Tippen Sie am Tablet auf die Produkte – oder auf Ihrem Handy.", "icon": "schritt-tablet" },
+      { "titel": "In die Kassa legen", "text": "Den angezeigten Betrag in die Kassa legen. Die Wechselgeld-Hilfe zeigt, was Sie herausnehmen dürfen.", "icon": "schritt-kassa" },
+      { "titel": "Leergut zurück", "text": "Leere Flaschen und Gläser zurückstellen und am Tablet abziehen.", "icon": "schritt-leergut", "nur_mit_leergut": true }
+    ],
+    "hinweise": [
+      "Rund um die Uhr geöffnet – Selbstbedienung",
+      "Etwas fehlt oder ist leer? Am Tablet auf ‚Etwas gefehlt?‘ tippen."
+    ],
+    "video_hinweis": "[Text zur Videoüberwachung – bitte ausfüllen]"
+  },
+  "so_gehts_en": {
+    "titel": "How our farm shop works",
+    "schritte": [
+      { "titel": "Take your goods", "text": "Everything is pre-packed and has a fixed price.", "icon": "schritt-ware" },
+      { "titel": "Add it up", "text": "Tap the products on the tablet – or on your own phone.", "icon": "schritt-tablet" },
+      { "titel": "Pay into the cash box", "text": "Put the amount shown into the cash box. The change helper shows what you may take out.", "icon": "schritt-kassa" },
+      { "titel": "Return empties", "text": "Put empty bottles and jars back and deduct them on the tablet.", "icon": "schritt-leergut", "nur_mit_leergut": true }
+    ],
+    "hinweise": [
+      "Open around the clock – self-service",
+      "Something missing or empty? Tap ‘Something missing?’ on the tablet."
+    ],
+    "video_hinweis": "[Text about video surveillance – please fill in]"
   }
 }

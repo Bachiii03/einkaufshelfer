@@ -1851,3 +1851,80 @@ html[data-thema="advent"] .deko-rand { background-image: url("bilder/jahreszeite
   .deko-schoner .deko-ecke { width: 150px; height: 102px; }
   .start-gruss { font-size: 19px; }
 }
+
+/* ===== So funktioniert unser Hofladen ===== */
+.start-sogehts { display: inline-flex; align-items: center; gap: 10px; }
+.sg-schritte {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  margin: 18px 0 0;
+  padding: 0 6px 6px 0;
+  list-style: none;
+}
+.sg-schritt {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px 16px 22px;
+  border: var(--rand);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 var(--tinte);
+  background: var(--papier);
+  text-align: center;
+}
+.sg-nr {
+  position: absolute;
+  top: -16px;
+  left: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border: var(--rand);
+  border-radius: 50%;
+  background: var(--gruen);
+  color: var(--weiss);
+  font-family: var(--schrift-titel);
+  font-weight: 700;
+  font-size: 28px;
+}
+.sg-icon { width: 110px; height: 110px; }
+.sg-titel { margin: 0; font-size: 28px; line-height: 1.1; }
+.sg-text { margin: 0; font-size: 1.15rem; line-height: 1.4; }
+.sg-hinweise { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 26px; }
+.sg-hinweis {
+  margin: 0;
+  padding: 12px 16px;
+  border-left: 6px solid var(--gruen);
+  background: var(--papier);
+  font-weight: 600;
+  font-size: 1.1rem;
+  line-height: 1.35;
+}
+.sg-video { display: flex; flex-direction: column; gap: 4px; border-left-color: var(--orange); }
+.sg-video .link-knopf { align-self: flex-start; }
+.sg-aktionen { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 28px; padding: 0 4px 4px 0; }
+.sg-aktionen button { min-width: 240px; min-height: 68px; font-size: 1.3rem; }
+@media (max-width: 899px) {
+  .sg-schritte { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 18px; }
+}
+@media (max-width: 560px) {
+  .sg-schritte { grid-template-columns: 1fr; }
+  .sg-icon { width: 90px; height: 90px; }
+  .sg-aktionen button { flex: 1 1 100%; }
+}
+
+/* Untere Knopfreihe der Startseite: fünf Knöpfe (Für Kinder, So funktioniert's, Über uns, Wünsche, Impressum) in einer Zeile */
+@media (min-width: 900px) {
+  .start-unten { gap: 12px; }
+  .start-klein { min-height: 58px; padding: 0 18px; }
+  .start-klein .start-kinder-icon { width: 28px; height: 28px; }
+}
+@media (min-width: 900px) and (max-width: 1199px) {
+  .start-unten { gap: 10px; }
+  .start-klein { padding: 0 13px; font-size: 1rem; }
+}

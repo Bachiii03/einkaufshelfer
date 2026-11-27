@@ -251,6 +251,28 @@ Einstellungen in **`inhalte.json`** unter `"jahreszeiten"`:
 
 Die automatische Prüfung kontrolliert die Themen-Namen und Datumsangaben.
 
+## „So funktioniert unser Hofladen“
+
+Erklärseite für Erstkunden: Knopf **„So funktioniert's“** unten auf der Startseite, eine eigene
+Folie im Bildschirmschoner („Zum ersten Mal hier?“) und direkt erreichbar unter
+`https://bachiii03.github.io/einkaufshelfer/#so-gehts` (z. B. als QR-Code auf einem Schild an der Tür).
+
+Alle Texte stehen in **`geschichten.json`** unter `"so_gehts"` (Englisch: `"so_gehts_en"`):
+
+- `titel`, `schritte` (je `titel`, `text`, `icon` aus `bilder/icons.svg`: `schritt-ware`,
+  `schritt-tablet`, `schritt-kassa`, `schritt-leergut`, `schritt-danke`), `hinweise` (Liste),
+  `video_hinweis`.
+- Ein Schritt mit `"nur_mit_leergut": true` erscheint nur, wenn es Produkte mit `"einsatz"` gibt –
+  sonst steht dort „Danke für Ihren Einkauf!“.
+- **Kontakt** („Fragen? Telefon … · E-Mail“) kommt automatisch aus dem Impressum (Abschnitt
+  „Kontakt“). Fehlt dort etwas, bleibt die Zeile weg.
+- **Videoüberwachung:** Solange bei `video_hinweis` noch der Platzhalter
+  `[Text zur Videoüberwachung – bitte ausfüllen]` steht, wird der Kasten nicht angezeigt.
+  Bitte den Text selbst eintragen (am besten mit eurer Datenschutz-Beratung abstimmen); der
+  Kasten verlinkt auf „Impressum & Datenschutz“.
+
+Die automatische Prüfung kontrolliert auch diesen Block (Titel, Schritte, Icons).
+
 ## Meldungen und Wochenbericht per E-Mail
 
 - **„Etwas gefehlt? Hier melden“** (auf der Danke-Seite): Kunden tippen an, was leer

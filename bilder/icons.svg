@@ -263,4 +263,70 @@
   </g>
 </symbol>
 
+<!-- ============ "SO FUNKTIONIERT'S" (Schritte und Knopf) ============ -->
+
+<symbol id="schritt-ware" viewBox="0 0 64 64">
+  <g stroke="#33261A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M17 31c0-15 30-15 30 0" fill="none" stroke-width="3"/>
+    <ellipse cx="25" cy="27" rx="8" ry="6" fill="#D3A35F"/>
+    <path d="M37 30c-1-9 3-15 9-16c3 6 1 13-5 17z" fill="#9CCB6B"/>
+    <circle cx="42" cy="28" r="5" fill="#C8322B"/>
+    <path d="M7 31h50l-6 26H13z" fill="#B98552"/>
+    <path d="M10 40h44M12 49h40M24 31l2 26M40 31l-2 26" fill="none" stroke-width="2"/>
+    <path d="M50 8l8 2-2 8-8-2z" fill="#FBF5E9" stroke-width="2"/>
+    <path d="M48 16c-2 4-4 7-6 9" fill="none" stroke-width="1.6"/>
+  </g>
+</symbol>
+
+<symbol id="schritt-tablet" viewBox="0 0 64 64">
+  <g stroke="#33261A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="6" y="6" width="40" height="52" rx="5" fill="#FBF5E9"/>
+    <rect x="11" y="12" width="30" height="36" rx="2" fill="#E6D5B4"/>
+    <rect x="14" y="15" width="11" height="10" rx="2" fill="#0A6B2D"/>
+    <rect x="27" y="15" width="11" height="10" rx="2" fill="#0A6B2D"/>
+    <rect x="14" y="28" width="11" height="10" rx="2" fill="#0A6B2D"/>
+    <rect x="14" y="41" width="24" height="5" rx="1.5" fill="#E8961E"/>
+    <circle cx="26" cy="53" r="1.6" fill="#33261A"/>
+    <path d="M40 34c0-3 4-3 4 0v8c0-3 4-3 4 0v2c0-3 4-3 4 0v2c0-3 4-2 4 1v8c0 5-4 8-9 8h-3c-4 0-6-2-8-5l-5-8c-2-3 2-5 4-3l5 5z" fill="#F2D2AE"/>
+  </g>
+</symbol>
+
+<symbol id="schritt-kassa" viewBox="0 0 64 64">
+  <g stroke="#33261A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="10" y="28" width="44" height="30" rx="4" fill="#7A4E2D"/>
+    <rect x="22" y="33" width="20" height="4" rx="2" fill="#33261A"/>
+    <path d="M24 46h16" fill="none" stroke="#E6D5B4"/>
+    <rect x="15" y="6" width="22" height="13" rx="2" fill="#9CCB6B" transform="rotate(-12 26 12)"/>
+    <circle cx="44" cy="17" r="9" fill="#F2C14E"/>
+    <path d="M47 13.5c-1-1-2.5-1.5-4-1.5c-3 0-5 2.3-5 5s2 5 5 5c1.5 0 3-.5 4-1.5M36.5 15.5h6M36.5 18.5h6" fill="none" stroke-width="1.8"/>
+    <path d="M32 22v6" fill="none" stroke-dasharray="2 3"/>
+  </g>
+</symbol>
+
+<symbol id="schritt-leergut" viewBox="0 0 64 64">
+  <g stroke="#33261A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M14 8h7v9l4 7v32a3 3 0 0 1-3 3H13a3 3 0 0 1-3-3V24l4-7z" fill="#DDEFF0"/>
+    <path d="M10 34h15" fill="none" stroke-width="2"/>
+    <rect x="32" y="30" width="20" height="29" rx="4" fill="#DDEFF0"/>
+    <rect x="31" y="24" width="22" height="7" rx="2" fill="#E8961E"/>
+    <path d="M36 16c4-7 13-7 17 0" fill="none"/>
+    <path d="M49 11l4 5-6 2" fill="none"/>
+  </g>
+</symbol>
+
+<symbol id="schritt-danke" viewBox="0 0 64 64">
+  <g stroke="#33261A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M32 56C14 44 6 34 6 23c0-8 6-14 13-14c6 0 10 3 13 8c3-5 7-8 13-8c7 0 13 6 13 14c0 11-8 21-26 33z" fill="#E8961E"/>
+    <path d="M20 22c1-4 4-6 8-6" fill="none" stroke="#FBF5E9" stroke-width="2.5"/>
+  </g>
+</symbol>
+
+<symbol id="frage" viewBox="0 0 64 64">
+  <g stroke="#33261A" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="32" cy="32" r="27" fill="#F2C14E"/>
+    <path d="M23 25c0-6 4-10 9-10s9 4 9 9c0 6-8 7-8 14" fill="none" stroke-width="5"/>
+    <circle cx="33" cy="47" r="3" fill="#33261A"/>
+  </g>
+</symbol>
+
 </svg>
