@@ -1783,3 +1783,6 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
 .google-qr img { display: block; width: 180px; height: 180px; flex: none; background: var(--weiss); }
 .google-qr span { font-weight: 700; font-size: 1.2rem; }
 .google-link { display: flex; align-items: center; justify-content: center; text-decoration: none; }
+
+/* Kinderecke: Inhalte untereinander, QR-Kasten nur so breit wie nötig */
+.kinder-buehne { display: flex; flex-direction: column; gap: 20px; }
